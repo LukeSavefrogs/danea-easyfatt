@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "danea-automation"
-version = "0.1.0"
+version = "0.1.4"
 description = ""
 authors = ["Luca Salvarani <lucasalvarani99@gmail.com>"]
 readme = "README.md"
@@ -10,8 +10,11 @@ packages = [{include = "src"}]
 python = ">=3.7, <3.12"
 rich = "^13.0.1"
 xmltodict = "^0.13.0"
-pyinstaller = "^5.7.0"
 
+
+[tool.poetry.group.dev.dependencies]
+gitpython = "^3.1.30"
+pyinstaller = "^5.7.0"
 
 [build-system]
 requires = ["poetry-core"]
