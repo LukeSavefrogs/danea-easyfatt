@@ -53,7 +53,7 @@ def main():
 		logger.warning(f"Attenzione: Ci sono {len(repo.untracked_files)} file non tracciati.")
 
 	if str(latest_tag) == str(version):
-		logger.error(f"Tag '{version}' già esistente.")
+		logger.error(f"Tag '{version}' già esistente.\nAumenta il numero di versione con 'poetry version [patch/minor/major/prepatch/preminor/premajor/prerelease]'")
 		return False
 
 	input(f"Premi [INVIO] per pubblicare la versione '{version}'...")
