@@ -37,7 +37,7 @@ jobs:
 
       - name: Generate artifacts
         run: |
-          poetry run pyinstaller --onefile --clean ./src/main.py
+          poetry run pyinstaller --name "Genera CSV" --log-level WARN --noconfirm --onefile --clean ./src/main.py
 
       - name: "Create Release"
         uses: ncipollo/release-action@v1.12.0
