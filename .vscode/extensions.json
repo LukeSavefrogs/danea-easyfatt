@@ -1,0 +1,9 @@
+{
+	"recommendations": [
+		"njpwerner.autodocstring",
+		"formulahendry.auto-rename-tag",
+		"tamasfe.even-better-toml",
+		"mechatroner.rainbow-csv",
+		"redhat.vscode-xml"
+	]
+}
