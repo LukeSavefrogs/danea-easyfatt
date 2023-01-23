@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import logging
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("danea-easyfatt.xml")
 
 
 def is_valid_xml(value):
@@ -37,8 +37,8 @@ def modifica_xml (easyfatt_xml_file: str, additional_xml_file: str):
 	easyfatt_xml_file: Path   = Path(easyfatt_xml_file).resolve()
 	additional_xml_file: Path = Path(additional_xml_file).resolve()
 
-	logging.debug(f'File XML generato dal gestionale Danea Easyfatt: "{easyfatt_xml_file}"')
-	logging.debug(f'File XML contenente il testo da inserire: "{additional_xml_file}"')
+	logger.debug(f'File XML generato dal gestionale Danea Easyfatt: "{easyfatt_xml_file}"')
+	logger.debug(f'File XML contenente il testo da inserire: "{additional_xml_file}"')
 
 
 	additional_xml_content = ""
@@ -70,7 +70,7 @@ def modifica_xml (easyfatt_xml_file: str, additional_xml_file: str):
 
 	if totale_documents_dopo <= totale_documents_prima:
 		raise ValueError("Non è stato aggiunto nessun tag 'Documenti'")
-		
+	
 	logger.debug(f"Trovati {totale_documents_dopo} tag 'Document'")
 
 	return ET.tostring(tree.getroot(), encoding="UTF-8", xml_declaration=True, short_empty_elements=False)

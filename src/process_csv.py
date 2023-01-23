@@ -2,11 +2,6 @@ import xml.etree.ElementTree as ET
 import xmltodict
 import re
 
-import logging
-logger = logging.getLogger(__name__)
-
-
-
 
 def genera_csv (xml_text, template_riga):
 	# Trasformo il CSV in un dizionario, in modo da poterlo traversare facilmente.

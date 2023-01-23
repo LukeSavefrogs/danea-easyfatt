@@ -10,6 +10,8 @@ import subprocess
 from rich.logging import RichHandler
 import logging
 
+from pathlib import Path
+import git
 
 
 logger = logging.getLogger(__name__)
@@ -20,9 +22,6 @@ logger.addHandler(RichHandler(
 ))
 logger.setLevel(logging.DEBUG)
 
-
-from pathlib import Path
-import git
 
 def main():
 	current_repo_dir = Path(".").resolve()
@@ -59,13 +58,17 @@ def main():
 	input(f"Premi [INVIO] per pubblicare la versione '{version}'...")
 
 	logger.info(f"Creo release per la versione '{version}' (latest: '{latest_tag}')")
+	# logger.info(f"Creo release per la commit '{repo.head.commit}'")
 
 	try:
 		tag = repo.create_tag(
+			# ref=repo.head.commit,
+			# force=True,
 			path=version,
 			message=f"Aggiornamento alla versione {version}"
 		)
 
+		logger.debug(f"Lancio comando push per tag '{tag.name}'")
 		repo.remote('origin').push(tag.name)
 		logger.info("Upload terminato con successo!")
 	except git.exc.GitCommandError as e:

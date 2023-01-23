@@ -23,3 +23,16 @@
 	```
 	poetry run python src/main.py
 	```
+
+
+### Scripts
+#### Build
+Lancia il processo di build:
+```
+poetry run build
+```
+
+#### Release
+```
+poetry run release
+```
