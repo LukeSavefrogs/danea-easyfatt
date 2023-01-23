@@ -9,12 +9,14 @@ repository = "https://github.com/LukeSavefrogs/danea-easyfatt"
 
 
 [tool.poetry.dependencies]
-python = ">=3.7, <3.12"
+python = ">=3.8, <3.12"
 rich = "^13.0.1"
 xmltodict = "^0.13.0"
 requests = "^2.28.2"
 toml = "^0.10.2"
 packaging = "^23.0"
+pandas = "^1.5.3"
+openpyxl = "^3.0.10"
 
 
 [tool.poetry.group.dev.dependencies]
