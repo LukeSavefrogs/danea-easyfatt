@@ -14,32 +14,29 @@ jobs:
       contents: write
 
     steps:
-      - name: "Checkout repository"
+      - name: "🛒 Checkout repository"
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
       
-      - name: Install Python
+      - name: "🐍 Install Python"
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
       
-      - name: Install Poetry
+      - name: "📜 Install Poetry"
         uses: abatilo/actions-poetry@v2
         with:
           poetry-version: 1.3.2
 
-      - name: View poetry --help
-        run: poetry --help
-
-      - name: Install dependencies
+      - name: "🔍 Install dependencies"
         run: poetry install
 
-      - name: Generate artifacts
+      - name: "🎉 Generate artifacts"
         run: |
-          poetry run pyinstaller --name "Genera CSV" --log-level WARN --noconfirm --onefile --clean ./src/main.py
+          poetry run build
 
-      - name: "Create Release"
+      - name: "🏁 Create Release"
         uses: ncipollo/release-action@v1.12.0
         with:
           allowUpdates: false
