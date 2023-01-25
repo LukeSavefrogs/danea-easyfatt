@@ -5,6 +5,8 @@ import re
 
 from clienti import get_intervallo_spedizioni
 
+# import pandas as pd
+
 import logging
 logger = logging.getLogger("danea-easyfatt.csv")
 
@@ -20,8 +22,9 @@ def genera_csv (xml_text, template_riga):
 	if file_clienti.exists():
 		logger.info(f"Trovato file 'ExportClienti.xlsx'")
 		logger.warning(f"Gestione automatica degli orari di consegna abilitata.")
-		intervallo_spedizioni = get_intervallo_spedizioni(filename=file_clienti, extra_field_id=3)
+		intervallo_spedizioni = get_intervallo_spedizioni(filename=file_clienti, extra_field_id=1)
 
+	# peso_totale = 0
 	csv_lines = []
 	for document in xml_dict["EasyfattDocuments"]["Documents"]["Document"]:
 		indirizzo_spedizione = document["DeliveryAddress"] if document.get("DeliveryAddress", None) else document["CustomerAddress"]
@@ -42,3 +45,5 @@ def genera_csv (xml_text, template_riga):
 	
 	return csv_lines
 
+# if __name__ == '__main__':
+# 	print(pd.read_xml("./src/PRIMARIGA.XML", parser='etree'))
