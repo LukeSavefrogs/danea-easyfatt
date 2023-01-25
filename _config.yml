@@ -4,6 +4,10 @@ title: "Easyfatt Integration"
 source: "docs"
 
 # theme: bulma-clean-theme
+url: 'https://lukesavefrogs.github.io'
+
+# Simulate Github Pages base url being the repository name
+baseurl: '/danea-easyfatt'
 
 theme: just-the-docs
 plugins:

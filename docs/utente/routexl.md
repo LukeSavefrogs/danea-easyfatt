@@ -22,7 +22,7 @@ Tramite un algoritmo intelligente permette di ordinare gli indirizzi in modo da 
 ## Come avviene l'integrazione?
 Il programma rilascia un file CSV, il cui contenuto andrà poi incollato nella finestra di importazione di RouteXL.
 
-<img src="/assets/images/routexl-import.png">
+<img src="{{ site.baseurl }}/assets/images/routexl-import.png">
 
 ## Gestione degli orari di consegna
 Il programma permette la gestione degli orari di consegna per ogni singolo cliente.
@@ -53,7 +53,7 @@ Questo però è possibile solo se nella cartella in cui si trova l'eseguibile è
 > Per rinominarlo andare su "_Opzioni > Clienti e Fornitori > Nomi campi aggiuntivi_".
 {: .note}
 
-<img src="/assets/images/easyfatt-clienti-lista.png" />
+<img src="{{ site.baseurl }}/assets/images/easyfatt-clienti-lista.png" />
 
 #### Controllare il "Codice cliente" di ogni cliente
 1. Andare nella scheda **"Cliente"**.
@@ -67,4 +67,4 @@ Questo però è possibile solo se nella cartella in cui si trova l'eseguibile è
 1. Salvare il file **nella stessa cartella** del programma
 
 
-<img src="/assets/images/easyfatt-clienti-export.png" />
+<img src="{{ site.baseurl }}/assets/images/easyfatt-clienti-export.png" />
