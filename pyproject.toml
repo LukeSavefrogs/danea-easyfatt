@@ -22,6 +22,7 @@ openpyxl = "^3.0.10"
 [tool.poetry.group.dev.dependencies]
 gitpython = "^3.1.30"
 pyinstaller = "^5.7.0"
+poethepoet = "^0.18.1"
 
 
 [build-system]
@@ -32,3 +33,11 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.scripts]
 build = "scripts.build:main"
 release = "scripts.release:main"
+
+
+[tool.poe.tasks.docs]
+sequence = [
+	{script  = "os:system('bundle exec jekyll clean')"},
+	{script  = "os:system('bundle exec jekyll serve --livereload --open-url --strict_front_matter --trace')"}
+]
+help = "Lancia il server LiveReload di Jekyll"

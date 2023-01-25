@@ -1,0 +1,7 @@
+.label-reset {
+	text-transform: none;
+}
+
+.label {
+	user-select: none !important;
+}
