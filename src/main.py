@@ -11,7 +11,7 @@ from packaging.version import Version
 from rich.logging import RichHandler
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("danea-easyfatt")
 logger.addHandler(RichHandler(
 	rich_tracebacks=True,
 	omit_repeated_times=False,
