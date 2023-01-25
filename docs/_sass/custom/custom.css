@@ -5,3 +5,22 @@
 .label {
 	user-select: none !important;
 }
+
+
+
+
+/* 
+------------------------------------------------	 
+                  MERMAID
+------------------------------------------------
+*/
+
+/* Disable text transformation for Mermaid diagrams */
+svg .label {
+	text-transform: none;
+}
+
+/* Fix text/graph cut off at the edges (https://github.com/mermaid-js/mermaid/issues/790#issuecomment-478860052) */
+svg[id^='mermaid'] {
+	overflow: visible;
+}
