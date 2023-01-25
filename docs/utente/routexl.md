@@ -53,6 +53,20 @@ Questo però è possibile solo se nella cartella in cui si trova l'eseguibile è
 > Per rinominarlo andare su "_Opzioni > Clienti e Fornitori > Nomi campi aggiuntivi_".
 {: .note}
 
+> Valori validi
+> 
+> Al momento sono considerati valori validi:
+> 1. **`HH > HH`**
+> 1. **`H >> HH`**
+> 1. **`HH:MM - HH`**
+> 1. **`HH:MM a HH:MM`**
+>
+> Nota inoltra che:
+> - Gli spazi sono _necessari solo per la sintassi 4_, mentre per tutte le altre sono completamente opzionali (es. `08 >> 12:00` è identico a `08:00>>12`).
+> - L'indicatore dei minuti è _sempre opzionale_; in sua assenza verrà automaticamente aggiunto `:00` (es. `08` = `08:00`)
+> - Sia l'indicatore dei minuti che delle ore vengono _sempre normalizzati_ nel formato `HH:MM` (es. `8:4` = `08:04`)
+{: .warning-title}
+
 <img src="{{ site.baseurl }}/assets/images/easyfatt-clienti-lista.png" />
 
 #### Controllare il "Codice cliente" di ogni cliente
