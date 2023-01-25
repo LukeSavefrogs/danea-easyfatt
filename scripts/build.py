@@ -15,7 +15,7 @@ logger.addHandler(RichHandler(
 logger.setLevel(logging.INFO)
 
 def main():
-	build("./src/main.py", "Danea Automation")
+	build("./src/main.py", "easyfatt_integration")
 	# build("./src/test.py", "TEST")
 
 def quote(string, quote='"'):
