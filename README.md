@@ -1,5 +1,4 @@
-[![Stato ultimo rilascio](https://github.com/LukeSavefrogs/danea-easyfatt/actions/workflows/release.yml/badge.svg)](https://github.com/LukeSavefrogs/danea-easyfatt/actions/workflows/release.yml)
-
+[![Stato ultimo rilascio](https://github.com/LukeSavefrogs/danea-easyfatt/actions/workflows/release.yml/badge.svg)](https://github.com/LukeSavefrogs/danea-easyfatt/actions/workflows/release.yml) 
 [![Documentazione](https://github.com/LukeSavefrogs/danea-easyfatt/actions/workflows/documentation.yml/badge.svg)](https://github.com/LukeSavefrogs/danea-easyfatt/actions/workflows/documentation.yml)
 
 ## Utilizzo
