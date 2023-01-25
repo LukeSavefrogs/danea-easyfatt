@@ -1,8 +1,12 @@
+from pathlib import Path
 import xml.etree.ElementTree as ET
 import xmltodict
 import re
 
 from clienti import get_intervallo_spedizioni
+
+import logging
+logger = logging.getLogger("danea-easyfatt.csv")
 
 
 def genera_csv (xml_text, template_riga):
@@ -11,7 +15,12 @@ def genera_csv (xml_text, template_riga):
 		xml_input=xml_text
 	)
 
-	intervallo_spedizioni = get_intervallo_spedizioni(filename="./ExportClienti.xlsx", extra_field_id=3)
+	intervallo_spedizioni = {}
+	file_clienti = Path("./ExportClienti.xlsx").resolve().absolute()
+	if file_clienti.exists():
+		logger.info(f"Trovato file 'ExportClienti.xlsx'")
+		logger.warning(f"Gestione automatica degli orari di consegna abilitata.")
+		intervallo_spedizioni = get_intervallo_spedizioni(filename=file_clienti, extra_field_id=3)
 
 	csv_lines = []
 	for document in xml_dict["EasyfattDocuments"]["Documents"]["Document"]:
@@ -32,3 +41,4 @@ def genera_csv (xml_text, template_riga):
 		))
 	
 	return csv_lines
+
