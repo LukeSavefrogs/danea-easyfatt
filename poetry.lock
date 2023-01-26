@@ -358,6 +358,27 @@ files = [
 future = "*"
 
 [[package]]
+name = "pint"
+version = "0.20.1"
+description = "Physical quantities module"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "Pint-0.20.1-py3-none-any.whl", hash = "sha256:68afe65665542ee3ec99f69f043b1d39bfe7c6d61b786940157138fd08b838fb"},
+    {file = "Pint-0.20.1.tar.gz", hash = "sha256:387cf04078dc7dfe4a708033baad54ab61d82ab06c4ee3d4922b1e45d5626067"},
+]
+
+[package.extras]
+babel = ["babel (<=2.8)"]
+dask = ["dask"]
+numpy = ["numpy (>=1.19.5)"]
+pandas = ["pint-pandas (>=0.3)"]
+test = ["pytest", "pytest-cov", "pytest-mpl", "pytest-subtests"]
+uncertainties = ["uncertainties (>=3.1.6)"]
+xarray = ["xarray"]
+
+[[package]]
 name = "poethepoet"
 version = "0.18.1"
 description = "A task runner that works well with poetry."
@@ -627,4 +648,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8, <3.12"
-content-hash = "01b8097669fdae85f44107522870ce5a1628dd211804665a1ff74775826ced6a"
+content-hash = "ad9cf2dc8c3fc334577ae4e42bc0b0c1769292adb95b0948f9a2b6c9e754fb4b"

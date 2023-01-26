@@ -19,6 +19,14 @@ logger.addHandler(RichHandler(
 ))
 logger.setLevel(logging.DEBUG)
 
+import pandas as pd
+import pint
+EASYFATT_DOCUMENT_DTYPE = {
+	"CustomerCode": str,
+	"CustomerPostcode": str,
+	"CustomerVatCode": str,
+	"CustomerTel": str,
+}
 
 # -----------------------------------------------------------
 #                        Inizio codice                       
@@ -93,6 +101,39 @@ def main():
 	except Exception:
 		logger.exception("Errore furante la generazione del file CSV.")
 		return False
+
+	# 3. Calcolo il peso totale della spedizione
+	try:
+		ureg = pint.UnitRegistry(cache_folder=':auto:', autoconvert_offset_to_baseunit=True)
+		ureg.default_format = "~P"
+		
+		df = pd.read_xml(nuovo_xml, parser='etree', xpath='./Documents/Document', dtype=EASYFATT_DOCUMENT_DTYPE)
+
+		# Effettuo una prima pulizia dei valori a solo scopo di visualizzazione.
+		#
+		# IMPORTANTE: Per evitare valori sballati nel totale sono costretto a
+		#             trasformare il separatore decimale nel formato inglese (.)
+		df["TransportedWeight"] = df["TransportedWeight"].map(
+			lambda v: ureg.Quantity(str(v).replace(".", "").replace(",", ".").lower()) if v is not None else v
+		)
+
+		pd.set_option('display.max_columns', None)
+		pd.set_option('display.max_rows', None)
+		logger.info(f"Effettuata prima analisi del peso trasportato: \n{df.get(['CustomerCode', 'TransportedWeight'])}")
+		pd.reset_option('display.max_columns')
+		pd.reset_option('display.max_rows')
+
+		df["TransportedWeight"] = df["TransportedWeight"].map(
+			lambda v: ureg.Quantity(str(v).lower()).to("g").magnitude if v is not None else v
+		)
+		logger.info(f"Effettuata conversione in grammi: \n{df.get(['CustomerCode', 'TransportedWeight'])}")
+
+		peso_totale = ureg.Quantity(df["TransportedWeight"].sum(), 'g') 
+		logger.info(f"Peso totale calcolato: {peso_totale.to('kg')} ({peso_totale.to('t')})")
+	
+	except Exception as e:
+		logger.error(f"Errore in fase di calcolo peso totale: {repr(e)}")
+		logger.exception("Errore in fase di calcolo peso totale")
 
 # Per compilare: pyinstaller --onefile --clean .\src\main.py
 if __name__ == '__main__':

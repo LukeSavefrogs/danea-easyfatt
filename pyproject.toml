@@ -17,6 +17,7 @@ toml = "^0.10.2"
 packaging = "^23.0"
 pandas = "^1.5.3"
 openpyxl = "^3.0.10"
+pint = "^0.20.1"
 
 
 [tool.poetry.group.dev.dependencies]
