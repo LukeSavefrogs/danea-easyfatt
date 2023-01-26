@@ -1,0 +1,88 @@
+# To override the color just set the `color` property 
+# To override the label text just set the `label` property 
+tasks:
+  - title: |
+      Aggiungere controllo di versione
+    body: |
+      > Il controllo di versione è stato implementato a partire dalla release [**`v2.1.0`**](https://github.com/LukeSavefrogs/danea-easyfatt/releases/tag/v0.2.1).
+      > 
+      > Assicurati di non avere una versione più vecchia.
+    completed: 100
+    category: completed
+
+  - title: |
+      Aggiungere _Changelog_ nel corpo delle _release_
+    completed: 0
+    category: todo
+
+  - title: |
+      Migliorare documentazione
+    completed: 0
+    category: work_in_progress
+
+  - title: |
+      Aggiungere _file di configurazione_
+    body: |
+      > Finora la scelta sembra ricadere sul TOML.
+      >
+      > Formati: 
+      > - JSON
+      >   - [_PRO_] Nessuna dipendenza esterna
+      >   - [_CONTRO_] Sarebbe comunque una import in più che andrebbe ad appesantire il bundle.
+      > - XML:
+      >   - [_PRO_] Già incluso
+      >   - [_CONTRO_] Estremamente verboso 🤮
+      > - YAML:
+      >   - [_CONTRO_] Vorrei evitare di aggiungere altre dipendenze esterne e appesantire il bundle.
+      > - TOML:
+      >   - [_PRO_] Già incluso, in quanto già utilizzato per la parte di controllo versione.
+      >   - [_PRO_] Più leggibile dell'XML o del JSON.
+      > 
+      
+    completed: 0
+    category: work_in_progress
+
+  - title: |
+      Aggiungere _interfaccia grafica_
+    body: |
+      > Risorse utili:
+      > - [Packaging PyQt5 applications for Windows with PyInstaller & InstallForge](https://www.pythonguis.com/tutorials/packaging-pyqt5-pyside2-applications-windows-pyinstaller/)
+      > - [Tutorial PyQT5](https://build-system.fman.io/pyqt5-tutorial)
+    completed: 0
+    category: todo
+
+  - title: |
+      Aggiungere visualizzazione di: peso totale dell'ordine, guadagno e importo
+    completed: 0
+    category: work_in_progress
+
+  - title: |
+      Aggiungere visuale di insieme degli ordini tramite [Google Earth](https://developers.google.com/kml/documentation?hl=en)
+    completed: 0
+    category: help_needed
+
+  - title: |
+      Aggiungere visualizzazione _peso totale_ dell'ordine
+    body: |
+      > _Da finire di testare.._
+    completed: 90
+    category: work_in_progress
+
+
+# Category list
+categories:
+  - name: Fatto
+    id: completed
+    color: green
+
+  - name: In corso
+    id: work_in_progress
+    color: yellow
+  
+  - name: Da fare
+    id: todo
+    color: blue
+  
+  - name: Aiuto richiesto
+    id: help_needed
+    color: red
