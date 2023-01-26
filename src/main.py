@@ -28,10 +28,14 @@ EASYFATT_DOCUMENT_DTYPE = {
 	"CustomerTel": str,
 }
 
+import bundle
+
 # -----------------------------------------------------------
 #                        Inizio codice                       
 # -----------------------------------------------------------
 def main():
+	logger.debug(f"Cartella di esecuzione: '{Path(bundle.path.get_bundle_directory()).resolve().absolute()}'")
+
 	# ==================================================================
 	#                       Controllo di versione
 	# ==================================================================
@@ -46,7 +50,7 @@ def main():
 			
 			return False
 		else:
-			logger.info(f"You're already running the latest version.")
+			logger.debug(f"La tua versione è aggiornata! :)")
 	except Exception as error:
 		logger.exception("Errore in fase di controllo aggiornamenti")
 
@@ -104,8 +108,10 @@ def main():
 
 	# 3. Calcolo il peso totale della spedizione
 	try:
-		ureg = pint.UnitRegistry(cache_folder=':auto:', autoconvert_offset_to_baseunit=True)
+		ureg = pint.UnitRegistry(autoconvert_offset_to_baseunit=True)
 		ureg.default_format = "~P"
+
+		logger.debug(f"Impostata cartella cache per 'pint': {ureg.cache_folder}")
 		
 		df = pd.read_xml(nuovo_xml, parser='etree', xpath='./Documents/Document', dtype=EASYFATT_DOCUMENT_DTYPE)
 
@@ -119,14 +125,14 @@ def main():
 
 		pd.set_option('display.max_columns', None)
 		pd.set_option('display.max_rows', None)
-		logger.info(f"Effettuata prima analisi del peso trasportato: \n{df.get(['CustomerCode', 'TransportedWeight'])}")
+		logger.debug(f"Effettuata prima analisi del peso trasportato: \n{df.get(['CustomerCode', 'TransportedWeight'])}")
 		pd.reset_option('display.max_columns')
 		pd.reset_option('display.max_rows')
 
 		df["TransportedWeight"] = df["TransportedWeight"].map(
 			lambda v: ureg.Quantity(str(v).lower()).to("g").magnitude if v is not None else v
 		)
-		logger.info(f"Effettuata conversione in grammi: \n{df.get(['CustomerCode', 'TransportedWeight'])}")
+		logger.debug(f"Effettuata conversione in grammi: \n{df.get(['CustomerCode', 'TransportedWeight'])}")
 
 		peso_totale = ureg.Quantity(df["TransportedWeight"].sum(), 'g') 
 		logger.info(f"Peso totale calcolato: {peso_totale.to('kg')} ({peso_totale.to('t')})")
