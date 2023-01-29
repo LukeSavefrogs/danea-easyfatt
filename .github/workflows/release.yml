@@ -44,7 +44,6 @@ jobs:
             breaking: Breaking Changes
             feat: ✨ Nuove funzionalità ✨
             ✨ feat: ✨ Nuove funzionalità ✨
-            ✨ feat: ✨ Nuove funzionalità ✨
             fix: 🐛 Bug risolti
             🐞 fix: 🐛 Bug risolti
             revert: Reverts
