@@ -36,7 +36,7 @@ jobs:
         run: |
           poetry run build
 
-      - name: Changelog
+      - name: "🧬 Generate Changelog"
         uses: ardalanamini/auto-changelog@v3
         id: changelog
         with:
@@ -69,7 +69,7 @@ jobs:
           mention-authors: true
           mention-new-contributors: true
           include-compare: true
-          semver: true
+          semver: false
 
       - name: "🏁 Create Release"
         uses: ncipollo/release-action@v1
