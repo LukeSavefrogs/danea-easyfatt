@@ -75,8 +75,8 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: false
-          body: steps.changelog.outputs.changelog
-          generateReleaseNotes: true
+          body: ${{ steps.changelog.outputs.changelog }}
+          # generateReleaseNotes: true
           makeLatest: true
           prerelease: false
           artifacts: "dist/*.exe"
