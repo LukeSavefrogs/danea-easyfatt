@@ -74,7 +74,10 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: false
-          body: ${{ steps.changelog.outputs.changelog }}
+          body: |
+            Di seguito l'elenco delle modifiche introdotte in questa versione.
+            
+            ${{ steps.changelog.outputs.changelog }}
           # generateReleaseNotes: true
           makeLatest: true
           prerelease: false
