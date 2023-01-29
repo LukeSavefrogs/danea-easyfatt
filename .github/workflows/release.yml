@@ -42,30 +42,30 @@ jobs:
         with:
           commit-types: |
             breaking: Breaking Changes
-            feat: New Features
-            ✨ feat: New Features
-            fix: Bug Fixes
-            🐞 fix: Bug Fixes
+            feat: ✨ Nuove funzionalità ✨
+            ✨ feat: ✨ Nuove funzionalità ✨
+            ✨ feat: ✨ Nuove funzionalità ✨
+            fix: 🐛 Bug risolti
+            🐞 fix: 🐛 Bug risolti
             revert: Reverts
-            perf: Performance Improvements
-            🚀 perf: Performance Improvements
+            perf: 🚀 Miglioramenti delle performance
+            🚀 perf: 🚀 Miglioramenti delle performance
             refactor: Refactors
             🩺 refactor: Refactors
-            deps: Dependencies
-            docs: Documentation Changes
-            📄 docs: Documentation Changes
-            style: Code Style Changes
-            🎨 style: Code Style Changes
-            build: Build System
-            🧱 build: Build System
+            deps: Dipendenze
+            docs: 📄 Documentazione
+            📄 docs: 📄 Documentazione
+            style: 🎨 Modifiche allo stile del codice
+            🎨 style: 🎨 Modifiche allo stile del codice
+            build: 🧱 Sistema di build
+            🧱 build: 🧱 Sistema di build
             ci: Continuous Integration
             🔄 ci: Continuous Integration
             test: Tests
             🧪 test: Tests
             chore: Chores
-            other: Other Changes
-          default-commit-type: Other Changes
-          # release-name: v1.0.0
+            other: Altre modifiche
+          default-commit-type: Altre modifiche
           mention-authors: true
           mention-new-contributors: true
           include-compare: true
