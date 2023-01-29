@@ -12,8 +12,10 @@ tasks:
 
   - title: |
       Aggiungere _Changelog_ nel corpo delle _release_
-    completed: 0
-    category: todo
+    body: |
+      > Changelog automatico introdotto con la commit  [**`0223c65`**](https://github.com/LukeSavefrogs/danea-easyfatt/compare/6d6fa239f3a7840999809524dd1b1809e2c99ecc...0223c65f81c1c288508699946d6b35b21b3134af)
+    completed: 100
+    category: completed
 
   - title: |
       Migliorare documentazione
