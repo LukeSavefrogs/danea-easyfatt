@@ -22,6 +22,7 @@ def genera_csv (xml_text, template_riga):
 			logger.info(f"Trovato file 'ExportClienti.{ext}'")
 			logger.warning(f"Gestione automatica degli orari di consegna abilitata.")
 			intervallo_spedizioni = get_intervallo_spedizioni(filename=file_clienti, extra_field_id=1)
+			break
 
 	csv_lines = []
 	for document in xml_dict["EasyfattDocuments"]["Documents"]["Document"]:
