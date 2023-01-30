@@ -7,13 +7,7 @@ import logging
 
 import re
 
-logger = logging.getLogger(__name__)
-logger.addHandler(RichHandler(
-	rich_tracebacks=True,
-	omit_repeated_times=False,
-	log_time_format="[%d-%m-%Y %H:%M:%S]"
-))
-logger.setLevel(logging.INFO)
+logger = logging.getLogger("danea-easyfatt.clienti")
 
 
 CUSTOMER_EXTRA_FIELD = 3
