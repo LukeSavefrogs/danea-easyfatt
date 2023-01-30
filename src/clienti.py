@@ -25,19 +25,6 @@ def rename_extra_field(column_name):
 	return "IntervalloSpedizione" if re.match(r"^Extra [0-9]+$", column_name) else column_name
 
 
-def sanitize_extra_field(value):
-	"""_summary_
-
-	Args:
-		value (_type_): _description_
-
-	Returns:
-		_type_: _description_
-	"""
-	if re.match(r'([0-9]+)(>+|-+|\s+|\s+a\s+)([0-9]+)', value):
-		return re.sub(r'([0-9]+)(>+|-+|\s+|\s+a\s+)([0-9]+)', repl='\1 >> \3', string=value) 
-	return None
-
 
 def formatta_orario(value):
 	"""Formatta l'orario nel formato HH:mm (aggiungendo '0*' e ':00' dove necessario)
@@ -54,7 +41,6 @@ def formatta_orario(value):
 		orario.append("0")
 
 	return ':'.join(map(lambda s: s.strip().zfill(2), orario))
-	
 
 
 
