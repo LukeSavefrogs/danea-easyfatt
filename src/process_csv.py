@@ -16,11 +16,12 @@ def genera_csv (xml_text, template_riga):
 	)
 
 	intervallo_spedizioni = {}
-	file_clienti = Path("./ExportClienti.xlsx").resolve().absolute()
-	if file_clienti.exists():
-		logger.info(f"Trovato file 'ExportClienti.xlsx'")
-		logger.warning(f"Gestione automatica degli orari di consegna abilitata.")
-		intervallo_spedizioni = get_intervallo_spedizioni(filename=file_clienti, extra_field_id=1)
+	for ext in ["xlsx", "ods"]:
+		file_clienti = Path(f"./ExportClienti.{ext}").resolve().absolute()
+		if file_clienti.exists():
+			logger.info(f"Trovato file 'ExportClienti.{ext}'")
+			logger.warning(f"Gestione automatica degli orari di consegna abilitata.")
+			intervallo_spedizioni = get_intervallo_spedizioni(filename=file_clienti, extra_field_id=1)
 
 	csv_lines = []
 	for document in xml_dict["EasyfattDocuments"]["Documents"]["Document"]:
