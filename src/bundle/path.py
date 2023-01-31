@@ -2,7 +2,19 @@ import sys
 from pathlib import Path
 import inspect
 
-def get_bundle_directory() -> str:
+def is_executable() -> bool:
+	"""Checks wether the app has been bundled using `pyinstaller` or not (normal Python environment).
+	
+	Source:
+		https://pyinstaller.org/en/stable/runtime-information.html#run-time-information
+	
+	Returns:
+		bool: `True` if the script is bundled in an executable.
+	"""
+	return getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS')
+
+
+def get_bundle_directory() -> Path:
 	"""Returns the directory where the script is located (or bundled).
 	
 	Works either with a `pyinstaller` bundled app or a normal Python script.
@@ -19,19 +31,7 @@ def get_bundle_directory() -> str:
 		return Path(caller_file).resolve().absolute().parent
 
 
-def is_executable() -> bool:
-	"""Checks wether the app has been bundled using `pyinstaller` or not (normal Python environment).
-	
-	Source:
-		https://pyinstaller.org/en/stable/runtime-information.html#run-time-information
-	
-	Returns:
-		bool: `True` if the script is bundled in an executable.
-	"""
-	return getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS')
-
-
-def get_root_directory(ref_filename: str = "pyproject.toml"):
+def get_root_directory(ref_filename: str = "pyproject.toml") -> Path:
 	"""Find the correct path to the root of the bundle.
 
 	When bundled, the entry point is at top-level, so i need 
@@ -47,6 +47,13 @@ def get_root_directory(ref_filename: str = "pyproject.toml"):
 
 	return find_upwards(bundle_directory, ref_filename).parent
 
+def get_execution_directory() -> Path:
+	"""Returns the directory where the actual script/executable is located.
+
+	Returns:
+		Path: The path where the program is saved.
+	"""
+	return Path(sys.executable if is_executable() else sys.argv[0]).resolve().absolute().parent
 
 def find_upwards(cwd: Path, filename: str):
 	"""Recursively searches for `filename` into `cwd` and all directories above it.
