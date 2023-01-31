@@ -29,7 +29,7 @@ def get_latest_version():
 
 
 def get_current_version():
-	toml_file = find_toml_file()
+	toml_file = (bundle.get_root_directory() / 'pyproject.toml').resolve()
 
 	if not toml_file.exists() or not toml_file.is_file():
 		raise Exception(f"Update error: TOML file '{toml_file}' was not found.")
@@ -48,26 +48,9 @@ def update_available():
 
 	return latest > current
 
-def find_toml_file():
-	"""Find the correct path to the `pyproject.toml` file.
-
-	When bundled, the entry point is at top-level, so i need 
-	to adjust the path accordingly.
-
-	Returns:
-		pathlib.Path: Absolute path to the `pyproject.toml` file.
-	"""
-	bundle_directory = Path(bundle.get_bundle_directory())
-
-	if bundle.is_executable():
-		return (bundle_directory / 'pyproject.toml').resolve()
-
-	return (bundle_directory / '..' / 'pyproject.toml').resolve()
-
-
 
 if __name__ == '__main__':
-	toml_file = find_toml_file()
+	toml_file = (bundle.get_root_directory() / 'pyproject.toml').resolve()
 	logger.info(f"TOML File: '{toml_file}'")
 
 
