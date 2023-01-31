@@ -21,7 +21,7 @@ tasks:
       Migliorare documentazione
     completed: 0
     category: work_in_progress
-
+    
   - title: |
       Aggiungere _file di configurazione_
     body: |
@@ -41,7 +41,7 @@ tasks:
       >   - [_PRO_] Più leggibile dell'XML o del JSON.
       > 
       
-    completed: 0
+    completed: 15
     category: work_in_progress
 
   - title: |
@@ -54,9 +54,9 @@ tasks:
     category: todo
 
   - title: |
-      Aggiungere visualizzazione di: peso totale dell'ordine, guadagno e importo
+      Aggiungere visualizzazione di: guadagno e importo
     completed: 0
-    category: work_in_progress
+    category: help_needed
 
   - title: |
       Aggiungere visuale di insieme degli ordini tramite [Google Earth](https://developers.google.com/kml/documentation?hl=en)
@@ -67,6 +67,18 @@ tasks:
       Aggiungere visualizzazione _peso totale_ dell'ordine
     body: |
       > _Da finire di testare.._
+      >
+      > - Aggiungere conversione in quintale?
+    completed: 90
+    category: work_in_progress
+
+
+  - title: |
+      Aggiungere caching della configurazione clienti recuperata dall'Export Clienti.
+    body: |
+      > La sola lettura del file XLSX risultante dall'export al momento supera il 
+      > minuto (a fronte di oltre 3000 righe), quindi fornire una cache in lettura
+      > velocizzerebbe di molto la procedura.
     completed: 90
     category: work_in_progress
 
