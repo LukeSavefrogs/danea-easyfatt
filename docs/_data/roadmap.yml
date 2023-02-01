@@ -41,8 +41,8 @@ tasks:
       >   - [_PRO_] Più leggibile dell'XML o del JSON.
       > 
       
-    completed: 15
-    category: work_in_progress
+    completed: 100
+    category: completed
 
   - title: |
       Aggiungere _interfaccia grafica_
