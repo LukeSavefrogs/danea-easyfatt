@@ -44,14 +44,16 @@ def genera_csv (xml_text: str, template_riga: str, customer_excel=None, extra_fi
 		citta_spedizione = document["DeliveryCity"] if document.get("DeliveryAddress", None) else document["CustomerCity"]
 		peso = re.search(pattern=r"([0-9,.]+)", string=document["TransportedWeight"]).group(0) if document.get("TransportedWeight", None) else 0
 
-
+		orario_spedizione = intervallo_spedizioni.get(document["CustomerCode"], "7:00>>16:00")
+		logger.debug(f"Orario di spedizione per il cliente '{document['CustomerCode']}': {orario_spedizione}")
+		
 		csv_lines.append(template_riga.format(
 			CustomerName = document["CustomerName"],
 			CustomerCode = document["CustomerCode"],
 			eval_IndirizzoSpedizione = indirizzo_spedizione,
 			eval_CAPSpedizione = str(cap_spedizione),
 			eval_CittaSpedizione = citta_spedizione,
-			eval_intervalloSpedizione = intervallo_spedizioni.get(document["CustomerCode"], "7:00>>16:00"),
+			eval_intervalloSpedizione = orario_spedizione,
 			eval_pesoSpedizione = str(peso)
 		))
 	

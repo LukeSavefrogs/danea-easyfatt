@@ -73,7 +73,7 @@ def get_intervallo_spedizioni(filename, extra_field_id=1):
 		logger.debug(f"Hash md5 pickle: '{cached_data.get('metadata', {}).get('hash', None)}'")
 		if cached_data and cached_data.get('metadata', {}).get('hash', None) == md5sum:
 			logger.info(f"Carico i dati dal file di cache.") 
-			return cached_data
+			return cached_data["data"]
 
 		logger.debug(f"File di cache invalidato. Necessaria rielaborazione dati.") 
 
@@ -135,7 +135,7 @@ def get_intervallo_spedizioni(filename, extra_field_id=1):
 		pickle.dump(return_data.copy(), file=pickle_file)
 	logger.info(f"Salvato file di cache '{cache_file}'. La prossima esecuzione dovrebbe essere più veloce.")
 
-	return return_data
+	return return_data["data"]
 
 
 if __name__ == '__main__':
