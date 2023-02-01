@@ -1,4 +1,4 @@
-name: Release artifacts
+name: Create Release
 
 on:
   push:
@@ -41,28 +41,17 @@ jobs:
         id: changelog
         with:
           commit-types: |
-            breaking: Breaking Changes
-            feat: ✨ Nuove funzionalità ✨
-            ✨ feat: ✨ Nuove funzionalità ✨
-            fix: 🐛 Bug risolti
-            🐞 fix: 🐛 Bug risolti
-            revert: Reverts
-            perf: 🚀 Miglioramenti delle performance
-            🚀 perf: 🚀 Miglioramenti delle performance
-            refactor: Refactors
-            🩺 refactor: Refactors
-            deps: Dipendenze
-            docs: 📄 Documentazione
-            📄 docs: 📄 Documentazione
-            style: 🎨 Modifiche allo stile del codice
-            🎨 style: 🎨 Modifiche allo stile del codice
-            build: 🧱 Sistema di build
-            🧱 build: 🧱 Sistema di build
-            ci: Continuous Integration
-            🔄 ci: Continuous Integration
-            test: Tests
-            🧪 test: Tests
-            chore: Chores
+            breaking: ⚠ Breaking Changes ⚠
+            feat: ✨ Features ✨
+            ✨ feat: ✨ Features ✨
+            fix: 🐛 Risoluzione bug 🐛
+            🐞 fix: 🐛 Risoluzione bug 🐛
+            perf: 🚀 Performance 🚀
+            🚀 perf: 🚀 Performance 🚀
+            docs: 📄 Documentazione 📄
+            📄 docs: 📄 Documentazione 📄
+            test: [_DEV_] Tests
+            🧪 test: [_DEV_] Tests
             other: Altre modifiche
           default-commit-type: Altre modifiche
           mention-authors: true
