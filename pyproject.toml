@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "danea-automation"
-version = "0.5.0"
+version = "0.6.0"
 description = ""
 authors = ["Luca Salvarani <lucasalvarani99@gmail.com>"]
 readme = "README.md"

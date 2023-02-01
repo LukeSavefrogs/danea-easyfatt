@@ -54,6 +54,11 @@ tasks:
     category: todo
 
   - title: |
+      Rendere `files.input.addition` davvero opzionale.
+    completed: 0
+    category: todo
+
+  - title: |
       Aggiungere visualizzazione di: guadagno e importo
     completed: 0
     category: help_needed

@@ -1,4 +1,6 @@
+import json
 from pathlib import Path
+import sys
 from src.process_xml import modifica_xml
 from src.process_csv import genera_csv
 
@@ -21,6 +23,7 @@ logger.setLevel(logging.DEBUG)
 
 import pandas as pd
 import pint
+
 EASYFATT_DOCUMENT_DTYPE = {
 	"CustomerCode": str,
 	"CustomerPostcode": str,
@@ -29,12 +32,17 @@ EASYFATT_DOCUMENT_DTYPE = {
 }
 
 import bundle
+import toml
+
+CONFIG_FILENAME = "veryeasyfatt.config.toml"
 
 # -----------------------------------------------------------
 #                        Inizio codice                       
 # -----------------------------------------------------------
 def main():
-	logger.debug(f"Cartella di esecuzione: '{Path(bundle.path.get_bundle_directory()).resolve().absolute()}'")
+	logger.debug(f"Execution directory: '{bundle.get_execution_directory()}'")
+	logger.debug(f"Bundle directory   : '{bundle.get_bundle_directory()}'")
+	logger.debug(f"Root directory     : '{bundle.get_root_directory()}'")
 
 	# ==================================================================
 	#                       Controllo di versione
@@ -51,17 +59,44 @@ def main():
 			return False
 		else:
 			logger.debug(f"La tua versione è aggiornata! :)")
-	except Exception as error:
+	except Exception:
 		logger.exception("Errore in fase di controllo aggiornamenti")
 
 		logger.fatal("Impossibile continuare. Assicurati di fare uno screenshot di questa schermata e condividerla con lo sviluppatore.")
 
 		return False
 
+	# Leggo la configurazione di default
+	default_config_file = bundle.get_root_directory()   / CONFIG_FILENAME
+	user_config_file    = bundle.get_execution_directory() / CONFIG_FILENAME
+	
+	default_configuration = {}
+	user_configuration = {}
+	
+	if not default_config_file.exists():
+		# Se non è stato compilato (quindi durante lo sviluppo) la configurazione DEVE esistere
+		logger.critical(f"Impossibile trovare file di configurazione '{default_config_file}'. Solo la versione compilata può essere utilizzata senza configurazione.")
+		return False
+	
+	default_configuration = toml.load(default_config_file)
+	logger.debug(f"Configurazione default: {default_configuration}")
+	
+	if user_config_file.exists():
+		logger.info(f"Trovato file di configurazione utente")
+		user_configuration = toml.load(user_config_file)
+		logger.debug(f"Configurazione utente: {user_configuration}")
+	else:
+		logger.warning(f"File di configurazione utente '{user_config_file}' non trovato.")
+		logger.info(f"Utilizzo la configurazione di default")
+
+	# Unisci le configurazioni
+	configuration = {**default_configuration, **user_configuration}
+	logger.debug(f"Configurazione in uso: \n{json.dumps(configuration, indent=4)}")
+	# return
 
 	REQUIRED_FILES = [
-		Path(configuration.XML_EASYFATT_FILE),
-		Path(configuration.XML_ADDITIONAL_FILE)
+		Path(configuration["files"]["input"]["easyfatt"]),
+		Path(configuration["files"]["input"]["addition"])
 	]
 	missing_required_file = False
 	for required_file in REQUIRED_FILES:
@@ -80,8 +115,8 @@ def main():
 	try:
 		# Aggiunge il contenuto di `additional_xml_file` all'interno di `easyfatt_xml`
 		nuovo_xml = modifica_xml(
-			easyfatt_xml_file = configuration.XML_EASYFATT_FILE,
-			additional_xml_file = configuration.XML_ADDITIONAL_FILE
+			easyfatt_xml_file = configuration["files"]["input"]["easyfatt"],
+			additional_xml_file = configuration["files"]["input"]["addition"]
 		)
 
 		logger.info(f"Analisi e modifica XML terminata..")
@@ -90,29 +125,32 @@ def main():
 		return False
 
 
+
 	# 2. Genero il CSV sulla base del template
 	try:
 		righe_csv = genera_csv(
 			xml_text=nuovo_xml,
-			template_riga=configuration.TEMPLATE_STRING
+			template_riga=configuration["options"]["output"]["csv_template"],
+			customer_excel=configuration["easyfatt"]["customers"]["export_filename"],
+			extra_field_id=configuration["easyfatt"]["customers"]["custom_field"],
 		)
 		
 		# Salvo il csv su file
-		with open(configuration.CSV_OUTPUT_FILE, "w") as json_file:
+		with open(configuration["files"]["output"]["csv"], "w") as json_file:
 			json_file.write('\n'.join(righe_csv))
 
-		logger.info(f"Creazione CSV '{configuration.CSV_OUTPUT_FILE}' terminata..")
+		logger.info(f"Creazione CSV '{configuration['files']['output']['csv']}' terminata..")
 	except Exception:
 		logger.exception("Errore furante la generazione del file CSV.")
 		return False
+
+
 
 	# 3. Calcolo il peso totale della spedizione
 	try:
 		ureg = pint.UnitRegistry(autoconvert_offset_to_baseunit=True)
 		ureg.default_format = "~P"
 
-		logger.debug(f"Impostata cartella cache per 'pint': {ureg.cache_folder}")
-		
 		df = pd.read_xml(nuovo_xml, parser='etree', xpath='./Documents/Document', dtype=EASYFATT_DOCUMENT_DTYPE)
 
 		# Effettuo una prima pulizia dei valori a solo scopo di visualizzazione.
@@ -149,3 +187,4 @@ if __name__ == '__main__':
 		logger.exception("Eccezione inaspettata nella funzione main")
 	finally:
 		input("Premi [INVIO] per terminare il programma...")
+		pass
