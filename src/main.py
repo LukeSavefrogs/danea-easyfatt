@@ -4,7 +4,6 @@ import sys
 from src.process_xml import modifica_xml
 from src.process_csv import genera_csv
 
-import src.configuration as configuration
 import updater
 
 import webbrowser
