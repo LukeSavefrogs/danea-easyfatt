@@ -54,6 +54,15 @@ tasks:
     category: todo
 
   - title: |
+      _Rebranding_ del progetto
+    body: |
+      > Possibili nomi:
+      > - VeryEasyfatt
+      > - EasyfattExtra
+    completed: 0
+    category: todo
+
+  - title: |
       Rendere `files.input.addition` davvero opzionale.
     completed: 0
     category: todo
