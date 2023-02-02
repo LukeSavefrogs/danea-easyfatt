@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 import inspect
 
+
 def is_executable() -> bool:
 	"""Checks wether the app has been bundled using `pyinstaller` or not (normal Python environment).
 	
@@ -31,30 +32,6 @@ def get_bundle_directory() -> Path:
 		return Path(caller_file).resolve().absolute().parent
 
 
-def get_root_directory(ref_filename: str = "pyproject.toml") -> Path:
-	"""Find the correct path to the root of the bundle.
-
-	When bundled, the entry point is at top-level, so i need 
-	to adjust the path accordingly.
-
-	Arguments:
-		ref_filename(str): File name used placed in the root directory to use as a reference.
-
-	Returns:
-		pathlib.Path | None: Absolute path to the `pyproject.toml` file.
-	"""
-	bundle_directory = Path(get_bundle_directory())
-
-	return find_upwards(bundle_directory, ref_filename).parent
-
-def get_execution_directory() -> Path:
-	"""Returns the directory where the actual script/executable is located.
-
-	Returns:
-		Path: The path where the program is saved.
-	"""
-	return Path(sys.executable if is_executable() else sys.argv[0]).resolve().absolute().parent
-
 def find_upwards(cwd: Path, filename: str):
 	"""Recursively searches for `filename` into `cwd` and all directories above it.
 	
@@ -73,3 +50,32 @@ def find_upwards(cwd: Path, filename: str):
 	fullpath = cwd / filename
 	
 	return fullpath if fullpath.exists() else find_upwards(cwd.parent, filename)
+
+
+def get_root_directory(ref_filename: str = "pyproject.toml") -> Path:
+	"""Find the correct path to the root of the bundle.
+
+	When bundled, the entry point is at top-level, so i need 
+	to adjust the path accordingly.
+
+	Arguments:
+		ref_filename(str): File name used placed in the root directory to use as a reference.
+
+	Returns:
+		pathlib.Path | None: Absolute path to the `pyproject.toml` file.
+	"""
+	bundle_directory = Path(get_bundle_directory())
+
+	return find_upwards(bundle_directory, ref_filename).parent
+
+
+def get_execution_directory() -> Path:
+	"""Returns the directory where the actual script/executable is located.
+
+	Source:
+		https://stackoverflow.com/a/35514032/8965861
+
+	Returns:
+		Path: The path where the program is saved.
+	"""
+	return Path(sys.executable if is_executable() else sys.argv[0]).resolve().absolute().parent
