@@ -14,3 +14,4 @@ group :jekyll_plugins do
   gem 'jekyll-timeago', '~> 0.13.1'
   gem "jekyll-default-layout"
 end
+gem "jekyll-glossary_tooltip", "~> 1.5", :group => :jekyll_plugins

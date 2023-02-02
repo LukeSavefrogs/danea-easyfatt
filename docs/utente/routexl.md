@@ -20,7 +20,7 @@ parent: Guida utente
 Tramite un algoritmo intelligente permette di ordinare gli indirizzi in modo da **minimizzare la durata** totale del percorso.
 
 ## Come avviene l'integrazione?
-Il programma rilascia un file CSV, il cui contenuto andrà poi incollato nella finestra di importazione di RouteXL.
+Il programma rilascia un file CSV, il cui contenuto andrà poi incollato nella finestra di importazione di {% glossary RouteXL %}.
 
 <img 
 	alt="Screenshot della finestra di importazione di RouteXL"

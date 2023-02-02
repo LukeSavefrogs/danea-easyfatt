@@ -13,7 +13,7 @@ theme: just-the-docs
 plugins:
   - jekyll-default-layout
   - jekyll-seo-tag
-
+  - jekyll-glossary_tooltip
 
 
 # --------------- Theme configuration ---------------
