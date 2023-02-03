@@ -12,4 +12,4 @@ nav_order: 1
 ## Introduzione
 Questo progetto mira ad integrare il software gestionale "[**Danea Easyfatt**](https://www.danea.it/software/easyfatt/)" con altri software e prodotti esterni.
 
-Creato inizialmente per [_LaSorgente_](https://www.lasorgente.net/) e successivamente rilasciato pubblicamente sotto licenza "[**GNU General Public License v3.0**](https://choosealicense.com/licenses/gpl-3.0/)".
+Creato inizialmente per [_LaSorgente_](https://www.lasorgente.net/) è stato successivamente rilasciato pubblicamente sotto licenza "[**GNU General Public License v3.0**](https://choosealicense.com/licenses/gpl-3.0/)".

@@ -15,3 +15,7 @@ group :jekyll_plugins do
   gem "jekyll-default-layout"
 end
 gem "jekyll-glossary_tooltip", "~> 1.5", :group => :jekyll_plugins
+
+gem "jemoji", "~> 0.13.0", :group => :jekyll_plugins
+
+gem "jekyll-github-metadata", "~> 2.15", :group => :jekyll_plugins

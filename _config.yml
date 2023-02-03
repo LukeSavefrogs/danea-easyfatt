@@ -14,7 +14,8 @@ plugins:
   - jekyll-default-layout
   - jekyll-seo-tag
   - jekyll-glossary_tooltip
-
+  - jemoji
+  - jekyll-github-metadata
 
 # --------------- Theme configuration ---------------
 favicon_ico: "/favicon.ico"
