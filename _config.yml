@@ -17,6 +17,10 @@ plugins:
   - jemoji
   - jekyll-github-metadata
 
+
+# --------------- `jekyll-github-metadata` configuration ---------------
+repository: LukeSavefrogs/danea-easyfatt
+
 # --------------- Theme configuration ---------------
 favicon_ico: "/favicon.ico"
 logo: "/easyfatt.ico"
