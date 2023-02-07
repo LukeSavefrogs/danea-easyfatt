@@ -1,7 +1,7 @@
 # --------------------------------------------------------------
 #                 Default configuration file
 # --------------------------------------------------------------
-log_level = "INFO" # Per la lista completa dei livelli di logging: https://docs.python.org/3/library/logging.html#logging-levels
+log_level = "DEBUG" # Per la lista completa dei livelli di logging: https://docs.python.org/3/library/logging.html#logging-levels
 
 
 [easyfatt.customers]
