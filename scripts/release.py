@@ -40,9 +40,23 @@ def main():
 
 	changed_files = [ item.a_path for item in repo.index.diff(None) ]
 
-	modifiche_non_committate = repo.index.diff('Head')
-	if len(modifiche_non_committate) > 0:
-		logger.critical(f"Ci sono {len(modifiche_non_committate)} modifiche non ancora committate.")
+	uncommitted_changes = repo.index.diff('Head')
+	if len(uncommitted_changes) > 0:
+		logger.critical(f"Ci sono {len(uncommitted_changes)} modifiche non ancora committate.")
+		return False
+
+	unpushed_commits = list(repo.iter_commits('main@{u}..main'))
+	if unpushed_commits:
+		logger.critical(f"Ci sono {len(unpushed_commits)} commit da pushare.")
+		for commit in unpushed_commits:
+			commit_time = commit.committed_datetime.strftime('%d-%m-%Y %H:%M:%S')
+			short_sha = commit.hexsha[-6:]
+			print(f"- [{commit_time}] {short_sha} ➜ {commit.message.strip()}")
+		
+		print("")
+
+		logger.info(f"Esegui il comando 'git push' e ritenta.")
+
 		return False
 
 	logger.debug("File modificati: \n\t- " + '\n\t- '.join(changed_files))
