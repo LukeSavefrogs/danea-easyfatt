@@ -54,9 +54,10 @@ def main():
 	if unpushed_commits:
 		logger.critical(f"Ci sono {len(unpushed_commits)} commit da pushare.")
 		for commit in unpushed_commits:
-			commit_time = commit.committed_datetime.strftime('%d-%m-%Y %H:%M:%S')
-			short_sha = commit.hexsha[-6:]
-			print(f"- [{commit_time}] {short_sha} ➜ {commit.message.strip()}")
+			commit_time    = commit.committed_datetime.strftime('%d-%m-%Y %H:%M:%S')
+			commit_hash    = commit.hexsha[-6:]
+			commit_message = commit.message.strip().splitlines()[0]
+			print(f"- [{commit_time}] {commit_hash} ➜ {commit_message}")
 		
 		print("")
 
