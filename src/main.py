@@ -90,6 +90,10 @@ def main():
 
 	# Unisci le configurazioni
 	configuration = {**default_configuration, **user_configuration}
+
+	if configuration["log_level"]:
+		logger.setLevel(logging.getLevelName(configuration["log_level"]))
+
 	logger.debug(f"Configurazione in uso: \n{json.dumps(configuration, indent=4)}")
 	# return
 

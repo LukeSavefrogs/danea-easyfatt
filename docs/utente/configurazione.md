@@ -12,6 +12,9 @@ Un esempio di file di configurazione è il seguente, tratto dalla [configurazion
 # --------------------------------------------------------------
 #                 Default configuration file
 # --------------------------------------------------------------
+log_level = "INFO" # Per la lista completa dei livelli di logging: https://docs.python.org/3/library/logging.html#logging-levels
+
+
 [easyfatt.customers]
 custom_field = 1                          # Numero del campo "Extra {N}"
 export_filename = "./Soggetti.xlsx"       # Nome del file esportato dalla sezione clienti di EasyFatt
@@ -35,6 +38,9 @@ csv_template = "@{CustomerName} {CustomerCode}@{eval_IndirizzoSpedizione} {eval_
 > _Questa pagina verrà costantemente aggiornata con le ultime informazioni utili.
 > Assicurarsi di consultarla in caso di problemi._
 {: .problem}
+
+## `log_level`
+Questa voce specifica il **livello di verbosità del logging**. Di default è impostata a `INFO`, ma può essere impostato a qualsiasi dei livelli definiti [nella documentazione](https://docs.python.org/3/library/logging.html#logging-levels)
 
 ## `easyfatt.customers`
 Questa sezione di configurazione regola il comportamento del programma verso l'**esportazione clienti** eseguita da **Easyfatt**.
