@@ -14,7 +14,7 @@ Un esempio di file di configurazione è il seguente, tratto dalla [configurazion
 # --------------------------------------------------------------
 [easyfatt.customers]
 custom_field = 1                          # Numero del campo "Extra {N}"
-export_filename = "./ExportClienti.xlsx"  # Nome del file esportato dalla sezione clienti di EasyFatt
+export_filename = "./Soggetti.xlsx"       # Nome del file esportato dalla sezione clienti di EasyFatt
 
 [files.input]
 easyfatt = "./Documenti.DefXml"           # Percorso (relativo o assoluto) al file `*.DefXML` generato dal gestionale "Danea Easyfatt".
@@ -55,11 +55,11 @@ Indica il percorso (assoluto o relativo) del file contenente l'estrazione da Eas
 
 > Valore di default
 > 
-> `./ExportClienti.xlsx` o `./ExportClienti.ods`
+> `./Soggetti.xlsx` o `./Soggetti.ods`
 >
 {: .note-title .fs-3 }
 
-Se omesso verrà cercato il file `./ExportClienti.xlsx` o `./ExportClienti.ods` e verrà utilizzato il primo trovato (nell'ordine: `.xlsx` e poi `.ods`).
+Se omesso verrà cercato il file `./Soggetti.xlsx` o `./Soggetti.ods` e verrà utilizzato il primo trovato (nell'ordine: `.xlsx` e poi `.ods`).
 
 
 ## `files.input`

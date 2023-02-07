@@ -28,9 +28,9 @@ def genera_csv (xml_text: str, template_riga: str, customer_excel=None, extra_fi
 	else:
 		logger.debug(f"Nessun excel specificato. Inizio ricerca file.")
 		for ext in ["xlsx", "ods"]:
-			file_clienti = Path(f"./ExportClienti.{ext}").resolve().absolute()
+			file_clienti = Path(f"./Soggetti.{ext}").resolve().absolute()
 			if file_clienti.exists():
-				logger.info(f"Trovato file 'ExportClienti.{ext}'")
+				logger.info(f"Trovato file 'Soggetti.{ext}'")
 				logger.warning(f"Gestione automatica degli orari di consegna abilitata.")
 				intervallo_spedizioni = get_intervallo_spedizioni(filename=file_clienti, extra_field_id=extra_field_id)
 				break

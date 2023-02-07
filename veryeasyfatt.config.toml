@@ -3,7 +3,7 @@
 # --------------------------------------------------------------
 [easyfatt.customers]
 custom_field = 1                          # Numero del campo "Extra {N}"
-export_filename = "./ExportClienti.xlsx"  # Nome del file esportato dalla sezione clienti di EasyFatt
+export_filename = "./Soggetti.xlsx"       # Nome del file esportato dalla sezione clienti di EasyFatt
 
 [files.input]
 easyfatt = "./Documenti.DefXml"  # Percorso (relativo o assoluto) al file `*.DefXML` generato dal gestionale "Danea Easyfatt".
