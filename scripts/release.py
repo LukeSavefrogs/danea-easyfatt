@@ -6,13 +6,13 @@
 # git push origin master # Or your current branch
 # git push origin --tags # Push the tags
 
-import subprocess
-from rich.logging import RichHandler
 import logging
+from rich.logging import RichHandler
 
 from pathlib import Path
 import git
 
+import toml
 
 logger = logging.getLogger(__name__)
 logger.addHandler(RichHandler(
@@ -27,16 +27,21 @@ def main():
 	current_repo_dir = Path(".").resolve()
 	repo = git.Repo(current_repo_dir)
 
-	poetry_version_data = subprocess.run(
-		['poetry', 'version', '--short'], 
-		stdout=subprocess.PIPE
-	)
+	toml_file = (Path(".") / 'pyproject.toml').resolve()
 
-	file_version = (poetry_version_data.stdout).decode('UTF-8').strip()
-	version = f"v{file_version}"
+	if not toml_file.exists() or not toml_file.is_file():
+		logger.fatal(f"File TOML '{toml_file}' non trovato.")
+		return False
 
-	tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
-	latest_tag = tags[-1]
+	poetry_config = toml.load(toml_file)
+
+	version = "v" + poetry_config["tool"]["poetry"]["version"]
+	logger.info(f"Versione da rilasciare: '{version}'")
+
+	local_tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
+	latest_tag = local_tags[-1]
+
+	logger.info(f"Ultima versione rilasciata: '{latest_tag}'")
 
 	changed_files = [ item.a_path for item in repo.index.diff(None) ]
 
