@@ -9,32 +9,30 @@ import logging
 logger = logging.getLogger("danea-easyfatt.csv")
 
 
-def genera_csv (xml_text: str, template_riga: str, customer_excel=None, extra_field_id=1):
+def genera_csv (xml_text: str, template_riga: str, customer_files: list | str, extra_field_id=1):
 	logger.debug(f"Trasformo l'XML in un dizionario")
+	
 	# Trasformo il CSV in un dizionario, in modo da poterlo traversare facilmente.
 	xml_dict = xmltodict.parse(
 		xml_input=xml_text
 	)
 
 	intervallo_spedizioni = {}
-	if customer_excel is not None:
-		logger.debug(f"Passato nome file excel: '{customer_excel}'")
-		file_clienti = Path(customer_excel).resolve().absolute()
+	
+	lista_file_clienti = customer_files if isinstance(customer_files, list) else [customer_files]
+	logger.debug(f"Inizio ricerca file '{'|'.join(lista_file_clienti)}'")
+	
+	for file in lista_file_clienti:
+		file_clienti = Path(file).resolve().absolute()
 		if file_clienti.exists():
 			logger.info(f"Trovato file '{file_clienti}'")
-			logger.warning(f"Gestione automatica degli orari di consegna abilitata.")
+			logger.info(f"Gestione automatica degli orari di consegna abilitata.")
 			intervallo_spedizioni = get_intervallo_spedizioni(filename=file_clienti, extra_field_id=extra_field_id)
-
+			break
 	else:
-		logger.debug(f"Nessun excel specificato. Inizio ricerca file.")
-		for ext in ["xlsx", "ods"]:
-			file_clienti = Path(f"./Soggetti.{ext}").resolve().absolute()
-			if file_clienti.exists():
-				logger.info(f"Trovato file 'Soggetti.{ext}'")
-				logger.warning(f"Gestione automatica degli orari di consegna abilitata.")
-				intervallo_spedizioni = get_intervallo_spedizioni(filename=file_clienti, extra_field_id=extra_field_id)
-				break
-	
+		logger.error(f"Nessun file trovato che corrisponda al pattern '{'|'.join(lista_file_clienti)}'")
+		logger.warning(f"Gestione automatica degli orari di consegna disabilitata.")
+
 	logger.debug(f"Intervallo spedizioni:\n {intervallo_spedizioni}")
 
 	csv_lines = []

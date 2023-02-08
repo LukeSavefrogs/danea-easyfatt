@@ -123,8 +123,8 @@ def main():
 		)
 
 		logger.info(f"Analisi e modifica XML terminata..")
-	except Exception:
-		logger.exception("Errore furante la modifica del file XML.")
+	except Exception as e:
+		logger.exception(f"Errore furante la modifica del file XML: {repr(e)}")
 		return False
 
 
@@ -134,7 +134,7 @@ def main():
 		righe_csv = genera_csv(
 			xml_text=nuovo_xml,
 			template_riga=configuration["options"]["output"]["csv_template"],
-			customer_excel=configuration["easyfatt"]["customers"]["export_filename"],
+			customer_files=configuration["easyfatt"]["customers"]["export_filename"],
 			extra_field_id=configuration["easyfatt"]["customers"]["custom_field"],
 		)
 		

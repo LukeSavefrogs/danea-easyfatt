@@ -12,12 +12,16 @@ Un esempio di file di configurazione è il seguente, tratto dalla [configurazion
 # --------------------------------------------------------------
 #                 Default configuration file
 # --------------------------------------------------------------
-log_level = "DEBUG"                        # Per la lista completa dei valori disponibili: https://docs.python.org/3/library/logging.html#logging-levels
+log_level = "DEBUG"                       # Per la lista completa dei valori disponibili: https://docs.python.org/3/library/logging.html#logging-levels
 
 
 [easyfatt.customers]
 custom_field = 1                          # Numero del campo "Extra {N}"
-export_filename = "./Soggetti.xlsx"       # Nome del file esportato dalla sezione clienti di EasyFatt
+export_filename = [                       # Nome del file esportato dalla sezione clienti di EasyFatt
+	"Soggetti.xlsx", 
+	"Soggetti.ods"
+]
+
 
 [files.input]
 easyfatt = "./Documenti.DefXml"           # Percorso (relativo o assoluto) al file `*.DefXML` generato dal gestionale "Danea Easyfatt".
@@ -61,12 +65,13 @@ Indica il numero sequenziale del **campo personalizzato** `Libero {N}` (poi espo
 
 ### `easyfatt.customers.export_filename`
 
-Indica il percorso (assoluto o relativo) del file contenente l'estrazione da Easyfatt degli utenti.
+Indica il percorso (assoluto o relativo) del file contenente l'estrazione da Easyfatt degli utenti. Può essere una **lista** o un'**unica stringa**.
 
+Se vengono specificati **più nomi di file** (come nel caso del valore di default) allora verrà utilizzato il **primo disponibile** (esistente e leggibile).
 
 > Valore di default
 > 
-> `./Soggetti.xlsx` o `./Soggetti.ods`
+> `["./Soggetti.xlsx", "./Soggetti.ods"]`
 >
 {: .note-title .fs-3 }
 
