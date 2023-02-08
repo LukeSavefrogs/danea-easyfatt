@@ -15,7 +15,6 @@ import bundle
 logger = logging.getLogger("danea-easyfatt.clienti")
 
 
-REGEX_INTERVALLO = r'([0-9:]+)\s*(?:>+|-+|\s+a\s+)\s*([0-9:]+)'
 
 CACHE_FILENAME = "customer_info.pickle"
 
@@ -48,6 +47,34 @@ def formatta_orario(value):
 
 	return ':'.join(map(lambda s: s.strip().zfill(2), orario))
 
+def routexl_time_boundaries(string: str):
+	"""Generates a valid "Ready and due time" string to be used for csv import
+
+	See also:
+		https://docs.routexl.com/index.php?title=Import#Additional_fields:~:text=Ready%20and%20due%20time%20as%20hh%3Amm%20before%20and%20after%20%3E%3E
+
+	Args:
+		string (str): The string to convert
+
+	Raises:
+		ValueError: If the input value is not a string
+
+	Returns:
+		str | None: The time boundaries in the form "HH:MM>>HH:MM"
+	"""
+	REGEX_INTERVALLO = r'([0-9:]+)\s*(?:>+|-+|\s+a\s+)\s*([0-9:]+)'
+
+	if not isinstance(string, str):
+		raise ValueError("Input string must be of type 'str'")
+
+	if not re.match(REGEX_INTERVALLO, string):
+		return None
+
+	return '>>'.join(
+		map(formatta_orario, 
+			re.match(REGEX_INTERVALLO, string).groups()
+		)
+	)
 
 def get_customers_data(filename: Union[str, Path], cache: bool=True, cache_path: Union[str, Path, None] = None) -> list[dict[str, Any]]:
 	"""Ricava i dati cliente dal file Excel/Libreoffice esportato da Easyfatt.
@@ -159,13 +186,7 @@ def get_intervallo_spedizioni(filename: Union[str, Path], extra_field_id=1):
 	# Esempio: 
 	# 	'08' invece di '8'
 	customer_info['IntervalloSpedizione'] = [
-		'>>'.join(
-			map(formatta_orario, 
-				re.match(REGEX_INTERVALLO, string=value.strip()).groups()
-			)
-		)
-		if value is not None and re.match(REGEX_INTERVALLO, value.strip())
-		else None
+		routexl_time_boundaries(value.strip()) if (value is not None) else None
 		for value in customer_info['IntervalloSpedizione']
 	]
 	logger.info(f"Sanificati valori della colonna 'IntervalloSpedizione'")

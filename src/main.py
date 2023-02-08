@@ -132,10 +132,11 @@ def main():
 	# 2. Genero il CSV sulla base del template
 	try:
 		righe_csv = genera_csv(
-			xml_text=nuovo_xml,
-			template_riga=configuration["options"]["output"]["csv_template"],
-			customer_files=configuration["easyfatt"]["customers"]["export_filename"],
-			extra_field_id=configuration["easyfatt"]["customers"]["custom_field"],
+			xml_text = nuovo_xml,
+			template_riga = configuration["options"]["output"]["csv_template"],
+			customer_files = configuration["easyfatt"]["customers"]["export_filename"],
+			extra_field_id = configuration["easyfatt"]["customers"]["custom_field"],
+			default_shipping_interval = configuration["features"]["shipping"]["default_interval"]
 		)
 		
 		# Salvo il csv su file

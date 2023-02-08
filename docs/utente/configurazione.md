@@ -12,7 +12,7 @@ Un esempio di file di configurazione è il seguente, tratto dalla [configurazion
 # --------------------------------------------------------------
 #                 Default configuration file
 # --------------------------------------------------------------
-log_level = "DEBUG"                       # Per la lista completa dei valori disponibili: https://docs.python.org/3/library/logging.html#logging-levels
+log_level = "DEBUG"                       # Per la lista completa dei livelli di logging: https://docs.python.org/3/library/logging.html#logging-levels
 
 
 [easyfatt.customers]
@@ -33,8 +33,13 @@ csv = "./Documenti.csv"                   # Percorso (relativo o assoluto) al fi
 
 
 [options.output]
-# Stringa utilizzata come template per OGNI riga del CSV. NON MODIFICARE I NOMI DEI PLACEHOLDER che iniziano per `eval_*`!
+# Stringa utilizzata come template per OGNI riga del CSV.
+# NON MODIFICARE I NOMI DEI PLACEHOLDER che iniziano per `eval_*`!
 csv_template = "@{CustomerName} {CustomerCode}@{eval_IndirizzoSpedizione} {eval_CAPSpedizione} {eval_CittaSpedizione}(20){eval_intervalloSpedizione}^{eval_pesoSpedizione}^"
+
+
+[features.shipping]
+default_interval = "07:00-16:00"          # Intervallo orario di spedizione di default
 ```
 
 > Essendo ancora in **fase di sviluppo** il nome di queste impostazioni potrebbe **cambiare nel tempo**!
@@ -48,7 +53,7 @@ Questa voce specifica il **livello di verbosità del logging**. Di default è im
 
 > Valore di default
 > 
-> `DEBUG`
+> `"DEBUG"`
 {: .note-title .fs-3 }
 
 ## `easyfatt.customers`
@@ -86,7 +91,7 @@ Il file `.DefXml` ottenuto dall'**esportazione** dei **documenti "Ordine cliente
 
 > Valore di default
 > 
-> `./Documenti.DefXml`
+> `"./Documenti.DefXml"`
 {: .note-title .fs-3 }
 
 
@@ -95,7 +100,7 @@ Il file `.xml` contenente il tag `Document` da aggiungere come **primo elemento*
 
 > Valore di default
 > 
-> `./PRIMARIGA.xml`
+> `"./PRIMARIGA.xml"`
 {: .note-title .fs-3 }
 
 Di seguito un **esempio** di un contenuto valido per il file:
@@ -186,7 +191,7 @@ Percorso (relativo o assoluto) al file `csv` da generare.
 
 > Valore di default
 > 
-> `./Documenti.csv`
+> `"./Documenti.csv"`
 {: .note-title .fs-3 }
 
 ## `options.output`
@@ -195,4 +200,13 @@ Questa voce definisce il formato di ogni riga del `csv` finale.
 > Valore di default
 > 
 > `"@{CustomerName} {CustomerCode}@{eval_IndirizzoSpedizione} {eval_CAPSpedizione} {eval_CittaSpedizione}(20){eval_intervalloSpedizione}^{eval_pesoSpedizione}^"`
+{: .note-title .fs-3 }
+
+## `features.shipping`
+### `features.shipping.default_interval`
+Questa voce definisce l'intervallo orario di spedizione di default per i clienti che non hanno un intervallo definito all'interno del campo personalizzato su Easyfatt.
+
+> Valore di default
+> 
+> `"07:00-16:00"`
 {: .note-title .fs-3 }

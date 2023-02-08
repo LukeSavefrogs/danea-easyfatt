@@ -13,15 +13,19 @@ export_filename = [                       # Nome del file esportato dalla sezion
 
 
 [files.input]
-easyfatt = "./Documenti.DefXml"  # Percorso (relativo o assoluto) al file `*.DefXML` generato dal gestionale "Danea Easyfatt".
-addition = "./PRIMARIGA.xml"     # Percorso (relativo o assoluto) al file `*.xml` con le righe da aggiungere come primo figlio del tag `Documents`.
+easyfatt = "./Documenti.DefXml"           # Percorso (relativo o assoluto) al file `*.DefXML` generato dal gestionale "Danea Easyfatt".
+addition = "./PRIMARIGA.xml"              # Percorso (relativo o assoluto) al file `*.xml` con le righe da aggiungere come primo figlio del tag `Documents`.
 
 
 [files.output]
-csv = "./Documenti.csv"          # Percorso (relativo o assoluto) al file CSV di output.
+csv = "./Documenti.csv"                   # Percorso (relativo o assoluto) al file CSV di output.
 
 
 [options.output]
 # Stringa utilizzata come template per OGNI riga del CSV.
 # NON MODIFICARE I NOMI DEI PLACEHOLDER che iniziano per `eval_*`!
 csv_template = "@{CustomerName} {CustomerCode}@{eval_IndirizzoSpedizione} {eval_CAPSpedizione} {eval_CittaSpedizione}(20){eval_intervalloSpedizione}^{eval_pesoSpedizione}^"
+
+
+[features.shipping]
+default_interval = "07:00-16:00"          # Intervallo orario di spedizione di default
