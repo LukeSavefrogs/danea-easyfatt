@@ -13,6 +13,7 @@ from pathlib import Path
 import git
 
 import toml
+import requests
 
 logger = logging.getLogger(__name__)
 logger.addHandler(RichHandler(
@@ -27,16 +28,36 @@ def main():
 	current_repo_dir = Path(".").resolve()
 	repo = git.Repo(current_repo_dir)
 
-	toml_file = (Path(".") / 'pyproject.toml').resolve()
+	current_branch = repo.active_branch.name
 
-	if not toml_file.exists() or not toml_file.is_file():
-		logger.fatal(f"File TOML '{toml_file}' non trovato.")
+	local_toml_file  = (Path(".") / 'pyproject.toml').resolve()
+	remote_toml_file = f"https://raw.githubusercontent.com/LukeSavefrogs/danea-easyfatt/{current_branch}/pyproject.toml"
+	
+	try:
+		remote_toml_file_content = requests.get(remote_toml_file).text
+	except Exception as e:
+		logger.critical(f"Errore in fase di recupero versione remota: {repr(e)}")
 		return False
 
-	poetry_config = toml.load(toml_file)
+	if not local_toml_file.exists() or not local_toml_file.is_file():
+		logger.fatal(f"File TOML '{local_toml_file}' non trovato.")
+		return False
 
-	version = "v" + poetry_config["tool"]["poetry"]["version"]
-	logger.info(f"Versione da rilasciare: '{version}'")
+	local_poetry_config  = toml.load(local_toml_file)
+	remote_poetry_config = toml.loads(remote_toml_file_content)
+
+	local_version  = "v" + local_poetry_config["tool"]["poetry"]["version"]
+	remote_version = "v" + remote_poetry_config["tool"]["poetry"]["version"]
+
+	logger.info(f"Versione `pyproject.toml` locale: '{local_version}'")
+	logger.info(f"Versione `pyproject.toml` remoto: '{remote_version}'")
+
+	
+	if local_version != remote_version:
+		logger.critical("Prima di eseguire la release il file `pyproject.toml` deve essere SEMPRE aggiornato.")
+		logger.warning("Assicurarsi di pushare la nuova versione.")
+		return False
+
 
 	local_tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
 	latest_tag = local_tags[-1]
@@ -50,7 +71,7 @@ def main():
 		logger.critical(f"Ci sono {len(uncommitted_changes)} modifiche non ancora committate.")
 		return False
 
-	unpushed_commits = list(repo.iter_commits('main@{u}..main'))
+	unpushed_commits = list(repo.iter_commits(current_branch + '@{u}..' + current_branch))
 	if unpushed_commits:
 		logger.critical(f"Ci sono {len(unpushed_commits)} commit da pushare.")
 		for commit in unpushed_commits:
@@ -71,28 +92,28 @@ def main():
 	if len(repo.untracked_files) > 0:
 		logger.warning(f"Attenzione: Ci sono {len(repo.untracked_files)} file non tracciati.")
 
-	if str(latest_tag) == str(version):
-		logger.error(f"Tag '{version}' già esistente.\nAumenta il numero di versione con 'poetry version [patch/minor/major/prepatch/preminor/premajor/prerelease]'")
+	if str(latest_tag) == str(local_version):
+		logger.error(f"Tag '{local_version}' già esistente.\nAumenta il numero di versione con 'poetry version [patch/minor/major/prepatch/preminor/premajor/prerelease]'")
 		return False
 
-	input(f"Premi [INVIO] per pubblicare la versione '{version}'...")
+	input(f"Premi [INVIO] per pubblicare la versione '{local_version}'...")
 
-	logger.info(f"Creo release per la versione '{version}' (latest: '{latest_tag}')")
+	logger.info(f"Creo release per la versione '{local_version}' (latest: '{latest_tag}')")
 	# logger.info(f"Creo release per la commit '{repo.head.commit}'")
 
 	try:
 		tag = repo.create_tag(
 			# ref=repo.head.commit,
 			# force=True,
-			path=version,
-			message=f"Aggiornamento alla versione {version}"
+			path=local_version,
+			message=f"Aggiornamento alla versione {local_version}"
 		)
 
 		logger.debug(f"Lancio comando push per tag '{tag.name}'")
 		repo.remote('origin').push(tag.name)
 		logger.info("Upload terminato con successo!")
 	except git.exc.GitCommandError as e:
-		logger.error(f"Creazione tag '{version}' fallita!")
+		logger.error(f"Creazione tag '{local_version}' fallita!")
 
 if __name__ == '__main__':
 	main()
