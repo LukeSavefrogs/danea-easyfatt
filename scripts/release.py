@@ -81,8 +81,7 @@ def main():
 			print(f"- [{commit_time}] {commit_hash} ➜ {commit_message}")
 		
 		print("")
-
-		logger.info(f"Esegui il comando 'git push' e ritenta.")
+		logger.warning(f"Esegui il comando 'git push' e ritenta.")
 
 		return False
 
