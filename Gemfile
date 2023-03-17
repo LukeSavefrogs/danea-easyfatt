@@ -11,7 +11,7 @@ gem 'tzinfo-data'
 gem 'wdm', '~> 0.1.1', :install_if => Gem.win_platform?
 
 group :jekyll_plugins do
-  gem 'jekyll-timeago', '~> 0.13.1'
+  gem 'jekyll-timeago', '~> 0.15.0'
   gem "jekyll-default-layout"
 end
 gem "jekyll-glossary_tooltip", "~> 1.5", :group => :jekyll_plugins
