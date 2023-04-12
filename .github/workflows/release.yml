@@ -1,14 +1,20 @@
 name: Create Release
 
 on:
-  push:
-    tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+**'
+    workflow_dispatch:
+    push:
+        tags:
+        - 'v[0-9]+.[0-9]+.[0-9]+**'
 
 
 jobs:
+  tests:
+    uses: ./.github/workflows/run-tests.yml  # use the callable tests job to run tests
+
   release:
+    needs: [tests]  # require tests to pass before deploy runs
     runs-on: windows-latest
+    if: startsWith(github.event.ref, 'refs/tags/v')
     
     permissions:
       contents: write
