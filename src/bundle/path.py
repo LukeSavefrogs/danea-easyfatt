@@ -25,27 +25,27 @@ def get_bundle_directory() -> Path:
 	"""
 	if is_executable():
 		# we are running in a bundle
-		return Path(sys._MEIPASS).resolve().absolute()
+		return Path(getattr(sys, '_MEIPASS')).resolve().absolute()
 	else:
 		# we are running in a normal Python environment
 		caller_file = inspect.stack()[1].filename
 		return Path(caller_file).resolve().absolute().parent
 
 
-def find_upwards(cwd: Path, filename: str):
+def find_upwards(cwd: Path, filename: str) -> Path:
 	"""Recursively searches for `filename` into `cwd` and all directories above it.
 	
 	The search goes on until it finds the first occurrence.
 
 	Args:
-		cwd (Path): _description_
-		filename (str): _description_
+		cwd (Path): The path where to start the search operation
+		filename (str): The file name that has to be found
 
 	Returns:
-		_type_: _description_
+		path (Path): The desired path
 	"""
 	if cwd == Path(cwd.root) or cwd == cwd.parent:
-		return None
+		raise Exception("Reached root directory without finding the requested filename!")
 	
 	fullpath = cwd / filename
 	
