@@ -8,6 +8,9 @@ import updater
 
 import webbrowser
 
+import argparse
+
+
 from packaging.version import Version
 from rich.logging import RichHandler
 import logging
@@ -43,36 +46,67 @@ def main():
 	logger.debug(f"Bundle directory   : '{bundle.get_bundle_directory()}'")
 	logger.debug(f"Root directory     : '{bundle.get_root_directory()}'")
 
+	parser = argparse.ArgumentParser(
+		description='Easyfatt made even easier.',
+		add_help=True,
+	)
+	parser.add_argument(
+		"-c", "--config",
+		required=False,
+		help="Specify a custom TOML configuration file.",
+		dest="configuration_file",
+		metavar="FILENAME",
+		type=str
+	)
+	parser.add_argument(
+		"--disable-version-check",
+		required=False,
+		help="Disable the version check process.",
+		dest="enable_version_check",
+		action="store_false",
+		default=True,
+	)
+	cli_args = parser.parse_args()
+
+	logger.debug(f"CLI parameters: {cli_args}")
+
+
 
 	# ==================================================================
 	#                       Controllo di versione
 	# ==================================================================
-	try:
-		if updater.update_available():
-			latest_release = updater.get_latest_version()
-			latest_version = Version(latest_release['version'])
-			current_version = Version(updater.get_current_version())
+	if not cli_args.enable_version_check:
+		logger.warning("Il controllo versione è stato disattivato tramite CLI (--disable-version-check).")
+	else:
+		try:
+			if updater.update_available():
+				latest_release = updater.get_latest_version()
+				latest_version = Version(latest_release['version'])
+				current_version = Version(updater.get_current_version())
 
-			logger.warning(f"An update is available (remote is '{latest_version}', while current is '{current_version}')")
-			webbrowser.open(latest_release["url"], new=0, autoraise=True)
-			
+				logger.warning(f"An update is available (remote is '{latest_version}', while current is '{current_version}')")
+				webbrowser.open(latest_release["url"], new=0, autoraise=True)
+				
+				return False
+			else:
+				logger.debug(f"La tua versione è aggiornata! :)")
+		except Exception:
+			logger.exception("Errore in fase di controllo aggiornamenti")
+
+			logger.fatal("Impossibile continuare. Assicurati di fare uno screenshot di questa schermata e condividerla con lo sviluppatore.")
+
 			return False
-		else:
-			logger.debug(f"La tua versione è aggiornata! :)")
-	except Exception:
-		logger.exception("Errore in fase di controllo aggiornamenti")
-
-		logger.fatal("Impossibile continuare. Assicurati di fare uno screenshot di questa schermata e condividerla con lo sviluppatore.")
-
-		return False
 
 
 	# ==================================================================
 	#                       Lettura configurazione
 	# ==================================================================
 	default_config_file = bundle.get_root_directory()      / CONFIG_FILENAME
-	user_config_file    = bundle.get_execution_directory() / CONFIG_FILENAME
-	
+	if cli_args.configuration_file is not None:
+		user_config_file = Path(cli_args.configuration_file).resolve()
+	else:
+		user_config_file = bundle.get_execution_directory() / CONFIG_FILENAME
+
 	default_configuration = {}
 	user_configuration = {}
 	
