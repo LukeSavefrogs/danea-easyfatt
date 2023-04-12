@@ -23,19 +23,19 @@ def is_valid_xml(value):
 
 
 
-def modifica_xml (easyfatt_xml_file: str, additional_xml_file: str):
+def modifica_xml (easyfatt_xml_file: Path, additional_xml_file: Path) -> str:
 	"""Aggiunge il contenuto di `additional_xml_file` all'interno di `easyfatt_xml`
 
 	Args:
-		easyfatt_xml (str): File `.DefXML` generato dal gestionale "Danea Easyfatt"
-		additional_xml_file (str): File contenente i valori da inserire come primo figlio dell'elemento `Documents`
+		easyfatt_xml (Path): File `.DefXML` generato dal gestionale "Danea Easyfatt"
+		additional_xml_file (Path): File contenente i valori da inserire come primo figlio dell'elemento `Documents`
 
 	Returns:
-		str: Il testo XML modificato.
+		xml_text (str): Il testo XML modificato.
 	"""
 	# Per semplicità converto tutte le stringhe in oggetti `Path`
-	easyfatt_xml_file: Path   = Path(easyfatt_xml_file).resolve()
-	additional_xml_file: Path = Path(additional_xml_file).resolve()
+	# easyfatt_xml_file: Path   = Path(easyfatt_xml_file).resolve()
+	# additional_xml_file: Path = Path(additional_xml_file).resolve()
 
 	logger.debug(f'File XML generato dal gestionale Danea Easyfatt: "{easyfatt_xml_file}"')
 	logger.debug(f'File XML contenente il testo da inserire: "{additional_xml_file}"')
@@ -46,8 +46,8 @@ def modifica_xml (easyfatt_xml_file: str, additional_xml_file: str):
 		additional_xml_content = file.read()
 
 	if not is_valid_xml(additional_xml_content):
-		logger.error(f"Il file '{additional_xml_file}' non contiene un XML valido")
-		return None
+		raise Exception(f"Il file '{additional_xml_file}' non contiene un XML valido")
+		
 	
 	tree = ET.parse(easyfatt_xml_file)
 
@@ -55,7 +55,7 @@ def modifica_xml (easyfatt_xml_file: str, additional_xml_file: str):
 	if len(elementi_documents_trovati) != 1:
 		logger.error(f"Il file '{additional_xml_file}' non contiene un tag 'Documents' valido.")
 		logger.error(f"Mi aspettavo di trovare 1 solo tag 'Documents' (trovati: {len(elementi_documents_trovati)})")
-		return None
+		raise Exception(f"Il file '{additional_xml_file}' non contiene un tag 'Documents' valido.")
 
 	# Elemento 'Documents' contenente tutti i tag 'Document'
 	elemento_documents = elementi_documents_trovati[0]

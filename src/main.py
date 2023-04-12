@@ -93,7 +93,8 @@ def main():
 		logger.info(f"Utilizzo la configurazione di default")
 
 	# Unisci le configurazioni
-	configuration = {**default_configuration, **user_configuration}
+	# configuration = {**default_configuration, **user_configuration}
+	configuration = deepmerge(user_configuration, default_configuration)
 
 	if configuration["log_level"]:
 		logger.setLevel(logging.getLevelName(configuration["log_level"]))
@@ -106,7 +107,6 @@ def main():
 	# ==================================================================
 	REQUIRED_FILES = [
 		Path(configuration["files"]["input"]["easyfatt"]),
-		Path(configuration["files"]["input"]["addition"])
 	]
 	missing_required_file = False
 	for required_file in REQUIRED_FILES:
@@ -119,20 +119,21 @@ def main():
 
 
 	# 1. Modifico l'XML
-	nuovo_xml = ""
-	righe_csv = ""
-	try:
-		# Aggiunge il contenuto di `additional_xml_file` all'interno di `easyfatt_xml`
-		nuovo_xml = modifica_xml(
-			easyfatt_xml_file = configuration["files"]["input"]["easyfatt"],
-			additional_xml_file = configuration["files"]["input"]["addition"]
-		)
+	nuovo_xml: str
+	if configuration["files"]["input"]["addition"] != "":
+		try:
+			# Aggiunge il contenuto di `additional_xml_file` all'interno di `easyfatt_xml`
+			nuovo_xml = modifica_xml(
+				easyfatt_xml_file   = Path(configuration["files"]["input"]["easyfatt"]).resolve(),
+				additional_xml_file = Path(configuration["files"]["input"]["addition"]).resolve(),
+			)
 
-		logger.info(f"Analisi e modifica XML terminata..")
-	except Exception as e:
-		logger.exception(f"Errore furante la modifica del file XML: {repr(e)}")
-		return False
-
+			logger.info(f"Analisi e modifica XML terminata..")
+		except Exception as e:
+			logger.exception(f"Errore furante la modifica del file XML: {repr(e)}")
+			return False
+	else:
+		nuovo_xml = Path(configuration["files"]["input"]["easyfatt"]).resolve().read_text()
 
 
 	# 2. Genero il CSV sulla base del template
@@ -192,11 +193,34 @@ def main():
 
 	logger.info("Procedura terminata.")
 
+
+	# ==================================================================
+	#                     Apro file CSV generato
+	# ==================================================================
 	# Issue #20
 	print("\n")
 	if input(f"Aprire il file '{configuration['files']['output']['csv']}'? [Si/No] ").lower() in ["y", "yes", "s", "si"]:
 		os.startfile(Path(configuration['files']['output']['csv']).resolve(), 'open')
 	print("\n")
+
+
+def deepmerge(source, destination):
+    """ Deep merge a dictionary.
+    
+    ! Bug if in A a given element contains a dict and in B any other type
+	Source: https://stackoverflow.com/a/20666342/8965861
+	"""
+    for key, value in source.items():
+        if isinstance(value, dict):
+            # get node or create one
+            node = destination.setdefault(key, {})
+            deepmerge(value, node)
+        else:
+            destination[key] = value
+
+    return destination
+
+
 
 # Per compilare: pyinstaller --onefile --clean .\src\main.py
 if __name__ == '__main__':

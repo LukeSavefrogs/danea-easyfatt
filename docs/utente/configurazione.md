@@ -25,7 +25,7 @@ export_filename = [                       # Nome del file esportato dalla sezion
 
 [files.input]
 easyfatt = "./Documenti.DefXml"           # Percorso (relativo o assoluto) al file `*.DefXML` generato dal gestionale "Danea Easyfatt".
-addition = "./PRIMARIGA.xml"              # Percorso (relativo o assoluto) al file `*.xml` con le righe da aggiungere come primo figlio del tag `Documents`.
+addition = ""                             # Percorso (relativo o assoluto) al file `*.xml` con le righe da aggiungere come primo figlio del tag `Documents`.
 
 
 [files.output]
@@ -100,7 +100,7 @@ Il file `.xml` contenente il tag `Document` da aggiungere come **primo elemento*
 
 > Valore di default
 > 
-> `"./PRIMARIGA.xml"`
+> `""` (nessuna riga da aggiungere)
 {: .note-title .fs-3 }
 
 Di seguito un **esempio** di un contenuto valido per il file:
