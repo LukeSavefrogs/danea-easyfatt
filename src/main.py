@@ -1,6 +1,6 @@
 import json
+import os
 from pathlib import Path
-import sys
 from src.process_xml import modifica_xml
 from src.process_csv import genera_csv
 
@@ -140,8 +140,8 @@ def main():
 		)
 		
 		# Salvo il csv su file
-		with open(configuration["files"]["output"]["csv"], "w") as json_file:
-			json_file.write('\n'.join(righe_csv))
+		with open(configuration["files"]["output"]["csv"], "w") as csv_file:
+			csv_file.write('\n'.join(righe_csv))
 
 		logger.info(f"Creazione CSV '{configuration['files']['output']['csv']}' terminata..")
 	except Exception:
@@ -182,6 +182,15 @@ def main():
 	except Exception as e:
 		logger.error(f"Errore in fase di calcolo peso totale: {repr(e)}")
 		logger.exception("Errore in fase di calcolo peso totale")
+
+
+	logger.info("Procedura terminata.")
+
+	# Issue #20
+	print("\n")
+	if input(f"Aprire il file '{configuration['files']['output']['csv']}'? [Si/No] ").lower() in ["y", "yes", "s", "si"]:
+		os.startfile(configuration['files']['output']['csv'], 'open')
+	print("\n")
 
 # Per compilare: pyinstaller --onefile --clean .\src\main.py
 if __name__ == '__main__':
