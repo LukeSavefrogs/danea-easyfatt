@@ -4,7 +4,7 @@ version = "0.7.1"
 description = ""
 authors = ["Luca Salvarani <lucasalvarani99@gmail.com>"]
 readme = "README.md"
-packages = [{include = "src"}]
+packages = [{include = "*", from = "src"}]
 repository = "https://github.com/LukeSavefrogs/danea-easyfatt"
 
 
@@ -44,3 +44,9 @@ sequence = [
 	{script  = "os:system('bundle exec jekyll serve --livereload --open-url --strict_front_matter --trace')"}
 ]
 help = "Lancia il server LiveReload di Jekyll"
+
+
+[tool.poe.tasks.test]
+help = "Esegue i test"
+cmd = "python -m unittest discover --failfast --catch"
+# cmd = "python -m unittest discover --failfast --catch --verbose"
