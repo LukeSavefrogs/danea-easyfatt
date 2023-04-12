@@ -1,8 +1,8 @@
 import json
 import os
 from pathlib import Path
-from src.process_xml import modifica_xml
-from src.process_csv import genera_csv
+from process_xml import modifica_xml
+from process_csv import genera_csv
 
 import updater
 
@@ -43,6 +43,7 @@ def main():
 	logger.debug(f"Bundle directory   : '{bundle.get_bundle_directory()}'")
 	logger.debug(f"Root directory     : '{bundle.get_root_directory()}'")
 
+
 	# ==================================================================
 	#                       Controllo di versione
 	# ==================================================================
@@ -65,8 +66,11 @@ def main():
 
 		return False
 
-	# Leggo la configurazione di default
-	default_config_file = bundle.get_root_directory()   / CONFIG_FILENAME
+
+	# ==================================================================
+	#                       Lettura configurazione
+	# ==================================================================
+	default_config_file = bundle.get_root_directory()      / CONFIG_FILENAME
 	user_config_file    = bundle.get_execution_directory() / CONFIG_FILENAME
 	
 	default_configuration = {}
@@ -95,8 +99,11 @@ def main():
 		logger.setLevel(logging.getLevelName(configuration["log_level"]))
 
 	logger.debug(f"Configurazione in uso: \n{json.dumps(configuration, indent=4)}")
-	# return
 
+
+	# ==================================================================
+	#                     Controllo file richiesti
+	# ==================================================================
 	REQUIRED_FILES = [
 		Path(configuration["files"]["input"]["easyfatt"]),
 		Path(configuration["files"]["input"]["addition"])
@@ -114,7 +121,6 @@ def main():
 	# 1. Modifico l'XML
 	nuovo_xml = ""
 	righe_csv = ""
-
 	try:
 		# Aggiunge il contenuto di `additional_xml_file` all'interno di `easyfatt_xml`
 		nuovo_xml = modifica_xml(
