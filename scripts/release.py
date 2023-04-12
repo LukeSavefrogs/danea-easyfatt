@@ -1,11 +1,3 @@
-# git add pyproject.toml
-# git commit -m v$(poetry version -s) # prints out the project version
-# git tag v$(poetry version -s)
-
-# # Push the version information
-# git push origin master # Or your current branch
-# git push origin --tags # Push the tags
-
 import logging
 from rich.logging import RichHandler
 
@@ -34,7 +26,10 @@ def main():
 	remote_toml_file = f"https://raw.githubusercontent.com/LukeSavefrogs/danea-easyfatt/{current_branch}/pyproject.toml"
 	
 	try:
-		remote_toml_file_content = requests.get(remote_toml_file).text
+		remote_toml_file_content = requests.get(remote_toml_file, headers={
+			"Cache-Control": "no-cache",
+			"Pragma": "no-cache"
+		}).text
 	except Exception as e:
 		logger.critical(f"Errore in fase di recupero versione remota: {repr(e)}")
 		return False
