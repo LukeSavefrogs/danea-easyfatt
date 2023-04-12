@@ -195,7 +195,7 @@ def main():
 	# Issue #20
 	print("\n")
 	if input(f"Aprire il file '{configuration['files']['output']['csv']}'? [Si/No] ").lower() in ["y", "yes", "s", "si"]:
-		os.startfile(configuration['files']['output']['csv'], 'open')
+		os.startfile(Path(configuration['files']['output']['csv']).resolve(), 'open')
 	print("\n")
 
 # Per compilare: pyinstaller --onefile --clean .\src\main.py
