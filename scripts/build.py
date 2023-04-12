@@ -28,10 +28,10 @@ def build(filename, output_name = None, clean=True):
 		'--log-level', 'ERROR',
 		'--noconfirm',
 		'--onefile', 
-		'--add-data', r'./src/;./src/',
+		# '--add-data', r'./src/;./src/',
 		'--add-data', r'./pyproject.toml;.',
 		'--add-data', r'./veryeasyfatt.config.toml;.',
-		'--path', r'./src/',
+		# '--path', r'./src/',
 	]
 
 	if clean:
