@@ -161,6 +161,7 @@ def main():
 	try:
 		ureg = pint.UnitRegistry(autoconvert_offset_to_baseunit=True)
 		ureg.default_format = "~P"
+		ureg.define('quintal = 100 * kg = q = centner')
 
 		df = pd.read_xml(nuovo_xml, parser='etree', xpath='./Documents/Document', dtype=EASYFATT_DOCUMENT_DTYPE)
 
@@ -184,7 +185,7 @@ def main():
 		logger.debug(f"Effettuata conversione in grammi: \n{df.get(['CustomerCode', 'TransportedWeight'])}")
 
 		peso_totale = ureg.Quantity(df["TransportedWeight"].sum(), 'g') 
-		logger.info(f"Peso totale calcolato: {peso_totale.to('kg')} ({peso_totale.to('t')})")
+		logger.info(f"Peso totale calcolato: {peso_totale.to('kg')} ({peso_totale.to('q')} / {peso_totale.to('t')})")
 	
 	except Exception as e:
 		logger.error(f"Errore in fase di calcolo peso totale: {repr(e)}")
