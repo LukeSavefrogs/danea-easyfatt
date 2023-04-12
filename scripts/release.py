@@ -25,10 +25,11 @@ def main():
 	current_branch = repo.active_branch.name
 
 	local_toml_file  = (Path(".") / 'pyproject.toml').resolve()
-	remote_toml_file = f"https://raw.githubusercontent.com/LukeSavefrogs/danea-easyfatt/{current_branch}/pyproject.toml"
+	remote_toml_file = f"https://raw.githubusercontent.com/LukeSavefrogs/danea-easyfatt/{current_branch}/pyproject.toml?nocache={randint(0, 123456)}"
 	
+	logger.debug(f"Requesting '{remote_toml_file}'")
 	try:
-		remote_toml_file_content = requests.get(f"{remote_toml_file}?nocache={randint(0, 123456)}", headers={
+		remote_toml_file_content = requests.get(remote_toml_file, headers={
 			"Cache-Control": "no-cache",
 			"Pragma": "no-cache"
 		}).text
