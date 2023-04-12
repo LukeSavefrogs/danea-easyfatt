@@ -7,6 +7,8 @@ import git
 import toml
 import requests
 
+from random import randint
+
 logger = logging.getLogger(__name__)
 logger.addHandler(RichHandler(
 	rich_tracebacks=True,
@@ -26,7 +28,7 @@ def main():
 	remote_toml_file = f"https://raw.githubusercontent.com/LukeSavefrogs/danea-easyfatt/{current_branch}/pyproject.toml"
 	
 	try:
-		remote_toml_file_content = requests.get(remote_toml_file, headers={
+		remote_toml_file_content = requests.get(f"{remote_toml_file}?nocache={randint(0, 123456)}", headers={
 			"Cache-Control": "no-cache",
 			"Pragma": "no-cache"
 		}).text
