@@ -46,6 +46,10 @@ def main():
 	logger.debug(f"Bundle directory   : '{bundle.get_bundle_directory()}'")
 	logger.debug(f"Root directory     : '{bundle.get_root_directory()}'")
 
+
+	# ==================================================================
+	#                     Parametri linea di comando
+	# ==================================================================
 	parser = argparse.ArgumentParser(
 		description='Easyfatt made even easier.',
 		add_help=True,
