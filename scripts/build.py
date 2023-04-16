@@ -52,6 +52,7 @@ def build(filename, output_name = None, clean=True):
 	)
 
 	if build_process.returncode != 0:
+		print(build_process.stderr)
 		logger.error("Build failed")
 		return False
 
