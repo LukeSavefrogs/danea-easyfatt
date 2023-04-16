@@ -7,16 +7,16 @@ import git
 
 
 logger = logging.getLogger(__name__)
-logger.addHandler(RichHandler(
-	rich_tracebacks=True,
-	omit_repeated_times=False,
-	log_time_format="[%d-%m-%Y %H:%M:%S]"
-))
-logger.setLevel(logging.INFO)
 
 def main():
+	logger.addHandler(RichHandler(
+		rich_tracebacks=True,
+		omit_repeated_times=False,
+		log_time_format="[%d-%m-%Y %H:%M:%S]"
+	))
+	logger.setLevel(logging.INFO)
+
 	build("./src/main.py", "easyfatt_integration")
-	# build("./src/test.py", "TEST")
 
 def quote(string, quote='"'):
 	return quote + string + quote
@@ -40,9 +40,9 @@ def build(filename, output_name = None, clean=True):
 	
 	if output_name:
 		logger.debug(f"A custom name was provided: '{output_name}'")
-		build_command.extend(['--name', output_name])
+		build_command.extend(['--name', str(output_name)])
 	
-	build_command.append(filename)
+	build_command.append(str(filename))
 
 	logger.info(f"Sending command: '{' '.join(map(quote, build_command))}'")
 	build_process = subprocess.run(
