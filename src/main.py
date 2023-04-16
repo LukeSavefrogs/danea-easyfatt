@@ -70,6 +70,12 @@ def main():
 		type=str
 	)
 	parser.add_argument(
+		"-V", "--version",
+		help="Show the current version and exit.",
+		action='version',
+		version=f"v{updater.get_current_version()}",
+	)
+	parser.add_argument(
 		"--disable-version-check",
 		required=False,
 		help="Disable the version check process.",
