@@ -1,8 +1,12 @@
 import json
 import os
 from pathlib import Path
+import sys
 from process_xml import modifica_xml
 from process_csv import genera_csv
+
+import config_manager as configuration_manager
+
 
 import updater
 
@@ -34,9 +38,12 @@ EASYFATT_DOCUMENT_DTYPE = {
 }
 
 import bundle
-import toml
 
-CONFIG_FILENAME = "veryeasyfatt.config.toml"
+# Windows specific definitions
+if sys.platform != 'win32':
+	logger.critical("This program is available only for the Windows platform.")
+	sys.exit(1)
+
 
 # -----------------------------------------------------------
 #                        Inizio codice                       
@@ -105,35 +112,12 @@ def main():
 	# ==================================================================
 	#                       Lettura configurazione
 	# ==================================================================
-	default_config_file = bundle.get_root_directory()      / CONFIG_FILENAME
-	if cli_args.configuration_file is not None:
-		user_config_file = Path(cli_args.configuration_file).resolve()
-	else:
-		user_config_file = bundle.get_execution_directory() / CONFIG_FILENAME
-
-	default_configuration = {}
-	user_configuration = {}
-	
-	if not default_config_file.exists():
-		# Se non è stato compilato (quindi durante lo sviluppo) la configurazione DEVE esistere
-		logger.critical(f"Impossibile trovare file di configurazione '{default_config_file}'. Solo la versione compilata può essere utilizzata senza configurazione.")
+	try:
+		configuration = configuration_manager.get_configuration(cli_args.configuration_file)
+	except Exception as e:
+		logger.critical(f"Errore in fase di recupero configurazione: {e}")
 		return False
 	
-	default_configuration = toml.load(default_config_file)
-	logger.debug(f"Configurazione default: {default_configuration}")
-	
-	if user_config_file.exists():
-		logger.info(f"Trovato file di configurazione utente")
-		user_configuration = toml.load(user_config_file)
-		logger.debug(f"Configurazione utente: {user_configuration}")
-	else:
-		logger.warning(f"File di configurazione utente '{user_config_file}' non trovato.")
-		logger.info(f"Utilizzo la configurazione di default")
-
-	# Unisci le configurazioni
-	# configuration = {**default_configuration, **user_configuration}
-	configuration = deepmerge(user_configuration, default_configuration)
-
 	if configuration["log_level"]:
 		logger.setLevel(logging.getLevelName(configuration["log_level"]))
 
@@ -201,7 +185,12 @@ def main():
 		ureg.default_format = "~P"
 		ureg.define('quintal = 100 * kg = q = centner')
 
-		df = pd.read_xml(nuovo_xml, parser='etree', xpath='./Documents/Document', dtype=EASYFATT_DOCUMENT_DTYPE)
+		df = pd.read_xml(
+			nuovo_xml,
+			parser='etree',
+			xpath='./Documents/Document',
+			dtype=EASYFATT_DOCUMENT_DTYPE
+		)
 
 		# Effettuo una prima pulizia dei valori a solo scopo di visualizzazione.
 		#
@@ -242,22 +231,6 @@ def main():
 		os.startfile(Path(configuration['files']['output']['csv']).resolve(), 'open')
 	print("\n")
 
-
-def deepmerge(source, destination):
-    """ Deep merge a dictionary.
-    
-    ! Bug if in A a given element contains a dict and in B any other type
-	Source: https://stackoverflow.com/a/20666342/8965861
-	"""
-    for key, value in source.items():
-        if isinstance(value, dict):
-            # get node or create one
-            node = destination.setdefault(key, {})
-            deepmerge(value, node)
-        else:
-            destination[key] = value
-
-    return destination
 
 
 
