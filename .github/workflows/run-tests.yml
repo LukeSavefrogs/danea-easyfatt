@@ -4,6 +4,10 @@ on:
     - push
     - workflow_call
 
+env:
+    PYTHON_VERSION: "3.10"
+    POETRY_VERSION: "1.4.2"
+
 jobs:
     test:
       runs-on: windows-latest
@@ -18,11 +22,12 @@ jobs:
         - name: "📜 Install Poetry"
           run: pipx install poetry
         
-        - name: "🐍 Install Python"
+        - name: "🐍 Install Python (v${{ env.PYTHON_VERSION }})"
           uses: actions/setup-python@v4
           with:
-            python-version: '3.10'
+            python-version: ${{ env.PYTHON_VERSION }}
             cache: 'poetry'
+            cache-dependency-path: poetry.lock
   
         - name: "🔍 Install dependencies"
           run: poetry install --with dev
