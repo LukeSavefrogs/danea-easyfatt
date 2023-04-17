@@ -2,11 +2,13 @@ import functools
 import os
 from pathlib import Path
 import tempfile
+import textwrap
 
 
-def with_temporary_file(file_prefix="veryeasyfatt-", file_suffix=".config.toml", *args, **kwargs):
+def with_temporary_file(content="", file_prefix="veryeasyfatt-", file_suffix=".config.toml", *args, **kwargs):
     """ Create a temporary file before the test starts and passes the file path as the first parameter.
-        At the end it deletes the temporary file 
+        
+    	When the test ends it deletes the temporary file.
     """
     def decorator(decorated_function):
         @functools.wraps(decorated_function)
@@ -17,6 +19,7 @@ def with_temporary_file(file_prefix="veryeasyfatt-", file_suffix=".config.toml",
             os.close(fd)   # The file handler is kept open by mkstemp, so close it.
 
             temp_config_file = Path(temp_file).resolve()    # Convert it to `pathlib.Path`
+            temp_config_file.write_text(textwrap.dedent(content))
 
             try:
                 # Execute the test by passing the configuration file path as the first parameter
