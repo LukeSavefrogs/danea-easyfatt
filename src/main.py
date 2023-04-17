@@ -19,13 +19,19 @@ from packaging.version import Version
 from rich.logging import RichHandler
 import logging
 
+default_handler = logging.StreamHandler(sys.stdout)
+default_handler.setFormatter(logging.Formatter(fmt="[%(asctime)s] %(levelname)-8s %(message)s", datefmt="%d-%m-%Y %H:%M:%S"))
+
 logger = logging.getLogger("danea-easyfatt")
-logger.addHandler(RichHandler(
+logger.addHandler(default_handler)
+logger.setLevel(logging.DEBUG)
+
+# The Rich handler will be used if `--disable-rich-handler` is not passed
+rich_handler = RichHandler(
 	rich_tracebacks=True,
 	omit_repeated_times=False,
 	log_time_format="[%d-%m-%Y %H:%M:%S]"
-))
-logger.setLevel(logging.DEBUG)
+)
 
 import pandas as pd
 import pint
@@ -77,15 +83,25 @@ def main():
 	)
 	parser.add_argument(
 		"--disable-version-check",
-		required=False,
 		help="Disable the version check process.",
 		dest="enable_version_check",
+		action="store_false",
+		default=True,
+	)
+	parser.add_argument(
+		"--disable-rich-logging",
+		help="Disable the Rich logging handler (used for testing).",
+		dest="enable_rich_logging",
 		action="store_false",
 		default=True,
 	)
 	cli_args = parser.parse_args()
 
 	logger.debug(f"CLI parameters: {cli_args}")
+
+	if cli_args.enable_rich_logging:
+		logger.removeHandler(default_handler)
+		logger.addHandler(rich_handler)
 
 
 
