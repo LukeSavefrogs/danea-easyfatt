@@ -8,11 +8,12 @@ env:
     PYTHON_VERSION: "3.10"
     POETRY_VERSION: "1.4.2"
 
+permissions:
+    contents: write
+
 jobs:
     test:
       runs-on: windows-latest
-      permissions:
-        contents: write
       steps:
         - name: "🛒 Checkout repository"
           uses: actions/checkout@v3
