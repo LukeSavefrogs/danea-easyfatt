@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Union
+from typing import Any, Hashable, Union
 import pandas as pd
 import numpy as np
 
@@ -13,7 +13,6 @@ import pickle
 import bundle
 
 logger = logging.getLogger("danea-easyfatt.clienti")
-
 
 
 CACHE_FILENAME = "customer_info.pickle"
@@ -67,16 +66,15 @@ def routexl_time_boundaries(string: str):
 	if not isinstance(string, str):
 		raise ValueError("Input string must be of type 'str'")
 
-	if not re.match(REGEX_INTERVALLO, string):
+	intervallo_match = re.match(REGEX_INTERVALLO, string)
+	if intervallo_match is None:
 		return None
 
 	return '>>'.join(
-		map(formatta_orario, 
-			re.match(REGEX_INTERVALLO, string).groups()
-		)
+		map(formatta_orario, intervallo_match.groups())
 	)
 
-def get_customers_data(filename: Union[str, Path], cache: bool=True, cache_path: Union[str, Path, None] = None) -> list[dict[str, Any]]:
+def get_customers_data(filename: Union[str, Path], cache: bool=True, cache_path: Union[str, Path, None] = None) -> list[dict[Hashable, Any]]:
 	"""Ricava i dati cliente dal file Excel/Libreoffice esportato da Easyfatt.
 
 	- Se `cache=True` allora viene salvata una copia dei dati recuperati dal file su
@@ -92,6 +90,7 @@ def get_customers_data(filename: Union[str, Path], cache: bool=True, cache_path:
 		list: Una lista di dizionari (convertibile a dataframe semplicemente passandolo come parametro) contenente tutte le voci del foglio excel.
 	"""
 	md5sum = ""
+	cache_file = ""
 
 	if not cache:
 		logger.warning("Cache bypassata forzatamente.")
@@ -103,7 +102,7 @@ def get_customers_data(filename: Union[str, Path], cache: bool=True, cache_path:
 			
 			logger.info(f"Hash md5 file excel: '{md5sum}'")
 
-			cache_dir = cache_path if cache_path else bundle.get_execution_directory() / ".cache"
+			cache_dir = Path(cache_path) if cache_path else bundle.get_execution_directory() / ".cache"
 			cache_file = cache_dir / CACHE_FILENAME
 
 			# Creo il percorso se non esiste già
@@ -138,7 +137,7 @@ def get_customers_data(filename: Union[str, Path], cache: bool=True, cache_path:
 	logger.info(f"File excel caricato (trovate {df.shape[0]} righe e {df.shape[1]} colonne)")
 	
 	df_dict = df.to_dict('records')
-	if cache:
+	if cache and cache_file:
 		return_data = {
 			"metadata": {
 				"date": pd.Timestamp.now(),
@@ -165,10 +164,9 @@ def get_intervallo_spedizioni(filename: Union[str, Path], extra_field_id=1):
 	cod_not_present = df[df["Cod."].isnull()]
 	if not cod_not_present.empty:
 		not_present_info = cod_not_present.get(['Denominazione', 'Partita Iva', 'Indirizzo', 'Cap', 'Città', 'Prov.'])
-		logger.error(f"Trovati i seguenti clienti con campo 'Cod.' NON VALORIZZATO:\n{not_present_info}")
-		return False
+		raise Exception(f"Trovati i seguenti clienti con campo 'Cod.' NON VALORIZZATO:\n{not_present_info}")
 
-	customer_info: pd.DataFrame = df.get(['Cod.', f'Extra {extra_field_id}'])
+	customer_info: pd.DataFrame = df.get(['Cod.', f'Extra {extra_field_id}']) # type: ignore
 	logger.info(f"Trovate informazioni cliente: \n{customer_info}")
 	
 	customer_info = customer_info.rename(mapper=rename_extra_field, axis='columns')

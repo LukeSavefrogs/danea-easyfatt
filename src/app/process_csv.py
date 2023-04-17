@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 import xmltodict
 import re
 
-from clienti import get_intervallo_spedizioni, routexl_time_boundaries
+from app.clienti import get_intervallo_spedizioni, routexl_time_boundaries
 
 import logging
 logger = logging.getLogger("danea-easyfatt.csv")
@@ -11,6 +11,8 @@ logger = logging.getLogger("danea-easyfatt.csv")
 
 def genera_csv (xml_text: str, template_riga: str, default_shipping_interval: str, customer_files: list | str, extra_field_id=1):
 	logger.debug(f"Trasformo l'XML in un dizionario")
+
+	default_time_boundary = routexl_time_boundaries(default_shipping_interval)
 	
 	# Trasformo il CSV in un dizionario, in modo da poterlo traversare facilmente.
 	xml_dict = xmltodict.parse(
@@ -22,6 +24,7 @@ def genera_csv (xml_text: str, template_riga: str, default_shipping_interval: st
 	lista_file_clienti = customer_files if isinstance(customer_files, list) else [customer_files]
 	logger.debug(f"Inizio ricerca file '{'|'.join(lista_file_clienti)}'")
 	
+	# Restituisci l'intervallo spedizioni trovato nel primo dei file cercati.
 	for file in lista_file_clienti:
 		file_clienti = Path(file).resolve().absolute()
 		if file_clienti.exists():
@@ -40,12 +43,14 @@ def genera_csv (xml_text: str, template_riga: str, default_shipping_interval: st
 		indirizzo_spedizione = document["DeliveryAddress"] if document.get("DeliveryAddress", None) else document["CustomerAddress"]
 		cap_spedizione = document["DeliveryPostcode"] if document.get("DeliveryAddress", None) else document["CustomerPostcode"]
 		citta_spedizione = document["DeliveryCity"] if document.get("DeliveryAddress", None) else document["CustomerCity"]
-		peso = re.search(pattern=r"([0-9,.]+)", string=document["TransportedWeight"]).group(0) if document.get("TransportedWeight", None) else 0
 
-		orario_spedizione = intervallo_spedizioni.get(
-			document["CustomerCode"],
-			routexl_time_boundaries(default_shipping_interval)
-		)
+		if document.get("TransportedWeight", None) is not None:
+			weight_matched = re.search(pattern=r"([0-9,.]+)", string=document.get("TransportedWeight"))
+			peso = weight_matched.group(0) if weight_matched is not None else 0
+		else:
+			peso = 0
+
+		orario_spedizione = intervallo_spedizioni.get(document["CustomerCode"], default_time_boundary)
 		logger.debug(f"Orario di spedizione per il cliente '{document['CustomerCode']}': {orario_spedizione}")
 		
 		csv_lines.append(template_riga.format(

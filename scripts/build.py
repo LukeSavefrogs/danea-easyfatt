@@ -16,7 +16,7 @@ def main():
 	))
 	logger.setLevel(logging.INFO)
 
-	build("./src/main.py", "easyfatt_integration")
+	build("./src/bootstrap.py", "easyfatt_integration")
 
 def quote(string, quote='"'):
 	return quote + string + quote

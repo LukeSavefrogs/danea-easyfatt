@@ -21,7 +21,7 @@ class BundleTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._executable_name = Path(f"./dist/{secrets.token_hex(16)}.exe")
-        cls._python_scr_name = Path("./src/main.py").resolve()
+        cls._python_scr_name = Path("./src/bootstrap.py").resolve()
 
         # 1. Build the temporary executable file
         if not builder_script.build(cls._python_scr_name, cls._executable_name.stem):
