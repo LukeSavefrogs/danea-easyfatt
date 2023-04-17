@@ -1,6 +1,10 @@
+""" Functions used to find files/directories in the context of applications
+bundled with Pyinstaller. """
+
 import sys
-from pathlib import Path
 import inspect
+
+from pathlib import Path
 
 
 def is_executable() -> bool:
@@ -10,7 +14,7 @@ def is_executable() -> bool:
 		https://pyinstaller.org/en/stable/runtime-information.html#run-time-information
 	
 	Returns:
-		bool: `True` if the script is bundled in an executable.
+		is_bundled (bool): `True` if the script is bundled in an executable.
 	"""
 	return getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS')
 
@@ -21,7 +25,7 @@ def get_bundle_directory() -> Path:
 	Works either with a `pyinstaller` bundled app or a normal Python script.
 
 	Returns:
-		bool: The directory as a string.
+		bundle_directory (Path): The directory as a string.
 	"""
 	if is_executable():
 		# we are running in a bundle
@@ -62,7 +66,7 @@ def get_root_directory(ref_filename: str = "pyproject.toml") -> Path:
 		ref_filename(str): File name used placed in the root directory to use as a reference.
 
 	Returns:
-		pathlib.Path | None: Absolute path to the `pyproject.toml` file.
+		root_dir (pathlib.Path | None): Absolute path to the `pyproject.toml` file.
 	"""
 	bundle_directory = Path(get_bundle_directory())
 
@@ -76,6 +80,6 @@ def get_execution_directory() -> Path:
 		https://stackoverflow.com/a/35514032/8965861
 
 	Returns:
-		Path: The path where the program is saved.
+		execution_directory (Path): The path where the program is saved.
 	"""
 	return Path(sys.executable if is_executable() else sys.argv[0]).resolve().absolute().parent
