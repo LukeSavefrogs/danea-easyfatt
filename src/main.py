@@ -187,7 +187,7 @@ def main():
 
 	# 3. Calcolo il peso totale della spedizione
 	try:
-		ureg = pint.UnitRegistry(autoconvert_offset_to_baseunit=True)
+		ureg = pint.UnitRegistry(autoconvert_offset_to_baseunit=True, on_redefinition="raise")
 		ureg.default_format = "~P"
 		ureg.define('quintal = 100 * kg = q = centner')
 
@@ -195,7 +195,7 @@ def main():
 			nuovo_xml,
 			parser='etree',
 			xpath='./Documents/Document',
-			dtype=EASYFATT_DOCUMENT_DTYPE
+			dtype=EASYFATT_DOCUMENT_DTYPE # type: ignore
 		)
 
 		# Effettuo una prima pulizia dei valori a solo scopo di visualizzazione.
@@ -206,22 +206,15 @@ def main():
 			lambda v: ureg.Quantity(str(v).replace(".", "").replace(",", ".").lower()) if v is not None else v
 		)
 
-		pd.set_option('display.max_columns', None)
-		pd.set_option('display.max_rows', None)
-		logger.debug(f"Effettuata prima analisi del peso trasportato: \n{df.get(['CustomerCode', 'TransportedWeight'])}")
-		pd.reset_option('display.max_columns')
-		pd.reset_option('display.max_rows')
-
+		# Converto in grammi
 		df["TransportedWeight"] = df["TransportedWeight"].map(
 			lambda v: ureg.Quantity(str(v).lower()).to("g").magnitude if v is not None else v
 		)
-		logger.debug(f"Effettuata conversione in grammi: \n{df.get(['CustomerCode', 'TransportedWeight'])}")
 
 		peso_totale = ureg.Quantity(df["TransportedWeight"].sum(), 'g') 
 		logger.info(f"Peso totale calcolato: {peso_totale.to('kg')} ({peso_totale.to('q')} / {peso_totale.to('t')})")
 	
 	except Exception as e:
-		logger.error(f"Errore in fase di calcolo peso totale: {repr(e)}")
 		logger.exception("Errore in fase di calcolo peso totale")
 
 
