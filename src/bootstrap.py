@@ -80,7 +80,7 @@ def main():
     logger.debug(f"CLI parameters: {cli_args}")
 
     if cli_args.enable_rich_logging:
-        logger.removeHandler(default_handler)
+        logger.handlers.clear()
         logger.addHandler(rich_handler)
 
 
