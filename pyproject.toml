@@ -6,7 +6,14 @@ authors = ["Luca Salvarani <lucasalvarani99@gmail.com>"]
 readme = "README.md"
 packages = [{include = "*", from = "src"}]
 repository = "https://github.com/LukeSavefrogs/danea-easyfatt"
-
+documentation = "https://lukesavefrogs.github.io/danea-easyfatt/"
+classifiers = [
+	"Intended Audience :: End Users/Desktop",
+	"Environment :: Win32 (MS Windows)",
+	"Natural Language :: Italian",
+	"Operating System :: Microsoft :: Windows",
+	"Programming Language :: Python :: 3"
+]
 
 [tool.poetry.dependencies]
 # python = ">=3.8, <3.12"
