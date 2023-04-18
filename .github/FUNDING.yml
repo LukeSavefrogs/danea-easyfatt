@@ -1,0 +1,20 @@
+# These are supported funding model platforms
+
+github: LukeSavefrogs
+patreon: LukeSavefrogs
+# open_collective: # Replace with a single Open Collective username
+ko_fi: lukesavefrogs
+# tidelift: # Replace with a single Tidelift platform-name/package-name e.g., npm/babel
+# community_bridge: # Replace with a single Community Bridge project-name e.g., cloud-foundry
+# liberapay: # Replace with a single Liberapay username
+# issuehunt: # Replace with a single IssueHunt username
+# otechie: # Replace with a single Otechie username
+# lfx_crowdfunding: # Replace with a single LFX Crowdfunding project-name e.g., cloud-foundry
+custom:
+  # PayPal donation button is superior to a paypal.me link because it
+  # additionally:
+  #   - accepts credit cards without a need to create a PayPal account
+  #   - allows monthly subscriptions (requires a PayPal account)
+  # However, the URL is rather lengthy and GitHub shows it in full in the
+  # Sponsor modal popup.
+  - https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RN3XMAHA8FZEE&source=url
