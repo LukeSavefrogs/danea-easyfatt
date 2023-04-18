@@ -72,6 +72,16 @@ class BundleTestCase(unittest.TestCase):
         self.assertRegex(command_output, "Utilizzo la configurazione di default")
 
 
+    def test_no_version_check (self):
+        """ Tests if no version check is done. """
+        command_output = subprocess.run(
+            [self._executable_name, "--disable-rich-logging", "--disable-version-check"], timeout=360,
+            input='\n', capture_output=True, text=True,
+        ).stdout
+
+        self.assertRegex(command_output, "Il controllo versione è stato disattivato tramite CLI")
+
+
     @with_temporary_file(file_prefix="veryeasyfatt-", file_suffix=".toml", content=f"""
         [files.input]
         easyfatt = "./{secrets.token_hex(32)}.DefXml"
