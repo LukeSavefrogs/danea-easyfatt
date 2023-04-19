@@ -1,4 +1,5 @@
 import os
+import secrets
 import subprocess
 import tempfile
 from rich.logging import RichHandler
@@ -25,6 +26,7 @@ def quote(string, quote='"'):
 	return quote + string + quote
 
 def build(filename: str, output_name: str|None = None, clean=True):
+	temporary_exe_file = secrets.token_hex(16)
 	original_filename: str = f"{Path(output_name).name}.exe" if output_name else f"{Path(filename).stem}.exe"
 
 	(fd, temporary_version_file) = tempfile.mkstemp(prefix="versionFile-", suffix=".txt", text=True)
@@ -64,7 +66,7 @@ def build(filename: str, output_name: str|None = None, clean=True):
 		
 		if output_name:
 			logger.debug(f"A custom name was provided: '{output_name}'")
-			build_command.extend(['--name', str(output_name)])
+			build_command.extend(['--name', temporary_exe_file])
 		
 		build_command.append(str(filename))
 
@@ -87,6 +89,17 @@ def build(filename: str, output_name: str|None = None, clean=True):
 	logger.debug(f"STDOUT: '{build_process.stdout}'")
 	logger.debug(f"STDERR: '{build_process.stderr}'")
 	logger.info("Build ended")
+
+	if output_name:
+		logger.info("Renaming to final output executable...")
+		input_file = Path("dist") / f"{temporary_exe_file}.exe"
+		output_file = Path("dist") / f"{output_name}.exe"
+		
+		if output_file.exists():
+			output_file.unlink()
+
+		input_file.rename(output_file)
+
 	return True
 
 if __name__ == '__main__':
