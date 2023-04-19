@@ -1,4 +1,5 @@
 """ Entry point of the wrapper. """
+from pathlib import Path
 import sys
 import webbrowser
 import argparse
@@ -41,7 +42,7 @@ def main():
     #                     Parametri linea di comando
     # ==================================================================
     parser = argparse.ArgumentParser(
-        prog="VeryEasyfatt",
+        prog=bundle.get_executed_file().name,
         description='Easyfatt made even easier!',
         epilog='Author: Luca Salvarani (email: lucasalvarani99@gmail.com - github: @LukeSavefrogs)',
         add_help=True,
