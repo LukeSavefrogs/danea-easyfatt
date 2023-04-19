@@ -8,7 +8,8 @@ import logging
 from pathlib import Path
 
 import pyinstaller_versionfile
-import updater
+import bundle
+import toml
 
 logger = logging.getLogger(__name__)
 
@@ -29,16 +30,18 @@ def build(filename: str, output_name: str|None = None, clean=True):
 	temporary_exe_file = secrets.token_hex(16)
 	original_filename: str = f"{Path(output_name).name}.exe" if output_name else f"{Path(filename).stem}.exe"
 
+	pyproject_data = toml.load((bundle.get_root_directory() / 'pyproject.toml').resolve())
+
 	(fd, temporary_version_file) = tempfile.mkstemp(prefix="versionFile-", suffix=".txt", text=True)
 	os.close(fd)
 
 	try:
 		pyinstaller_versionfile.create_versionfile(
 			output_file=temporary_version_file,
-			version=updater.get_current_version(),
+			version=pyproject_data["tool"]["poetry"]["version"],
 
 			company_name="Luca Salvarani",
-			file_description="Automazione flussi aziendali Easyfatt",
+			file_description=pyproject_data["tool"]["poetry"]["description"],
 			internal_name=Path(original_filename).stem,
 			original_filename=Path(original_filename).name,
 			product_name="VeryEasyfatt Extra tools",
