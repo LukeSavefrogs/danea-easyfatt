@@ -82,4 +82,13 @@ def get_execution_directory() -> Path:
 	Returns:
 		execution_directory (Path): The path where the program is saved.
 	"""
-	return Path(sys.executable if is_executable() else sys.argv[0]).resolve().absolute().parent
+	return get_executed_file().parent
+
+
+def get_executed_file() -> Path:
+	"""Returns the absolute path to the script/executable being run.
+
+	Returns:
+		executed_file (Path): The path to the file being executed.
+	"""
+	return Path(sys.executable if is_executable() else sys.argv[0]).resolve().absolute()
