@@ -63,13 +63,14 @@ class ConfigurationTestCase(unittest.TestCase):
             }
         )
 
-    # @with_temporary_file(file_prefix="veryeasyfatt-", file_suffix=".toml", content="""
-    #     [features.shipping.default_interval]
-    #     test = ""
-    # """)
-    # def test_err_value(self, temp_config_file: Path):
-    #     with self.assertRaises(Exception):
-    #         get_configuration(temp_config_file)
+    @with_temporary_file(file_prefix="veryeasyfatt-", file_suffix=".toml", content="""
+        [features.shipping.default_interval]
+        test = ""
+    """)
+    def test_err_value(self, temp_config_file: Path):
+        """ The `get_configuration` function raises an Exception when a string leaf is being redefined as dict. """
+        with self.assertRaises(Exception):
+            get_configuration(temp_config_file)
 
 
 if __name__ == '__main__':
