@@ -60,7 +60,7 @@ jobs:
             🧪 test: "[_DEV_] Tests"
             other: Altre modifiche
           default-commit-type: Altre modifiche
-          mention-authors: true
+          mention-authors: false
           mention-new-contributors: true
           include-compare: true
           semver: false
