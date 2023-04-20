@@ -41,7 +41,7 @@ def build(filename: str, output_name: str|None = None, clean=True):
 			version=pyproject_data["tool"]["poetry"]["version"],
 
 			company_name="Luca Salvarani",
-			file_description=pyproject_data["tool"]["poetry"]["description"],
+			file_description="VeryEasyfatt Extra tools",
 			internal_name=Path(original_filename).stem,
 			original_filename=Path(original_filename).name,
 			product_name="VeryEasyfatt Extra tools",
