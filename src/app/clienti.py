@@ -64,7 +64,7 @@ def routexl_time_boundaries(string: str):
 	REGEX_INTERVALLO = r'([0-9:]+)\s*(?:>+|-+|\s+a\s+)\s*([0-9:]+)'
 
 	if not isinstance(string, str):
-		raise ValueError("Input string must be of type 'str'")
+		raise ValueError(f"Input string must be of type 'str', not '{type(string).__name__}'")
 
 	intervallo_match = re.match(REGEX_INTERVALLO, string)
 	if intervallo_match is None:
