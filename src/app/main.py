@@ -69,7 +69,7 @@ def main(configuration_file = None):
 
 			logger.info(f"Analisi e modifica XML terminata..")
 		except Exception as e:
-			logger.exception(f"Errore furante la modifica del file XML: {repr(e)}")
+			logger.exception(f"Errore durante la modifica del file XML: {repr(e)}")
 			return False
 	else:
 		nuovo_xml = Path(configuration["files"]["input"]["easyfatt"]).resolve().read_text()
@@ -91,7 +91,7 @@ def main(configuration_file = None):
 
 		logger.info(f"Creazione CSV '{configuration['files']['output']['csv']}' terminata..")
 	except Exception:
-		logger.exception("Errore furante la generazione del file CSV.")
+		logger.exception("Errore durante la generazione del file CSV.")
 		return False
 
 
