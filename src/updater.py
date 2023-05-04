@@ -39,7 +39,7 @@ def get_github_api_endpoint() -> str:
 	return f"https://api.{domain}/repos/{author}/{repository}"
 
 
-def get_latest_version():
+def get_latest_release():
 	""" Returns information about the latest release (/releases/latest).
 
 	Returns:
@@ -55,6 +55,14 @@ def get_latest_version():
 		"version": json_response["tag_name"],
 		"date": json_response["published_at"]
 	}
+
+def get_latest_version() -> str:
+	""" Returns the latest version available from the releases.
+
+	Returns:
+		version (str): The remote version
+	"""
+	return get_latest_release()["version"]
 
 
 def get_current_version() -> str:
@@ -82,7 +90,7 @@ def update_available() -> bool:
 	Returns:
 		is_available (bool): Wether a new update is available among the releases.
 	"""
-	latest  = Version(get_latest_version()["version"])
+	latest  = Version(get_latest_version())
 	current = Version(get_current_version())
 	
 	logger.debug(f"Latest is {latest}")
@@ -102,6 +110,6 @@ if __name__ == '__main__':
 
 
 	if update_available():
-		logger.warning(f"An update is available (remote is '{Version(get_latest_version()['version'])}', while current is '{Version(get_current_version())}')")
+		logger.warning(f"An update is available (remote is '{Version(get_latest_version())}', while current is '{Version(get_current_version())}')")
 	else:
 		logger.info(f"You're already running the latest version.")

@@ -100,12 +100,12 @@ def main():
         try:
             if updater.update_available():
                 latest_release = updater.get_latest_version()
-                latest_version = Version(latest_release['version'])
+                latest_version = Version(updater.get_latest_version())
                 current_version = Version(updater.get_current_version())
 
                 logger.warning(
                     f"An update is available (remote is '{latest_version}', while current is '{current_version}')")
-                webbrowser.open(latest_release["url"], new=0, autoraise=True)
+                webbrowser.open(updater.get_latest_release()["url"], new=0, autoraise=True)
 
                 return False
             else:

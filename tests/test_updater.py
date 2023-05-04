@@ -10,8 +10,8 @@ class OperationsTestCase(unittest.TestCase):
 			r"[0-9]+\.[0-9]+\.[0-9]+.*"
 		)
 
-	def test_remote_version (self):
-		version_info = updater.get_latest_version()
+	def test_remote_release (self):
+		version_info = updater.get_latest_release()
 
 		self.assertEqual(len(version_info.keys()), 3)
 		
@@ -20,8 +20,16 @@ class OperationsTestCase(unittest.TestCase):
 			r"[0-9]+\.[0-9]+\.[0-9]+.*"
 		)
 	
+	def test_remote_version (self):
+		version_info = updater.get_latest_version()
+
+		self.assertRegex(
+			version_info,
+			r"[0-9]+\.[0-9]+\.[0-9]+.*"
+		)
+	
 	def test_version_syntax (self):
-		latest  = Version(updater.get_latest_version()["version"])
+		latest  = Version(updater.get_latest_version())
 		current = Version(updater.get_current_version())
 
 		self.assertIsInstance(latest, Version)
