@@ -16,7 +16,6 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-# python = ">=3.8, <3.12"
 python = "~3.10"
 rich = "^13.0.1"
 xmltodict = "^0.13.0"
