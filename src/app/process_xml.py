@@ -33,10 +33,6 @@ def modifica_xml (easyfatt_xml_file: Path, additional_xml_file: Path) -> str:
 	Returns:
 		xml_text (str): Il testo XML modificato.
 	"""
-	# Per semplicità converto tutte le stringhe in oggetti `Path`
-	# easyfatt_xml_file: Path   = Path(easyfatt_xml_file).resolve()
-	# additional_xml_file: Path = Path(additional_xml_file).resolve()
-
 	logger.debug(f'File XML generato dal gestionale Danea Easyfatt: "{easyfatt_xml_file}"')
 	logger.debug(f'File XML contenente il testo da inserire: "{additional_xml_file}"')
 
