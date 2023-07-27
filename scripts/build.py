@@ -60,6 +60,7 @@ def build(filename: str, output_name: str|None = None, clean=True):
 			'--add-data', r'./pyproject.toml;.',
 			'--add-data', r'./veryeasyfatt.config.toml;.',
 			'--version-file', temporary_version_file,
+			'--noupx',
 			# '--path', r'./src/',
 		]
 
