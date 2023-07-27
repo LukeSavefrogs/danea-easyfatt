@@ -40,8 +40,6 @@ def generate_kml(
 ):
     """Generate a KML file from an XML file and a database file.
 
-    FIXME: Vengono salvati nel KML solo i documenti che hanno il cliente salvato nell'anagrafica.
-
     Args:
         xml_filename (Path | str): Path to the XML file.
         database_path (Path | str): Path to the database file.
