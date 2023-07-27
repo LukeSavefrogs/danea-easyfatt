@@ -15,11 +15,15 @@ Un esempio di file di configurazione è il seguente, tratto dalla [configurazion
 log_level = "DEBUG"                       # Per la lista completa dei livelli di logging: https://docs.python.org/3/library/logging.html#logging-levels
 
 
+[easyfatt.database]
+filename = ""                             # Percorso (relativo o assoluto) al database (`*.eft`) di EasyFatt
+
+
 [easyfatt.customers]
 custom_field = 1                          # Numero del campo "Extra {N}"
 export_filename = [                       # Nome del file esportato dalla sezione clienti di EasyFatt
-	"Soggetti.xlsx", 
-	"Soggetti.ods"
+    "Soggetti.xlsx", 
+    "Soggetti.ods"
 ]
 
 
@@ -55,6 +59,9 @@ Questa voce specifica il **livello di verbosità del logging**. Di default è im
 > 
 > `"DEBUG"`
 {: .note-title .fs-3 }
+
+## `easyfatt.database.filename`
+Indica il **percorso** (assoluto o relativo) **del database** di Danea Easyfatt. _Se omesso non sarà possibile utilizzare la funzione di generazione KML_.
 
 ## `easyfatt.customers`
 Questa sezione di configurazione regola il comportamento del programma verso l'**esportazione clienti** eseguita da **Easyfatt**.
@@ -106,80 +113,80 @@ Il file `.xml` contenente il tag `Document` da aggiungere come **primo elemento*
 Di seguito un **esempio** di un contenuto valido per il file:
 ```xml
 <Document>
-	<CustomerCode>00000</CustomerCode>
-	<CustomerWebLogin></CustomerWebLogin>
-	<CustomerName>{Nome Azienda}</CustomerName>
-	<CustomerAddress>{Indirizzo}</CustomerAddress>
-	<CustomerPostcode>{CAP}</CustomerPostcode>
-	<CustomerCity>{Città}</CustomerCity>
-	<CustomerProvince>{Provincia}</CustomerProvince>
-	<CustomerCountry>{Italia}</CustomerCountry>
-	<CustomerFiscalCode>{PartitaIVA}</CustomerFiscalCode>
-	<CustomerTel>{Telefono}</CustomerTel>
-	<CustomerCellPhone>{Cellulare}</CustomerCellPhone>
-	<CustomerEmail>{Email}</CustomerEmail>
-	<DeliveryName>{Nome per la consegna}</DeliveryName>
-	<DeliveryAddress>{Indirizzo}</DeliveryAddress>
-	<DeliveryPostcode>{CAP}</DeliveryPostcode>
-	<DeliveryCity>{Città}</DeliveryCity>
-	<DeliveryProvince>{Provincia}</DeliveryProvince>
-	<DeliveryCountry>{Stato}</DeliveryCountry>
-	<DocumentType>C</DocumentType>
-	<Date>{Data}</Date>
-	<Number>{Numero}</Number>
-	<Numbering></Numbering>
-	<CostDescription></CostDescription>
-	<CostVatCode></CostVatCode>
-	<CostAmount></CostAmount>
-	<ContribDescription></ContribDescription>
-	<ContribPerc></ContribPerc>
-	<ContribSubjectToWithholdingTax></ContribSubjectToWithholdingTax>
-	<ContribAmount></ContribAmount>
-	<ContribVatCode></ContribVatCode>
-	<TotalWithoutTax>+10</TotalWithoutTax>
-	<VatAmount>+10</VatAmount>
-	<WithholdingTaxAmount>0</WithholdingTaxAmount>
-	<WithholdingTaxAmountB>0</WithholdingTaxAmountB>
-	<WithholdingTaxNameB></WithholdingTaxNameB>
-	<Total>+10</Total>
-	<PriceList>Dom. OFFERTA</PriceList>
-	<PricesIncludeVat>true</PricesIncludeVat>
-	<TotalSubjectToWithholdingTax>0</TotalSubjectToWithholdingTax>
-	<WithholdingTaxPerc>0</WithholdingTaxPerc>
-	<WithholdingTaxPerc2>0</WithholdingTaxPerc2>
-	<PaymentName>Contrassegno</PaymentName>
-	<PaymentBank></PaymentBank>
-	<PaymentAdvanceAmount></PaymentAdvanceAmount>
-	<Carrier></Carrier>
-	<TransportReason></TransportReason>
-	<GoodsAppearance></GoodsAppearance>
-	<NumOfPieces></NumOfPieces>
-	<TransportDateTime></TransportDateTime>
-	<ShipmentTerms></ShipmentTerms>
-	<TransportedWeight></TransportedWeight>
-	<TrackingNumber></TrackingNumber>
-	<InternalComment></InternalComment>
-	<CustomField1></CustomField1>
-	<CustomField2></CustomField2>
-	<CustomField3></CustomField3>
-	<CustomField4></CustomField4>
-	<FootNotes></FootNotes>
-	<ExpectedConclusionDate></ExpectedConclusionDate>
-	<SalesAgent></SalesAgent>
-	<Rows>
-		<Row>
-			<Code></Code>
-			<Description>QUESTA E' UNA RIGA DI TESTO PER EFFETTUARE TEST D'IMPORTAZIONE CORRETTA</Description>
-			<Qty></Qty>
-			<Um></Um>
-			<Price></Price>
-			<Discounts></Discounts>
-			<VatCode Perc="22" Class="Imponibile" Description="Imponibile 22%">22</VatCode>
-			<Total></Total>
-			<Stock>false</Stock>
-			<Notes></Notes>
-		</Row>
-	</Rows>
+    <CustomerCode>00000</CustomerCode>
+    <CustomerWebLogin></CustomerWebLogin>
+    <CustomerName>{Nome Azienda}</CustomerName>
+    <CustomerAddress>{Indirizzo}</CustomerAddress>
+    <CustomerPostcode>{CAP}</CustomerPostcode>
+    <CustomerCity>{Città}</CustomerCity>
+    <CustomerProvince>{Provincia}</CustomerProvince>
+    <CustomerCountry>{Italia}</CustomerCountry>
+    <CustomerFiscalCode>{PartitaIVA}</CustomerFiscalCode>
+    <CustomerTel>{Telefono}</CustomerTel>
+    <CustomerCellPhone>{Cellulare}</CustomerCellPhone>
+    <CustomerEmail>{Email}</CustomerEmail>
+    <DeliveryName>{Nome per la consegna}</DeliveryName>
+    <DeliveryAddress>{Indirizzo}</DeliveryAddress>
+    <DeliveryPostcode>{CAP}</DeliveryPostcode>
+    <DeliveryCity>{Città}</DeliveryCity>
+    <DeliveryProvince>{Provincia}</DeliveryProvince>
+    <DeliveryCountry>{Stato}</DeliveryCountry>
+    <DocumentType>C</DocumentType>
+    <Date>{Data}</Date>
+    <Number>{Numero}</Number>
+    <Numbering></Numbering>
+    <CostDescription></CostDescription>
+    <CostVatCode></CostVatCode>
+    <CostAmount></CostAmount>
+    <ContribDescription></ContribDescription>
+    <ContribPerc></ContribPerc>
+    <ContribSubjectToWithholdingTax></ContribSubjectToWithholdingTax>
+    <ContribAmount></ContribAmount>
+    <ContribVatCode></ContribVatCode>
+    <TotalWithoutTax>+10</TotalWithoutTax>
+    <VatAmount>+10</VatAmount>
+    <WithholdingTaxAmount>0</WithholdingTaxAmount>
+    <WithholdingTaxAmountB>0</WithholdingTaxAmountB>
+    <WithholdingTaxNameB></WithholdingTaxNameB>
+    <Total>+10</Total>
+    <PriceList>Dom. OFFERTA</PriceList>
+    <PricesIncludeVat>true</PricesIncludeVat>
+    <TotalSubjectToWithholdingTax>0</TotalSubjectToWithholdingTax>
+    <WithholdingTaxPerc>0</WithholdingTaxPerc>
+    <WithholdingTaxPerc2>0</WithholdingTaxPerc2>
+    <PaymentName>Contrassegno</PaymentName>
+    <PaymentBank></PaymentBank>
+    <PaymentAdvanceAmount></PaymentAdvanceAmount>
+    <Carrier></Carrier>
+    <TransportReason></TransportReason>
+    <GoodsAppearance></GoodsAppearance>
+    <NumOfPieces></NumOfPieces>
+    <TransportDateTime></TransportDateTime>
+    <ShipmentTerms></ShipmentTerms>
+    <TransportedWeight></TransportedWeight>
+    <TrackingNumber></TrackingNumber>
+    <InternalComment></InternalComment>
+    <CustomField1></CustomField1>
+    <CustomField2></CustomField2>
+    <CustomField3></CustomField3>
+    <CustomField4></CustomField4>
+    <FootNotes></FootNotes>
+    <ExpectedConclusionDate></ExpectedConclusionDate>
+    <SalesAgent></SalesAgent>
+    <Rows>
+        <Row>
+            <Code></Code>
+            <Description>QUESTA E' UNA RIGA DI TESTO PER EFFETTUARE TEST D'IMPORTAZIONE CORRETTA</Description>
+            <Qty></Qty>
+            <Um></Um>
+            <Price></Price>
+            <Discounts></Discounts>
+            <VatCode Perc="22" Class="Imponibile" Description="Imponibile 22%">22</VatCode>
+            <Total></Total>
+            <Stock>false</Stock>
+            <Notes></Notes>
+        </Row>
+    </Rows>
 </Document>
 ```
 
