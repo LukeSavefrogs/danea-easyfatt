@@ -56,8 +56,6 @@ jobs:
             🚀 perf: 🚀 Performance 🚀
             docs: 📄 Documentazione 📄
             📄 docs: 📄 Documentazione 📄
-            test: "[_DEV_] Tests"
-            🧪 test: "[_DEV_] Tests"
             other: Altre modifiche
           default-commit-type: Altre modifiche
           mention-authors: false
