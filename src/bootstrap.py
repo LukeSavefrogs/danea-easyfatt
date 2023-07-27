@@ -76,6 +76,14 @@ def main():
         action="store_false",
         default=True,
     )
+    parser.add_argument(
+        "--goal",
+        help="Specify the goal of the program (used for testing).",
+        dest="goal",
+        type=str,
+        default=None,
+        choices=["csv-generator", "kml-generator"]
+    )
     cli_args = parser.parse_args()
 
     logger.debug(f"CLI parameters: {cli_args}")
@@ -119,7 +127,7 @@ def main():
             return False
     
     try:
-        application.main(cli_args.configuration_file)
+        application.main(cli_args.configuration_file, cli_args.goal)
     except Exception:
         logger.exception("Eccezione inaspettata nell'applicazione")
 
