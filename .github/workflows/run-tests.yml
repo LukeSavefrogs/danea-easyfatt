@@ -35,4 +35,4 @@ jobs:
   
         - name: "🧪 Run tests"
           run: |
-            poetry run poe test
+            poetry run poe test -- --verbose
