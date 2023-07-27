@@ -24,7 +24,7 @@ class BundleTestCase(unittest.TestCase):
         cls._python_scr_name = Path("./src/bootstrap.py").resolve()
 
         # 1. Build the temporary executable file
-        if not builder_script.build(cls._python_scr_name, cls._executable_name.stem):
+        if not builder_script.build(str(cls._python_scr_name), cls._executable_name.stem):
             raise Exception("Failed creating executable.")
         
         # 2. Remove the temporary build spec file
