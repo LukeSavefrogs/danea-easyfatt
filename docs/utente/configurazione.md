@@ -4,10 +4,13 @@ title: Configurazione
 parent: Guida utente
 nav_order: 2
 ---
+
 # Configurazione
+
 A partire dalla versione [`v0.6.0`](https://github.com/LukeSavefrogs/danea-easyfatt/releases/tag/v0.6.0) è possibile modificare il comportamento del programma tramite il file di configurazione `veryeasyfatt.config.toml` all'interno della stessa cartella in cui è salvato il programma.
 
 Un esempio di file di configurazione è il seguente, tratto dalla [configurazione di default](https://github.com/LukeSavefrogs/danea-easyfatt/blob/main/pyproject.toml){:target="_blank"} del programma:
+
 ```toml
 # --------------------------------------------------------------
 #                 Default configuration file
@@ -53,17 +56,20 @@ default_interval = "07:00-16:00"          # Intervallo orario di spedizione di d
 {: .problem}
 
 ## `log_level`
+
 Questa voce specifica il **livello di verbosità del logging**. Di default è impostata a `INFO`, ma può essere impostato a qualsiasi dei livelli definiti [nella documentazione](https://docs.python.org/3/library/logging.html#logging-levels).
 
 > Valore di default
-> 
+>
 > `"DEBUG"`
 {: .note-title .fs-3 }
 
 ## `easyfatt.database.filename`
+
 Indica il **percorso** (assoluto o relativo) **del database** di Danea Easyfatt. _Se omesso non sarà possibile utilizzare la funzione di generazione KML_.
 
 ## `easyfatt.customers`
+
 Questa sezione di configurazione regola il comportamento del programma verso l'**esportazione clienti** eseguita da **Easyfatt**.
 
 ### `easyfatt.customers.custom_field`
@@ -71,7 +77,7 @@ Questa sezione di configurazione regola il comportamento del programma verso l'*
 Indica il numero sequenziale del **campo personalizzato** `Libero {N}` (poi esportato come `Extra {N}`) utilizzato per definire l'**orario di consegna** per il singolo cliente.
 
 > Valore di default
-> 
+>
 > `1`
 {: .note-title .fs-3 }
 
@@ -82,35 +88,37 @@ Indica il percorso (assoluto o relativo) del file contenente l'estrazione da Eas
 Se vengono specificati **più nomi di file** (come nel caso del valore di default) allora verrà utilizzato il **primo disponibile** (esistente e leggibile).
 
 > Valore di default
-> 
+>
 > `["./Soggetti.xlsx", "./Soggetti.ods"]`
 >
 {: .note-title .fs-3 }
 
 Se omesso verrà cercato il file `./Soggetti.xlsx` o `./Soggetti.ods` e verrà utilizzato il primo trovato (nell'ordine: `.xlsx` e poi `.ods`).
 
-
 ## `files.input`
+
 Contiene impostazioni relative ai file utilizzati dal programma.
 
 ### `files.input.easyfatt`
+
 Il file `.DefXml` ottenuto dall'**esportazione** dei **documenti "Ordine cliente"** da Easyfatt.
 
 > Valore di default
-> 
+>
 > `"./Documenti.DefXml"`
 {: .note-title .fs-3 }
 
-
 ### `files.input.addition`
+
 Il file `.xml` contenente il tag `Document` da aggiungere come **primo elemento** nel file `csv` generato. Questo servirà poi a [`RouteXL`]({{ site.baseurl }}/utente/routexl.html) come punto di partenza per calcolare le consegne.
 
 > Valore di default
-> 
+>
 > `""` (nessuna riga da aggiungere)
 {: .note-title .fs-3 }
 
 Di seguito un **esempio** di un contenuto valido per il file:
+
 ```xml
 <Document>
     <CustomerCode>00000</CustomerCode>
@@ -191,29 +199,35 @@ Di seguito un **esempio** di un contenuto valido per il file:
 ```
 
 ## `files.output`
+
 Contiene impostazioni relative ai file creati dal programma.
 
 ### `files.output.csv`
+
 Percorso (relativo o assoluto) al file `csv` da generare.
 
 > Valore di default
-> 
+>
 > `"./Documenti.csv"`
 {: .note-title .fs-3 }
 
 ## `options.output`
+
 ### `options.output.csv_template`
+
 Questa voce definisce il formato di ogni riga del `csv` finale.
 > Valore di default
-> 
+>
 > `"@{CustomerName} {CustomerCode}@{eval_IndirizzoSpedizione} {eval_CAPSpedizione} {eval_CittaSpedizione}(20){eval_intervalloSpedizione}^{eval_pesoSpedizione}^"`
 {: .note-title .fs-3 }
 
 ## `features.shipping`
+
 ### `features.shipping.default_interval`
+
 Questa voce definisce l'intervallo orario di spedizione di default per i clienti che non hanno un intervallo definito all'interno del campo personalizzato su Easyfatt.
 
 > Valore di default
-> 
+>
 > `"07:00-16:00"`
 {: .note-title .fs-3 }
