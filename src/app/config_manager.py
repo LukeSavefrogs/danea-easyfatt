@@ -1,3 +1,4 @@
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 import toml
@@ -27,7 +28,7 @@ def deepmerge(source, destination):
 
     return destination
 
-
+@lru_cache(maxsize=None)
 def get_configuration(custom_config_file: (str | Path | None) = None) -> dict[str, Any]:
 	""" Reads the user configuration file (if present) and merges it with the default configuration
 
