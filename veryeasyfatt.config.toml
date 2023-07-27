@@ -4,6 +4,10 @@
 log_level = "DEBUG"                       # Per la lista completa dei livelli di logging: https://docs.python.org/3/library/logging.html#logging-levels
 
 
+[easyfatt.database]
+filename = ""
+
+
 [easyfatt.customers]
 custom_field = 1                          # Numero del campo "Extra {N}"
 export_filename = [                       # Nome del file esportato dalla sezione clienti di EasyFatt
