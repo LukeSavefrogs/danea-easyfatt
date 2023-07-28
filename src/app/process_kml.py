@@ -32,6 +32,10 @@ class CustomerAddress(HashableBaseModel):
     is_primary: bool = pydantic.Field()
     alias: str = pydantic.Field(alias="CodDest", default="", frozen=True)
 
+    @pydantic.validator("address", "postcode", "city", "province", "country", pre=True)
+    def replace_none(cls, value):
+        return value if value is not None else ""
+
 
 def generate_kml(
     xml_filename: (Path | str),
