@@ -119,6 +119,7 @@ class BundleTestCase(unittest.TestCase):
         command_output = subprocess.run(
             [
                 self._executable_name,
+                "--disable-version-check",
                 "--disable-rich-logging",
                 "-c",
                 configuration_file,
