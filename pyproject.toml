@@ -60,5 +60,5 @@ help = "Lancia il server LiveReload di Jekyll"
 
 [tool.poe.tasks.test]
 help = "Esegue i test"
-cmd = "python -m unittest discover --failfast --catch"
+cmd = "python -m unittest discover --catch"
 # cmd = "python -m unittest discover --failfast --catch --verbose"
