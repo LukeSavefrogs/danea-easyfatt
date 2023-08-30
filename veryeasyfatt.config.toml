@@ -33,3 +33,7 @@ csv_template = "@{CustomerName} {CustomerCode}@{eval_IndirizzoSpedizione} {eval_
 
 [features.shipping]
 default_interval = "07:00-16:00"          # Intervallo orario di spedizione di default
+
+
+[features.kml_generation]
+google_api_key = ""                       # Chiave API di Google Maps per la generazione del KML

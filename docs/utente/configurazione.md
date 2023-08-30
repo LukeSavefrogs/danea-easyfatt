@@ -47,6 +47,10 @@ csv_template = "@{CustomerName} {CustomerCode}@{eval_IndirizzoSpedizione} {eval_
 
 [features.shipping]
 default_interval = "07:00-16:00"          # Intervallo orario di spedizione di default
+
+
+[features.kml_generation]
+google_api_key = ""                       # Chiave API di Google Maps per la generazione del KML
 ```
 
 > Essendo ancora in **fase di sviluppo** il nome di queste impostazioni potrebbe **cambiare nel tempo**!
@@ -230,4 +234,22 @@ Questa voce definisce l'intervallo orario di spedizione di default per i clienti
 > Valore di default
 >
 > `"07:00-16:00"`
+{: .note-title .fs-3 }
+
+## `features.kml_generation`
+
+### `features.kml_generation.google_api_key`
+
+Questa voce imposta la chiave di accesso alle API di Google Cloud usate per eseguire la geocodifica degli indirizzi in fase di creazione del file KML.
+
+> FARE ATTENZIONE
+>
+> **Attenzione!** Questa chiave è **personale** e **non deve essere condivisa** con nessuno!
+>
+> Inoltre, in assenza di questa chiave il programma **non sarà in grado di generare il file KML**.
+{: .warning-title .fs-3 }
+
+> Valore di default
+>
+> `""`
 {: .note-title .fs-3 }

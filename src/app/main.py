@@ -171,6 +171,7 @@ def main(configuration_file: Optional[str] = None, goal: Optional[str] = None):
             xml_filename    = Path(configuration["files"]["input"]["easyfatt"]).resolve(),
             database_path   = Path(configuration["easyfatt"]["database"]["filename"]).expanduser().resolve(),
             output_filename = output_file,
+            google_api_key  = configuration["features"]["kml_generation"]["google_api_key"],
         )
         
         try:

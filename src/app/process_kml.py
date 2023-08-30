@@ -20,8 +20,6 @@ import bundle
 
 logger = logging.getLogger("danea-easyfatt.kml")
 
-# TODO: Move this to the configuration file
-GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", None)
 
 class HashableBaseModel(pydantic.BaseModel):
     def __hash__(self):
@@ -50,7 +48,7 @@ class CustomerAddress(HashableBaseModel):
     file_name=(bundle.get_execution_directory() / ".cache" / "locations.pickle"),
     backend="pickle",
 )
-def search_location(address: str) -> geopy.location.Location:
+def search_location(address: str, google_api_key: str) -> geopy.location.Location:
     """Search for a location.
 
     Args:
@@ -62,7 +60,7 @@ def search_location(address: str) -> geopy.location.Location:
     Raises:
         Exception: If the location is not found.
     """
-    geolocator = geopy.geocoders.GoogleV3(api_key=GOOGLE_API_KEY)
+    geolocator = geopy.geocoders.GoogleV3(api_key=google_api_key)
     location: Union[geopy.location.Location, None] = geolocator.geocode(address, language="it") # pyright: ignore[reportGeneralTypeIssues]
 
     if location is None:
@@ -70,7 +68,7 @@ def search_location(address: str) -> geopy.location.Location:
 
     return location
 
-def get_coordinates(address: str) -> tuple[float, float, float]:
+def get_coordinates(address: str, google_api_key: str) -> tuple[float, float, float]:
     """Get the coordinates of an address.
 
     Args:
@@ -79,7 +77,7 @@ def get_coordinates(address: str) -> tuple[float, float, float]:
     Returns:
         tuple[float, float]: Tuple containing the latitude and longitude of the address.
     """
-    location = search_location(address)
+    location = search_location(address, google_api_key)
 
     return (location.longitude, location.latitude, location.altitude)
 
@@ -87,6 +85,7 @@ def generate_kml(
     xml_filename: (Path | str),
     database_path: (Path | str),
     output_filename: (Path | str) = "export.kml",
+    google_api_key = None,
 ):
     """Generate a KML file from an XML file and a database file.
 
@@ -95,7 +94,7 @@ def generate_kml(
         database_path (Path | str): Path to the database file.
         output_filename (Path | str, optional): Path to the output KML file. Defaults to "export.kml".
     """
-    if GOOGLE_API_KEY is None:
+    if google_api_key is None or google_api_key.strip() == "":
         raise Exception("Google API key not found in environment variables")
     
     # point_format = "{name} ({code}) {notes}"
@@ -212,7 +211,7 @@ def generate_kml(
             supplier_locations.append(
                 kmlb.point(
                     name=f"{anagrafica.name}",
-                    coords=get_coordinates(f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}"),
+                    coords=get_coordinates(f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}", google_api_key),
                     hidden=True,
                     style_to_use="Suppliers",
                 )
@@ -274,7 +273,7 @@ def generate_kml(
                             code=anagrafica.code,
                             notes="",
                         ),
-                        coords=get_coordinates(address_string),
+                        coords=get_coordinates(address_string, google_api_key),
                         hidden=False,
                         style_to_use="Customers",
                     )
@@ -292,7 +291,7 @@ def generate_kml(
                             code=anagrafica.code,
                             notes="",
                         ),
-                        coords=get_coordinates(f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}"),
+                        coords=get_coordinates(f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}", google_api_key),
                         hidden=True,
                         style_to_use="Customers",
                     )
@@ -325,7 +324,7 @@ def generate_kml(
                                     code=unknown_address.customer.code, 
                                     notes="- NUOVO!",
                                 ),
-                                coords=get_coordinates(address_string),
+                                coords=get_coordinates(address_string, google_api_key),
                                 hidden=False,
                                 style_to_use="Customers",
                             ),
@@ -359,7 +358,7 @@ def generate_kml(
                         code=anagrafica.code,
                         notes="",
                     ),
-                    coords=get_coordinates(f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}"),
+                    coords=get_coordinates(f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}", google_api_key),
                     hidden=True,
                     style_to_use="Customers",
                 )
@@ -386,7 +385,7 @@ def generate_kml(
                             code=document.customer.code,
                             notes="- CLIENTE NON CENSITO!",
                         ),
-                        coords=get_coordinates(address_string),
+                        coords=get_coordinates(address_string, google_api_key),
                         hidden=False,
                         style_to_use="Customers",
                     )
