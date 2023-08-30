@@ -53,7 +53,7 @@ class ConfigurationTestCase(unittest.TestCase):
         parsed_configuration = get_configuration(temp_config_file)
         
         try:
-            parsed_configuration["features"]["test"]["default_interval"]
+            parsed_configuration["features"]["shipping"]["default_interval"]
         except KeyError as e:
             self.fail(f"Parsed configuration does not have key 'features.shipping.default_interval' (error: {e})")
 
