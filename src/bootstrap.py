@@ -82,7 +82,7 @@ def main():
         dest="goal",
         type=str,
         default=None,
-        choices=["csv-generator", "kml-generator"]
+        choices=["csv-generator", "kml-generator", "initialize-geo-cache", "initialize-geo-cache-dryrun"]
     )
     cli_args = parser.parse_args()
 

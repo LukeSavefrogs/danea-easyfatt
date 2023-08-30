@@ -105,50 +105,14 @@ def generate_kml(
     logger.info(f"Database path: {database_path}")
     logger.info(f"XML path: {xml_filename}")
 
-    database = EasyfattFDB(database_path, download_firebird=True)
-
     xml_object = read_xml(xml_filename)
+    anagrafiche = get_all_addresses(database_path)
 
-    logger.info("Connecting to database...")
-    with database.connect() as connection:
-        logger.info("Connected to database")
-
-        anagrafiche = [
-            CustomerAddress(**item, is_primary=True)
-            for item in connection.cursor()
-            .execute(
-                """
-                    SELECT anag."CodAnagr", ANAG."Nome", ANAG."Indirizzo", ANAG."Cap", ANAG."Citta", ANAG."Prov", IIF(naz."NomeNazionePrint" IS NULL, 'Italia', naz."NomeNazionePrint") AS "Nazione", IIF(anag."Cliente" = 1, 1, 0) AS "IsCustomer"
-                    FROM "TAnagrafica" AS anag
-                    LEFT JOIN "TNazioni" naz ON ANAG."Nazione" = naz."NomeNazione";
-                """
-            )
-            .fetchallmap()
-        ]
-
-        anagrafiche_indirizzi_extra = [
-            CustomerAddress(**item, is_primary=False)
-            for item in connection.cursor()
-            .execute(
-                """
-                    SELECT anag."CodAnagr", td."Nome", td."Indirizzo", td."Cap", td."Citta", td."Prov", IIF(naz."NomeNazionePrint" IS NULL, 'Italia', naz."NomeNazionePrint") AS "Nazione", IIF(anag."Cliente" = 1, 1, 0) AS "IsCustomer", td."CodDest"
-                    FROM "TAnagrafica" AS anag
-                    RIGHT JOIN "TAnagraficaDest" td ON td."IDAnagr" = ANAG."IDAnagr"
-                    LEFT JOIN "TNazioni" naz ON td."Nazione" = naz."NomeNazione";
-                """
-            )
-            .fetchallmap()
-        ]
+    populate_cache(google_api_key, addresses=anagrafiche)
 
     # Lista di indirizzi
     customer_locations = []
     supplier_locations = []
-
-    # Elenco ordinato di tutte le anagrafiche (con indirizzi primari e secondari)
-    anagrafiche = sorted(
-        anagrafiche + anagrafiche_indirizzi_extra,
-        key=lambda x: (x.code, not x.is_primary, x.alias),
-    )
 
     total_documents_processed = 0
     customers_unknown_address = []
@@ -453,18 +417,81 @@ def generate_kml(
     logger.info(f"KML file saved to '{output_filename}'")
 
 
-# if __name__ == "__main__":
-    # try:
-    #     # generate_kml(
-    #     #     r"tests\data\OrdiniCliente.DefXml",
-    #     #     r"C:\Users\lucas\Documents\Danea Easyfatt/Arredo Ufficio (LaSorgente).eft",
-    #     # )
-    #     geolocator = Nominatim(user_agent="MyGeocoder")
-    #     location = geolocator.geocode("Via Giuseppe Montanelli, 11, 00195 Roma")
-    #     print(location)
-    #     # print(f"{location.address} ({location.latitude}, {location.longitude})")
-    # except Exception as e:
-    #     logger.error("An error occurred")
-    #     logger.exception(e)
-    # finally:
-    #     input("Premi invio per uscire...")
+def populate_cache(google_api_key, addresses=None, database_path: Union[str, Path, None] = None, dry_run=False):
+    if addresses is None and database_path is None:
+        raise Exception("Addresses and database path cannot be both None")
+    
+    if database_path is not None:
+        addresses = get_all_addresses(database_path)
+    else:
+        if not isinstance(addresses, list):
+            raise Exception("Addresses must be a list of CustomerAddress objects")
+        
+        if not all([isinstance(address, CustomerAddress) for address in addresses]):
+            raise Exception("Addresses must be a list of CustomerAddress objects")
+        
+
+    logger.info("Cache initialization started (this may take a while...)")
+    for address in addresses:
+        if dry_run:
+            logger.debug(f"Search for '{address.address} {address.postcode}, {address.city}, {address.country}'")
+            continue
+
+        search_result = search_location(f"{address.address} {address.postcode}, {address.city}, {address.country}", google_api_key)
+        logger.debug(f"Search returned {search_result}")
+
+    unique_customers = set([address.code for address in addresses if address.is_customer])
+    unique_suppliers = set([address.code for address in addresses if not address.is_customer])
+
+    logger.info(f"Cache initialization completed successfully ({len(addresses)} addresses processed for {len(unique_customers) + len(unique_suppliers)} customers/suppliers)")
+    logger.info(f"Total processed customers: {len(unique_customers)}")
+    logger.info(f"Total processed suppliers: {len(unique_suppliers)}")
+
+
+def get_all_addresses(database_path: Union[str, Path]) -> list[CustomerAddress]:
+    """ Get all the addresses from the database.
+
+    Args:
+        database_path (Union[str, Path]): Path to the database file.
+
+    Returns:
+        list[CustomerAddress]: List of all the addresses.
+    """
+    database = EasyfattFDB(database_path, download_firebird=True)
+
+    logger.info("Connecting to database...")
+    with database.connect() as connection:
+        logger.info("Connected to database")
+
+        anagrafiche = [
+            CustomerAddress(**item, is_primary=True)
+            for item in connection.cursor()
+            .execute(
+                """
+                    SELECT anag."CodAnagr", ANAG."Nome", ANAG."Indirizzo", ANAG."Cap", ANAG."Citta", ANAG."Prov", IIF(naz."NomeNazionePrint" IS NULL, 'Italia', naz."NomeNazionePrint") AS "Nazione", IIF(anag."Cliente" = 1, 1, 0) AS "IsCustomer"
+                    FROM "TAnagrafica" AS anag
+                    LEFT JOIN "TNazioni" naz ON ANAG."Nazione" = naz."NomeNazione";
+                """
+            )
+            .fetchallmap()
+        ]
+
+        anagrafiche_indirizzi_extra = [
+            CustomerAddress(**item, is_primary=False)
+            for item in connection.cursor()
+            .execute(
+                """
+                    SELECT anag."CodAnagr", td."Nome", td."Indirizzo", td."Cap", td."Citta", td."Prov", IIF(naz."NomeNazionePrint" IS NULL, 'Italia', naz."NomeNazionePrint") AS "Nazione", IIF(anag."Cliente" = 1, 1, 0) AS "IsCustomer", td."CodDest"
+                    FROM "TAnagrafica" AS anag
+                    RIGHT JOIN "TAnagraficaDest" td ON td."IDAnagr" = ANAG."IDAnagr"
+                    LEFT JOIN "TNazioni" naz ON td."Nazione" = naz."NomeNazione";
+                """
+            )
+            .fetchallmap()
+        ]
+
+    # Elenco ordinato di tutte le anagrafiche (con indirizzi primari e secondari)
+    return sorted(
+        anagrafiche + anagrafiche_indirizzi_extra,
+        key=lambda x: (x.code, not x.is_primary, x.alias),
+    )

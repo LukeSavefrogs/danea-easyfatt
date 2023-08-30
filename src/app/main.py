@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 import subprocess
 from typing import Optional
-from app.process_kml import generate_kml
+from app.process_kml import generate_kml, populate_cache
 from app.process_xml import modifica_xml
 from app.process_csv import genera_csv
 
@@ -68,18 +68,29 @@ def main(configuration_file: Optional[str] = None, goal: Optional[str] = None):
         print("Scegli l'operazione da effettuare:")
         print("1) Generatore CSV per RouteXL")
         print("2) Generatore KML per Google Earth")
+        print("3) Inizializza cache geografica (Google Maps)")
+        print("4) Simula inizializzazione cache geografica (Google Maps)")
         print("0) Esci")
         print()
         user_choice = IntPrompt.ask(
             "Quale azione desideri eseguire?",
-            choices=["1", "2", "0"],
+            choices=["1", "2", "3", "4", "0"],
             default=0
         )
 
         if user_choice == 0:
             return True
-
-        goal = "csv-generator" if user_choice == 1 else "kml-generator"
+        elif user_choice == 1:
+            goal = "csv-generator"
+        elif user_choice == 2:
+            goal = "kml-generator"
+        elif user_choice == 3:
+            goal = "initialize-geo-cache"
+        elif user_choice == 4:
+            goal = "initialize-geo-cache-dryrun"
+        else:
+            logger.error("Scelta non valida.")
+            return False
     
     if goal == "csv-generator":
         # 1. Modifico l'XML
@@ -190,6 +201,12 @@ def main(configuration_file: Optional[str] = None, goal: Optional[str] = None):
         except Exception as e:
             logger.error(f"Errore in fase di apertura Google Earth: {e}")
 
+    elif goal.startswith("initialize-geo-cache"):
+        populate_cache(
+            google_api_key  = configuration["features"]["kml_generation"]["google_api_key"],
+            database_path   = Path(configuration["easyfatt"]["database"]["filename"]).expanduser().resolve(),
+            dry_run         = goal.endswith("-dryrun"),
+        )
 
 
 
