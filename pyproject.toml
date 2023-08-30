@@ -35,7 +35,7 @@ geopy = "^2.3.0"
 [tool.poetry.group.dev.dependencies]
 gitpython = "^3.1.30"
 pyinstaller = "^5.7.0"
-poethepoet = "^0.21.0"
+poethepoet = "^0.22.0"
 autopep8 = "^2.0.2"
 pyinstaller-versionfile = "^2.1.1"
 
