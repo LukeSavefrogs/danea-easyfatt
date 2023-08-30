@@ -47,6 +47,7 @@ class CustomerAddress(HashableBaseModel):
 @caching.persist_to_file(
     file_name=(bundle.get_execution_directory() / ".cache" / "locations.pickle"),
     backend="pickle",
+    include=["address", 0], # Include the first positional argument or the keyword argument 'address'
 )
 def search_location(address: str, google_api_key: str) -> geopy.location.Location:
     """Search for a location.
@@ -95,7 +96,7 @@ def generate_kml(
         output_filename (Path | str, optional): Path to the output KML file. Defaults to "export.kml".
     """
     if google_api_key is None or google_api_key.strip() == "":
-        raise Exception("Google API key not found in environment variables")
+        raise Exception("Google API key not found in the configuration file. Cannot continue.")
     
     # point_format = "{name} ({code}) {notes}"
     point_format = "{name:.10} {code}"
