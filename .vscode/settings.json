@@ -1,5 +1,6 @@
 {
-	// The number of spaces a tab is equal to. This setting is overridden
+    /* ------- https://stackoverflow.com/a/29972553/8965861 ------- */
+    // The number of spaces a tab is equal to. This setting is overridden
     // based on the file contents when `editor.detectIndentation` is true.
     "editor.tabSize": 4,
 
@@ -12,5 +13,16 @@
     // the values you've explicitly set, above.
     "editor.detectIndentation": false,
 
-	"python.analysis.typeCheckingMode": "basic"
+    "python.analysis.typeCheckingMode": "basic",
+
+    // Markdown linting configuration
+    "markdownlint.config": {
+        "MD033": false,
+        // MD024 - Multiple headings with the same content
+        "MD024": {
+            "allow_different_nesting": true
+        },
+        "MD028": false,
+        "no-hard-tabs": true
+    },
 }
