@@ -7,8 +7,11 @@ from typing import Any, Union
 import pydantic
 
 import kmlb
+
 import geopy.geocoders
 import geopy.location
+from geopy.extra.rate_limiter import RateLimiter
+from geopy.geocoders.base import Geocoder
 
 from easyfatt_db_connector import EasyfattFDB, read_xml
 from easyfatt_db_connector.xml.document import Document
@@ -47,7 +50,7 @@ class CustomerAddress(HashableBaseModel):
     backend="pickle",
     include=["address", 0], # Include the first positional argument or the keyword argument 'address'
 )
-def search_location(address: str, google_api_key: str) -> geopy.location.Location:
+def search_location(address: str, google_api_key: str|None = None, geocoder = None) -> geopy.location.Location:
     """Search for a location.
 
     Args:
@@ -57,10 +60,20 @@ def search_location(address: str, google_api_key: str) -> geopy.location.Locatio
         geopy.location.Location: Location object.
             
     Raises:
+        Exception: If no geocoder is passed as argument and no Google API key is provided.
         Exception: If the location is not found.
     """
-    geolocator = geopy.geocoders.GoogleV3(api_key=google_api_key)
-    location: Union[geopy.location.Location, None] = geolocator.geocode(address, language="it") # pyright: ignore[reportGeneralTypeIssues]
+    if geocoder is None:
+        if google_api_key is None or google_api_key.strip() == "":
+            raise Exception("Google API key MUST be provided if no geocoder is passed as argument.")
+        
+        geolocator = geopy.geocoders.GoogleV3(api_key=google_api_key)
+        geocoder = RateLimiter(
+            geolocator.geocode,
+            min_delay_seconds=1/5 # Max 5 requests per second
+        )
+    
+    location: Union[geopy.location.Location, None] = geocoder(address, language="it") # pyright: ignore[reportGeneralTypeIssues]
 
     if location is None:
         raise Exception(f"Location '{address}' not found")
@@ -429,13 +442,22 @@ def populate_cache(google_api_key, addresses=None, database_path: Union[str, Pat
             raise Exception("Addresses must be a list of CustomerAddress objects")
         
 
+    # Use a rate limiter to avoid Google API rate limits
+    bulk_geocoder = RateLimiter(
+        geopy.geocoders.GoogleV3(api_key=google_api_key).geocode,
+        min_delay_seconds=1/5  # Max 5 requests per second
+    )
+
     logger.info("Cache initialization started (this may take a while...)")
     for address in addresses:
         if dry_run:
             logger.debug(f"Search for '{address.address} {address.postcode}, {address.city}, {address.country}'")
             continue
 
-        search_result = search_location(f"{address.address} {address.postcode}, {address.city}, {address.country}", google_api_key)
+        search_result = search_location(
+            address=f"{address.address} {address.postcode}, {address.city}, {address.country}",
+            geocoder = bulk_geocoder       # Use the rate limited geocoder
+        )
         logger.debug(f"Search returned {search_result}")
 
     unique_customers = set([address.code for address in addresses if address.is_customer])
