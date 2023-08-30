@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "danea-automation"
-version = "1.2.1"
+version = "1.2.2"
 description = "Automazione flussi aziendali Easyfatt"
 authors = ["Luca Salvarani <lucasalvarani99@gmail.com>"]
 readme = "README.md"
