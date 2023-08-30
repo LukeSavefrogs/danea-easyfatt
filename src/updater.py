@@ -48,6 +48,8 @@ def get_latest_release():
 	api_url = get_github_api_endpoint()
 
 	response = requests.get(f"{api_url}/releases/latest")
+	response.raise_for_status()
+	
 	json_response = json.loads(response.text)
 
 	return { 
