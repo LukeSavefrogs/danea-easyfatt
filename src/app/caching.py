@@ -37,7 +37,6 @@ def persist_to_file(file_name: _Union[str, _Path], backend: _Literal['json', 'pi
             with open(file_name, read_mode) as f:
                 cache = cache_backend.load(f)
         except (IOError, ValueError):
-            print(f"Cache file '{file_name}' not found. Creating new one.")
             pass
 
         def new_func(*args, **kwargs):
