@@ -98,6 +98,9 @@ def generate_kml(
     if GOOGLE_API_KEY is None:
         raise Exception("Google API key not found in environment variables")
     
+    # point_format = "{name} ({code}) {notes}"
+    point_format = "{name:.10} {code}"
+    
     logger.info("Start")
     logger.info(f"Database path: {database_path}")
     logger.info(f"XML path: {xml_filename}")
@@ -266,7 +269,11 @@ def generate_kml(
 
                 customer_locations.append(
                     kmlb.point(
-                        name=f"{anagrafica.name} ({anagrafica.code})",
+                        name=point_format.format(
+                            name=anagrafica.name,
+                            code=anagrafica.code,
+                            notes="",
+                        ),
                         coords=get_coordinates(address_string),
                         hidden=False,
                         style_to_use="Customers",
@@ -280,7 +287,11 @@ def generate_kml(
             else:
                 customer_locations.append(
                     kmlb.point(
-                        name=f"{anagrafica.name} ({anagrafica.code})",
+                        name=point_format.format(
+                            name=anagrafica.name,
+                            code=anagrafica.code,
+                            notes="",
+                        ),
                         coords=get_coordinates(f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}"),
                         hidden=True,
                         style_to_use="Customers",
@@ -309,7 +320,11 @@ def generate_kml(
                         {
                             "id": unknown_address.customer.code,
                             "data": kmlb.point(
-                                name=f"{unknown_address.customer.name} ({unknown_address.customer.code}) - NUOVO!",
+                                name=point_format.format(
+                                    name=unknown_address.customer.name,
+                                    code=unknown_address.customer.code, 
+                                    notes="- NUOVO!",
+                                ),
                                 coords=get_coordinates(address_string),
                                 hidden=False,
                                 style_to_use="Customers",
@@ -339,7 +354,11 @@ def generate_kml(
             )
             customer_locations.append(
                 kmlb.point(
-                    name=f"{anagrafica.name} ({anagrafica.code})",
+                    name=point_format.format(
+                        name=anagrafica.name,
+                        code=anagrafica.code,
+                        notes="",
+                    ),
                     coords=get_coordinates(f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}"),
                     hidden=True,
                     style_to_use="Customers",
@@ -362,7 +381,11 @@ def generate_kml(
 
                 customer_locations.append(
                     kmlb.point(
-                        name=f"{document.customer.name} ({document.customer.code}) - CLIENTE NON CENSITO!",
+                        name=point_format.format(
+                            name=document.customer.name,
+                            code=document.customer.code,
+                            notes="- CLIENTE NON CENSITO!",
+                        ),
                         coords=get_coordinates(address_string),
                         hidden=False,
                         style_to_use="Customers",
@@ -407,7 +430,7 @@ def generate_kml(
             ),
             kmlb.point_style(
                 "Customers",  # Point style name
-                "https://maps.google.com/mapfiles/kml/shapes/truck.png",  # Icon
+                "https://maps.google.com/mapfiles/kml/paddle/red-circle.png",  # Icon
                 ("#ff0000", 100),  # Icon color
                 1.0,  # Icon scale
                 ("#ffffff", 100),  # Label color
@@ -415,7 +438,7 @@ def generate_kml(
             ),
             kmlb.point_style(
                 "Suppliers",  # Point style name
-                "https://maps.google.com/mapfiles/kml/shapes/euro.png",  # Icon
+                "https://maps.google.com/mapfiles/kml/paddle/red-circle.png",  # Icon
                 ("#ffff00", 100),  # Icon color
                 1.0,  # Icon scale
                 ("#ffffff", 100),  # Label color
