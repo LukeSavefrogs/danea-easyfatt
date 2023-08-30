@@ -444,8 +444,8 @@ def populate_cache(google_api_key, addresses=None, database_path: Union[str, Pat
     unique_suppliers = set([address.code for address in addresses if not address.is_customer])
 
     logger.info(f"Cache initialization completed successfully ({len(addresses)} addresses processed for {len(unique_customers) + len(unique_suppliers)} customers/suppliers)")
-    logger.info(f"Total processed customers: {len(unique_customers)}")
-    logger.info(f"Total processed suppliers: {len(unique_suppliers)}")
+    logger.info(f"Total processed customers: {len(unique_customers)} ({len([ addr for addr in addresses if addr.is_customer])} addresses)")
+    logger.info(f"Total processed suppliers: {len(unique_suppliers)} ({len([ addr for addr in addresses if not addr.is_customer])} addresses)")
 
 
 def get_all_addresses(database_path: Union[str, Path]) -> list[CustomerAddress]:
