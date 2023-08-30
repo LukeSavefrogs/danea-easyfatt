@@ -29,6 +29,7 @@ odfpy = "^1.4.1"
 kmlb = "^0.0.94"
 pydantic = "^2.0.3"
 easyfatt-db-connector = "^0.3.1"
+geopy = "^2.3.0"
 
 
 [tool.poetry.group.dev.dependencies]

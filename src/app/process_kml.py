@@ -1,17 +1,27 @@
-from collections import defaultdict
+import os
 import datetime
 import logging
+from collections import defaultdict
 from pathlib import Path
+from typing import Union
 
 import pydantic
 
 import kmlb
-from easyfatt_db_connector import EasyfattFDB, read_xml
+import geopy.geocoders
+import geopy.location
+from geopy.extra.rate_limiter import RateLimiter
 
+from easyfatt_db_connector import EasyfattFDB, read_xml
 from easyfatt_db_connector.xml.document import Document
+
+from app import caching
+import bundle
 
 logger = logging.getLogger("danea-easyfatt.kml")
 
+# TODO: Move this to the configuration file
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", None)
 
 class HashableBaseModel(pydantic.BaseModel):
     def __hash__(self):
@@ -36,6 +46,42 @@ class CustomerAddress(HashableBaseModel):
     def replace_none(cls, value):
         return value if value is not None else ""
 
+@caching.persist_to_file(
+    file_name=(bundle.get_execution_directory() / ".cache" / "locations.pickle"),
+    backend="pickle",
+)
+def search_location(address: str) -> geopy.location.Location:
+    """Search for a location.
+
+    Args:
+        address (str): Address to search.
+
+    Returns:
+        geopy.location.Location: Location object.
+            
+    Raises:
+        Exception: If the location is not found.
+    """
+    geolocator = geopy.geocoders.GoogleV3(api_key=GOOGLE_API_KEY)
+    location: Union[geopy.location.Location, None] = geolocator.geocode(address, language="it") # pyright: ignore[reportGeneralTypeIssues]
+
+    if location is None:
+        raise Exception(f"Location '{address}' not found")
+
+    return location
+
+def get_coordinates(address: str) -> tuple[float, float, float]:
+    """Get the coordinates of an address.
+
+    Args:
+        address (str): Address to search.
+
+    Returns:
+        tuple[float, float]: Tuple containing the latitude and longitude of the address.
+    """
+    location = search_location(address)
+
+    return (location.longitude, location.latitude, location.altitude)
 
 def generate_kml(
     xml_filename: (Path | str),
@@ -49,6 +95,9 @@ def generate_kml(
         database_path (Path | str): Path to the database file.
         output_filename (Path | str, optional): Path to the output KML file. Defaults to "export.kml".
     """
+    if GOOGLE_API_KEY is None:
+        raise Exception("Google API key not found in environment variables")
+    
     logger.info("Start")
     logger.info(f"Database path: {database_path}")
     logger.info(f"XML path: {xml_filename}")
@@ -158,10 +207,10 @@ def generate_kml(
         # --------------- Fornitori ---------------
         if not anagrafica.is_customer:
             supplier_locations.append(
-                kmlb.search_poi(
-                    f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}",
-                    hidden=True,
+                kmlb.point(
                     name=f"{anagrafica.name}",
+                    coords=get_coordinates(f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}"),
+                    hidden=True,
                     style_to_use="Suppliers",
                 )
             )
@@ -216,10 +265,10 @@ def generate_kml(
                     address_string = f"{address.customer.address} {address.customer.postcode}, {address.customer.city}, {address.customer.country}"
 
                 customer_locations.append(
-                    kmlb.search_poi(
-                        address_string,
-                        hidden=False,
+                    kmlb.point(
                         name=f"{anagrafica.name} ({anagrafica.code})",
+                        coords=get_coordinates(address_string),
+                        hidden=False,
                         style_to_use="Customers",
                     )
                 )
@@ -230,10 +279,10 @@ def generate_kml(
                 total_documents_processed += len(known_addresses)
             else:
                 customer_locations.append(
-                    kmlb.search_poi(
-                        f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}",
-                        hidden=True,
+                    kmlb.point(
                         name=f"{anagrafica.name} ({anagrafica.code})",
+                        coords=get_coordinates(f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}"),
+                        hidden=True,
                         style_to_use="Customers",
                     )
                 )
@@ -259,10 +308,10 @@ def generate_kml(
                     address_buffer.append(
                         {
                             "id": unknown_address.customer.code,
-                            "data": kmlb.search_poi(
-                                address_string,
-                                hidden=False,
+                            "data": kmlb.point(
                                 name=f"{unknown_address.customer.name} ({unknown_address.customer.code}) - NUOVO!",
+                                coords=get_coordinates(address_string),
+                                hidden=False,
                                 style_to_use="Customers",
                             ),
                         }
@@ -278,6 +327,7 @@ def generate_kml(
             # endif
 
             del documents_by_customer[anagrafica.code]
+        # endif 
 
         else:
             # 2. This customer has no documents
@@ -288,10 +338,10 @@ def generate_kml(
                 f"Aggiungo cliente {anagrafica.code} ({anagrafica.name}) - {'PRIMARIO' if anagrafica.is_primary else 'SECONDARIO'}"
             )
             customer_locations.append(
-                kmlb.search_poi(
-                    f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}",
-                    hidden=True,
+                kmlb.point(
                     name=f"{anagrafica.name} ({anagrafica.code})",
+                    coords=get_coordinates(f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}"),
+                    hidden=True,
                     style_to_use="Customers",
                 )
             )
@@ -311,10 +361,10 @@ def generate_kml(
                     address_string = f"{document.customer.address} {document.customer.postcode}, {document.customer.city}, {document.customer.country}"
 
                 customer_locations.append(
-                    kmlb.search_poi(
-                        address_string,
-                        hidden=False,
+                    kmlb.point(
                         name=f"{document.customer.name} ({document.customer.code}) - CLIENTE NON CENSITO!",
+                        coords=get_coordinates(address_string),
+                        hidden=False,
                         style_to_use="Customers",
                     )
                 )
@@ -376,16 +426,22 @@ def generate_kml(
 
     with open(output_filename, "w") as file:
         file.write(kml)
+    
+    logger.info(f"KML file saved to '{output_filename}'")
 
 
-if __name__ == "__main__":
-    try:
-        generate_kml(
-            r"tests\data\OrdiniCliente.DefXml",
-            r"C:\Users\lucas\Documents\Danea Easyfatt/Arredo Ufficio (LaSorgente).eft",
-        )
-    except Exception as e:
-        logger.error("An error occurred")
-        logger.exception(e)
-    finally:
-        input("Premi invio per uscire...")
+# if __name__ == "__main__":
+    # try:
+    #     # generate_kml(
+    #     #     r"tests\data\OrdiniCliente.DefXml",
+    #     #     r"C:\Users\lucas\Documents\Danea Easyfatt/Arredo Ufficio (LaSorgente).eft",
+    #     # )
+    #     geolocator = Nominatim(user_agent="MyGeocoder")
+    #     location = geolocator.geocode("Via Giuseppe Montanelli, 11, 00195 Roma")
+    #     print(location)
+    #     # print(f"{location.address} ({location.latitude}, {location.longitude})")
+    # except Exception as e:
+    #     logger.error("An error occurred")
+    #     logger.exception(e)
+    # finally:
+    #     input("Premi invio per uscire...")
