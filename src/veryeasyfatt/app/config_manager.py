@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any
 import toml
 
-import bundle
+import veryeasyfatt.bundle as bundle
 
 import logging
 logger = logging.getLogger("danea-easyfatt.config")

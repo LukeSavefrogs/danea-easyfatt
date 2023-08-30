@@ -1,22 +1,20 @@
-import os
 import datetime
 import logging
 from collections import defaultdict
 from pathlib import Path
-from typing import Union
+from typing import Any, Union
 
 import pydantic
 
 import kmlb
 import geopy.geocoders
 import geopy.location
-from geopy.extra.rate_limiter import RateLimiter
 
 from easyfatt_db_connector import EasyfattFDB, read_xml
 from easyfatt_db_connector.xml.document import Document
 
-from app import caching
-import bundle
+from veryeasyfatt.app import caching
+import veryeasyfatt.bundle as bundle
 
 logger = logging.getLogger("danea-easyfatt.kml")
 
@@ -160,7 +158,7 @@ def generate_kml(
     #       - Indirizzi documento (da analizzare XML):
     #           - conosciuti (vedi primari o secondari)
     #           - sconosciuti (aggiungere)
-    address_buffer = []
+    address_buffer: list[dict[str, Any]] = []
     for anagrafica in anagrafiche:
         if address_buffer and anagrafica.code != address_buffer[0]["id"]:
             customer_locations.extend([item["data"] for item in address_buffer])

@@ -4,15 +4,15 @@ import os
 from pathlib import Path
 import subprocess
 from typing import Optional
-from app.process_kml import generate_kml, populate_cache
-from app.process_xml import modifica_xml
-from app.process_csv import genera_csv
+from veryeasyfatt.app.process_kml import generate_kml, populate_cache
+from veryeasyfatt.app.process_xml import modifica_xml
+from veryeasyfatt.app.process_csv import genera_csv
 
-import app.config_manager as configuration_manager
+import veryeasyfatt.app.config_manager as configuration_manager
 
 import logging
 
-from app.registry import find_install_location
+from veryeasyfatt.app.registry import find_install_location
 
 logger = logging.getLogger("danea-easyfatt.application.core")
 

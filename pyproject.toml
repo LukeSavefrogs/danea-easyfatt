@@ -4,7 +4,7 @@ version = "1.2.2"
 description = "Automazione flussi aziendali Easyfatt"
 authors = ["Luca Salvarani <lucasalvarani99@gmail.com>"]
 readme = "README.md"
-packages = [{include = "*", from = "src"}]
+packages = [{include = "veryeasyfatt", from = "src"}]
 repository = "https://github.com/LukeSavefrogs/danea-easyfatt"
 documentation = "https://lukesavefrogs.github.io/danea-easyfatt/"
 classifiers = [
@@ -63,3 +63,6 @@ help = "Lancia il server LiveReload di Jekyll"
 help = "Esegue i test"
 cmd = "python -m unittest discover --catch"
 # cmd = "python -m unittest discover --failfast --catch --verbose"
+
+[tool.mypy]
+ignore_missing_imports = true

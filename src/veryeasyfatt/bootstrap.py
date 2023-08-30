@@ -1,11 +1,10 @@
 """ Entry point of the wrapper. """
-from pathlib import Path
 import sys
 import webbrowser
 import argparse
 
-import bundle
-import updater
+import veryeasyfatt.bundle as bundle
+import veryeasyfatt.updater as updater
 
 from packaging.version import Version
 from rich.logging import RichHandler
@@ -31,7 +30,7 @@ if sys.platform != 'win32':
     logger.critical("This program is available only for the Windows platform.")
     sys.exit(1)
 
-import app.main as application
+import veryeasyfatt.app.main as application
 
 
 # -----------------------------------------------------------

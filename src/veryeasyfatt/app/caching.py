@@ -1,3 +1,4 @@
+import types
 from typing import Any as _Any, Literal as _Literal, Union as _Union
 from pathlib import Path as _Path
 import datetime as _datetime
@@ -13,6 +14,10 @@ def persist_to_file(file_name: _Union[str, _Path], backend: _Literal['json', 'pi
     Args:
         file_name (str): The name of the file where to store the cache.
     """
+    cache_backend: types.ModuleType
+    read_mode: _Literal['r', 'rb']
+    write_mode: _Literal['w', 'wb']
+
     if backend == 'pickle':
         cache_backend = _pickle
         read_mode = 'rb'
@@ -25,7 +30,7 @@ def persist_to_file(file_name: _Union[str, _Path], backend: _Literal['json', 'pi
         raise ValueError(f"Invalid backend: {backend}")
     
     def decorator(original_func):
-        cache: dict[_Any, _Any] = {
+        cache = {
             'data': {},
             'metadata': {
                 'version': '1',

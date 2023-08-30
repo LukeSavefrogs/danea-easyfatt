@@ -2,7 +2,7 @@ from pathlib import Path
 import sys
 import unittest
 
-from app.config_manager import get_configuration
+from veryeasyfatt.app.config_manager import get_configuration
 
 # Hack needed to include scripts from the `scripts` directory (under root)
 sys.path.append(str(Path(__file__).resolve().parent.parent))

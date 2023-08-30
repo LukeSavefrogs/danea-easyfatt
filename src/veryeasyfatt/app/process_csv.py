@@ -2,7 +2,7 @@ from pathlib import Path
 import xmltodict
 import re
 
-from app.clienti import get_intervallo_spedizioni, routexl_time_boundaries
+from veryeasyfatt.app.clienti import get_intervallo_spedizioni, routexl_time_boundaries
 
 import logging
 logger = logging.getLogger("danea-easyfatt.csv")

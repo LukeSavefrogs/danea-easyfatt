@@ -8,7 +8,7 @@ import json
 import toml
 from packaging.version import Version
 
-import bundle.path as bundle
+import veryeasyfatt.bundle.path as bundle
 
 logger = logging.getLogger("danea-easyfatt.updater")
 logger.addHandler(logging.NullHandler())

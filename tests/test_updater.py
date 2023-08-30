@@ -1,6 +1,6 @@
 import unittest
 
-import updater
+import veryeasyfatt.updater as updater
 from packaging.version import Version
 
 class OperationsTestCase(unittest.TestCase):
