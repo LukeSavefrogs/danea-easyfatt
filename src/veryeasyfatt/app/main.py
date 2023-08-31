@@ -183,6 +183,7 @@ def main(configuration_file: Optional[str] = None, goal: Optional[str] = None):
             database_path   = Path(configuration["easyfatt"]["database"]["filename"]).expanduser().resolve(),
             output_filename = output_file,
             google_api_key  = configuration["features"]["kml_generation"]["google_api_key"],
+            placemark_title = configuration["features"]["kml_generation"]["placemark_title"],
         )
         
         try:

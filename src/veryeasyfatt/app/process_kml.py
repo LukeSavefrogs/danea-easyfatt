@@ -99,6 +99,7 @@ def generate_kml(
     database_path: (Path | str),
     output_filename: (Path | str) = "export.kml",
     google_api_key = None,
+    placemark_title = None,
 ):
     """Generate a KML file from an XML file and a database file.
 
@@ -106,12 +107,14 @@ def generate_kml(
         xml_filename (Path | str): Path to the XML file.
         database_path (Path | str): Path to the database file.
         output_filename (Path | str, optional): Path to the output KML file. Defaults to "export.kml".
+        google_api_key ([type], optional): Google API key. Defaults to None.
+        placemark_title ([type], optional): Title of the placemark. Defaults to None.
     """
     if google_api_key is None or google_api_key.strip() == "":
         raise Exception("Google API key not found in the configuration file. Cannot continue.")
     
-    # point_format = "{name} ({code}) {notes}"
-    point_format = "{name:.10} {code}"
+    if placemark_title is None:
+        placemark_title = "{customerName} ({customerCode}) {notes}" # "{name:.10} {code}"
     
     logger.info("Start")
     logger.info(f"Database path: {database_path}")
@@ -244,9 +247,9 @@ def generate_kml(
 
                 customer_locations.append(
                     kmlb.point(
-                        name=point_format.format(
-                            name=anagrafica.name,
-                            code=anagrafica.code,
+                        name=placemark_title.format(
+                            customerName=anagrafica.name,
+                            customerCode=anagrafica.code,
                             notes="",
                         ),
                         coords=get_coordinates(address_string, google_api_key),
@@ -263,9 +266,9 @@ def generate_kml(
             else:
                 customer_locations.append(
                     kmlb.point(
-                        name=point_format.format(
-                            name=anagrafica.name,
-                            code=anagrafica.code,
+                        name=placemark_title.format(
+                            customerName=anagrafica.name,
+                            customerCode=anagrafica.code,
                             notes="",
                         ),
                         coords=get_coordinates(f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}", google_api_key),
@@ -296,9 +299,9 @@ def generate_kml(
                         {
                             "id": unknown_address.customer.code,
                             "data": kmlb.point(
-                                name=point_format.format(
-                                    name=unknown_address.customer.name,
-                                    code=unknown_address.customer.code, 
+                                name=placemark_title.format(
+                                    customerName=unknown_address.customer.name,
+                                    customerCode=unknown_address.customer.code, 
                                     notes="- NUOVO!",
                                 ),
                                 coords=get_coordinates(address_string, google_api_key, caching=False),
@@ -330,9 +333,9 @@ def generate_kml(
             )
             customer_locations.append(
                 kmlb.point(
-                    name=point_format.format(
-                        name=anagrafica.name,
-                        code=anagrafica.code,
+                    name=placemark_title.format(
+                        customerName=anagrafica.name,
+                        customerCode=anagrafica.code,
                         notes="",
                     ),
                     coords=get_coordinates(f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}", google_api_key),
@@ -368,9 +371,9 @@ def generate_kml(
 
                 customer_locations.append(
                     kmlb.point(
-                        name=point_format.format(
-                            name=document.customer.name,
-                            code=document.customer.code,
+                        name=placemark_title.format(
+                            customerName=document.customer.name,
+                            customerCode=document.customer.code,
                             notes="- CLIENTE NON CENSITO!",
                         ),
                         coords=get_coordinates(address_string, google_api_key),

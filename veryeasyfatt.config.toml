@@ -37,3 +37,4 @@ default_interval = "07:00-16:00"          # Intervallo orario di spedizione di d
 
 [features.kml_generation]
 google_api_key = ""                       # Chiave API di Google Maps per la generazione del KML
+placemark_title = "{customerName} ({customerCode}) {notes}" # Formato del nome del segnaposto nel KML

@@ -51,6 +51,7 @@ default_interval = "07:00-16:00"          # Intervallo orario di spedizione di d
 
 [features.kml_generation]
 google_api_key = ""                       # Chiave API di Google Maps per la generazione del KML
+placemark_title = "{customerName} ({customerCode}) {notes}" # Formato del nome del segnaposto nel KML
 ```
 
 > Essendo ancora in **fase di sviluppo** il nome di queste impostazioni potrebbe **cambiare nel tempo**!
@@ -252,4 +253,13 @@ Questa voce imposta la chiave di accesso alle API di Google Cloud usate per eseg
 > Valore di default
 >
 > `""`
+{: .note-title .fs-3 }
+
+### `features.kml_generation.placemark_title`
+
+Permette di personalizzare il titolo del nome del segnaposto nel file KML generato. E' possibile utilizzare la formattazione di Python (es. `{customerName:.10}`) per cambiare il formato di output.
+
+> Valore di default
+>
+> `"{customerName} ({customerCode}) {notes}"`
 {: .note-title .fs-3 }
