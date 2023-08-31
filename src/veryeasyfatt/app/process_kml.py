@@ -51,11 +51,14 @@ class CustomerAddress(HashableBaseModel):
     include=["address", 0], # Include the first positional argument or the keyword argument 'address'
     enabled="cache"
 )
-def search_location(address: str, google_api_key: str|None = None, geocoder = None, cache=True) -> geopy.location.Location:
+def search_location(address: str, google_api_key: str|None = None, geocoder = None, **kwargs) -> geopy.location.Location:
     """Search for a location.
 
     Args:
         address (str): Address to search.
+        google_api_key (str, optional): Google API key. Defaults to None.
+        geocoder (Geocoder, optional): Geocoder to use. Defaults to None.
+        cache (bool, optional): Whether to cache the result or not. Defaults to True.
 
     Returns:
         geopy.location.Location: Location object.
@@ -304,7 +307,7 @@ def generate_kml(
                                     customerCode=unknown_address.customer.code, 
                                     notes="- NUOVO!",
                                 ),
-                                coords=get_coordinates(address_string, google_api_key, caching=False),
+                                coords=get_coordinates(address_string, google_api_key),
                                 hidden=False,
                                 style_to_use="Customers",
                             ),
@@ -376,7 +379,7 @@ def generate_kml(
                             customerCode=document.customer.code,
                             notes="- CLIENTE NON CENSITO!",
                         ),
-                        coords=get_coordinates(address_string, google_api_key),
+                        coords=get_coordinates(address_string, google_api_key, caching=False),
                         hidden=False,
                         style_to_use="Customers",
                     )
