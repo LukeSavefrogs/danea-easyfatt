@@ -49,8 +49,9 @@ class CustomerAddress(HashableBaseModel):
     file_name=(bundle.get_execution_directory() / ".cache" / "locations.pickle"),
     backend="pickle",
     include=["address", 0], # Include the first positional argument or the keyword argument 'address'
+    enabled="cache"
 )
-def search_location(address: str, google_api_key: str|None = None, geocoder = None) -> geopy.location.Location:
+def search_location(address: str, google_api_key: str|None = None, geocoder = None, cache=True) -> geopy.location.Location:
     """Search for a location.
 
     Args:
@@ -80,7 +81,7 @@ def search_location(address: str, google_api_key: str|None = None, geocoder = No
 
     return location
 
-def get_coordinates(address: str, google_api_key: str) -> tuple[float, float, float]:
+def get_coordinates(address: str, google_api_key: str, caching=True) -> tuple[float, float, float]:
     """Get the coordinates of an address.
 
     Args:
@@ -89,7 +90,7 @@ def get_coordinates(address: str, google_api_key: str) -> tuple[float, float, fl
     Returns:
         tuple[float, float]: Tuple containing the latitude and longitude of the address.
     """
-    location = search_location(address, google_api_key)
+    location = search_location(address, google_api_key, cache=caching)
 
     return (location.longitude, location.latitude, location.altitude)
 
@@ -195,7 +196,6 @@ def generate_kml(
             continue
 
         # --------------- Clienti ---------------
-
         # 1. Controlla se ci sono documenti nell'XML per questo cliente
         if anagrafica.code in documents_by_customer.keys():
             logger.info(
@@ -259,6 +259,7 @@ def generate_kml(
                     f"Added {len(known_addresses)} known addresses for customer {anagrafica.code} ({anagrafica.name})"
                 )
                 total_documents_processed += len(known_addresses)
+            
             else:
                 customer_locations.append(
                     kmlb.point(
@@ -300,7 +301,7 @@ def generate_kml(
                                     code=unknown_address.customer.code, 
                                     notes="- NUOVO!",
                                 ),
-                                coords=get_coordinates(address_string, google_api_key),
+                                coords=get_coordinates(address_string, google_api_key, caching=False),
                                 hidden=False,
                                 style_to_use="Customers",
                             ),
