@@ -74,7 +74,8 @@ def search_location(address: str, google_api_key: str|None = None, geocoder = No
         geolocator = geopy.geocoders.GoogleV3(api_key=google_api_key)
         geocoder = RateLimiter(
             geolocator.geocode,
-            min_delay_seconds=1/5 # Max 5 requests per second
+            min_delay_seconds=1/5, # Max 5 requests per second
+            swallow_exceptions=False,
         )
     
     location: Union[geopy.location.Location, None] = geocoder(address, language="it") # pyright: ignore[reportGeneralTypeIssues]
@@ -463,7 +464,8 @@ def populate_cache(google_api_key, addresses=None, database_path: Union[str, Pat
     # Use a rate limiter to avoid Google API rate limits
     bulk_geocoder = RateLimiter(
         geopy.geocoders.GoogleV3(api_key=google_api_key).geocode,
-        min_delay_seconds=1/5  # Max 5 requests per second
+        min_delay_seconds=1/5,  # Max 5 requests per second
+        swallow_exceptions=False,
     )
 
     logger.info("Cache initialization started (this may take a while...)")
