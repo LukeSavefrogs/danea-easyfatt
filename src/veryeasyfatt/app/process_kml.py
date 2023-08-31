@@ -340,6 +340,17 @@ def generate_kml(
                     style_to_use="Customers",
                 )
             )
+    
+    else:
+        # Clear the buffer if there are still addresses in it
+        if address_buffer:
+            customer_locations.extend([item["data"] for item in address_buffer])
+
+            logger.info(
+                f"Added {len(address_buffer)} buffered unknown addresses for customer {address_buffer[0]['id']}"
+            )
+            address_buffer.clear()
+            logger.debug("Buffer cleared")
 
     if total_documents_processed != len(xml_documents):
         logger.warning(
