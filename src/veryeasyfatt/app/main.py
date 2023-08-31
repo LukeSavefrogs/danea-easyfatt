@@ -44,7 +44,7 @@ def main(configuration_file: Optional[str] = None, goal: Optional[str] = None):
         return False
     
     if configuration["log_level"]:
-        logger.setLevel(logging.getLevelName(configuration["log_level"]))
+        logging.getLogger("danea-easyfatt").setLevel(logging.getLevelName(configuration["log_level"]))
 
     logger.debug(f"Configurazione in uso: \n{json.dumps(configuration, indent=4)}")
 
