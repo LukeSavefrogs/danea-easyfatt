@@ -1,4 +1,5 @@
 """ Entry point of the application. """
+from io import StringIO
 import json
 import os
 from pathlib import Path
@@ -139,26 +140,23 @@ def main(configuration_file: Optional[str] = None, goal: Optional[str] = None):
             ureg.define('quintal = 100 * kg = q = centner')
 
             df = pd.read_xml(
-                nuovo_xml,
+                StringIO(nuovo_xml),
                 parser='etree',
                 xpath='./Documents/Document',
                 dtype=EASYFATT_DOCUMENT_DTYPE # type: ignore
             )
 
             # Effettuo una prima pulizia dei valori a solo scopo di visualizzazione.
+            # Successivamente, per il calcolo del peso totale, converto tutti i valori a grammi.
             #
             # IMPORTANTE: Per evitare valori sballati nel totale sono costretto a
             #             trasformare il separatore decimale nel formato inglese (.)
             df["TransportedWeight"] = df["TransportedWeight"].map(
-                lambda v: ureg.Quantity(str(v).replace(".", "").replace(",", ".").lower()) if v is not None else v
+                lambda v: v if (v is None or pd.isnull(v)) else ureg.Quantity(str(v).replace(".", "").replace(",", ".").lower()).to("g").magnitude
             )
 
-            # Converto in grammi
-            df["TransportedWeight"] = df["TransportedWeight"].map(
-                lambda v: ureg.Quantity(str(v).lower()).to("g").magnitude if v is not None else v
-            )
-
-            peso_totale = ureg.Quantity(df["TransportedWeight"].sum(), 'g') 
+            df_weight_sum = df["TransportedWeight"].sum()
+            peso_totale = ureg.Quantity(df_weight_sum, 'g') if not pd.isna(df_weight_sum) else ureg.Quantity(0, 'g')
             logger.info(f"Peso totale calcolato: {peso_totale.to('kg')} ({peso_totale.to('q')} / {peso_totale.to('t')})")
         
         except Exception as e:
