@@ -18,6 +18,7 @@ from easyfatt_db_connector.xml.document import Document
 
 from veryeasyfatt.app import caching
 import veryeasyfatt.bundle as bundle
+from veryeasyfatt.formatter import SimpleFormatter
 
 logger = logging.getLogger("danea-easyfatt.kml")
 
@@ -119,6 +120,8 @@ def generate_kml(
     
     if placemark_title is None:
         placemark_title = "{customerName} ({customerCode}) {notes}" # "{name:.10} {code}"
+    
+    safe_formatter = SimpleFormatter()
     
     logger.info("Start")
     logger.info(f"Database path: {database_path}")
@@ -251,7 +254,8 @@ def generate_kml(
 
                 customer_locations.append(
                     kmlb.point(
-                        name=placemark_title.format(
+                        name=safe_formatter.format(
+                            placemark_title,
                             customerName=anagrafica.name,
                             customerCode=anagrafica.code,
                             notes="",
@@ -270,7 +274,8 @@ def generate_kml(
             else:
                 customer_locations.append(
                     kmlb.point(
-                        name=placemark_title.format(
+                        name=safe_formatter.format(
+                            placemark_title,
                             customerName=anagrafica.name,
                             customerCode=anagrafica.code,
                             notes="",
@@ -303,7 +308,8 @@ def generate_kml(
                         {
                             "id": unknown_address.customer.code,
                             "data": kmlb.point(
-                                name=placemark_title.format(
+                                name=safe_formatter.format(
+                                    placemark_title,
                                     customerName=unknown_address.customer.name,
                                     customerCode=unknown_address.customer.code, 
                                     notes="- NUOVO!",
@@ -337,7 +343,8 @@ def generate_kml(
             )
             customer_locations.append(
                 kmlb.point(
-                    name=placemark_title.format(
+                    name=safe_formatter.format(
+                        placemark_title,
                         customerName=anagrafica.name,
                         customerCode=anagrafica.code,
                         notes="",
@@ -375,7 +382,8 @@ def generate_kml(
 
                 customer_locations.append(
                     kmlb.point(
-                        name=placemark_title.format(
+                        name=safe_formatter.format(
+                            placemark_title,
                             customerName=document.customer.name,
                             customerCode=document.customer.code,
                             notes="- CLIENTE NON CENSITO!",

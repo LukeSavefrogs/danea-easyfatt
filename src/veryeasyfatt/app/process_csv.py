@@ -1,10 +1,11 @@
 from pathlib import Path
 import xmltodict
 import re
+import logging
 
 from veryeasyfatt.app.clienti import get_intervallo_spedizioni, routexl_time_boundaries
+from veryeasyfatt.formatter import SimpleFormatter
 
-import logging
 logger = logging.getLogger("danea-easyfatt.csv")
 
 
@@ -17,6 +18,7 @@ def genera_csv (
         extra_field_orario=4
     ):
     logger.debug(f"Trasformo l'XML in un dizionario")
+    safe_formatter = SimpleFormatter()
 
     default_time_boundary = routexl_time_boundaries(default_shipping_interval)
     
@@ -79,7 +81,7 @@ def genera_csv (
         
         logger.debug(f"Orario di spedizione per il cliente '{document['CustomerCode']}': {orario_spedizione}")
         
-        csv_lines.append(template_riga.format(
+        csv_lines.append(safe_formatter.format(template_riga,
             CustomerName = document["CustomerName"],
             CustomerCode = document["CustomerCode"],
             eval_IndirizzoSpedizione = indirizzo_spedizione,
