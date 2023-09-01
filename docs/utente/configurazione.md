@@ -221,6 +221,9 @@ Percorso (relativo o assoluto) al file `csv` da generare.
 ### `options.output.csv_template`
 
 Questa voce definisce il formato di ogni riga del `csv` finale.
+
+E' possibile utilizzare i [comandi di formattazione]({{ site.baseurl }}/sviluppo/formatter.html#funzioni-disponibili) per cambiare il formato di output.
+
 > Valore di default
 >
 > `"@{CustomerName} {CustomerCode}@{eval_IndirizzoSpedizione} {eval_CAPSpedizione} {eval_CittaSpedizione}(20){eval_intervalloSpedizione}^{eval_pesoSpedizione}^"`
@@ -257,7 +260,7 @@ Questa voce imposta la chiave di accesso alle API di Google Cloud usate per eseg
 
 ### `features.kml_generation.placemark_title`
 
-Permette di personalizzare il titolo del nome del segnaposto nel file KML generato. E' possibile utilizzare la formattazione di Python (es. `{customerName:.10}`) per cambiare il formato di output.
+Permette di personalizzare il titolo del nome del segnaposto nel file KML generato. E' possibile utilizzare i [comandi di formattazione]({{ site.baseurl }}/sviluppo/formatter.html#funzioni-disponibili) per cambiare il formato di output.
 
 > Valore di default
 >
