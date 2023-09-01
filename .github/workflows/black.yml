@@ -1,0 +1,23 @@
+name: Check Python code formatting
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  check-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - uses: psf/black@stable
+        with:
+          options: "--check"
+          src: "./src/"
+          version: "~= 22.0"
