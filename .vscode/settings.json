@@ -23,6 +23,7 @@
             "allow_different_nesting": true
         },
         "MD028": false,
-        "no-hard-tabs": true
+        "no-hard-tabs": true,
+        "MD049": false,
     },
 }
