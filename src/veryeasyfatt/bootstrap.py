@@ -11,7 +11,11 @@ from rich.logging import RichHandler
 import logging
 
 default_handler = logging.StreamHandler(sys.stdout)
-default_handler.setFormatter(logging.Formatter(fmt="[%(asctime)s] %(levelname)-8s %(message)s", datefmt="%d-%m-%Y %H:%M:%S"))
+default_handler.setFormatter(
+    logging.Formatter(
+        fmt="[%(asctime)s] %(levelname)-8s %(message)s", datefmt="%d-%m-%Y %H:%M:%S"
+    )
+)
 
 logger = logging.getLogger("danea-easyfatt")
 logger.addHandler(default_handler)
@@ -21,12 +25,12 @@ logger.setLevel(logging.DEBUG)
 rich_handler = RichHandler(
     rich_tracebacks=True,
     omit_repeated_times=False,
-    log_time_format="[%d-%m-%Y %H:%M:%S]"
+    log_time_format="[%d-%m-%Y %H:%M:%S]",
 )
 
 
 # Windows specific definitions
-if sys.platform != 'win32':
+if sys.platform != "win32":
     logger.critical("This program is available only for the Windows platform.")
     sys.exit(1)
 
@@ -42,23 +46,25 @@ def main():
     # ==================================================================
     parser = argparse.ArgumentParser(
         prog=bundle.get_executed_file().name,
-        description='Easyfatt made even easier!',
-        epilog='Author: Luca Salvarani (email: lucasalvarani99@gmail.com - github: @LukeSavefrogs)',
+        description="Easyfatt made even easier!",
+        epilog="Author: Luca Salvarani (email: lucasalvarani99@gmail.com - github: @LukeSavefrogs)",
         add_help=True,
     )
     parser.add_argument(
-        "-c", "--config",
+        "-c",
+        "--config",
         required=False,
         help="Specify a custom TOML configuration file.",
         dest="configuration_file",
         metavar="FILENAME",
         type=str,
-        default=None
+        default=None,
     )
     parser.add_argument(
-        "-V", "--version",
+        "-V",
+        "--version",
         help="Show the current version and exit.",
-        action='version',
+        action="version",
         version=f"v{updater.get_current_version()}",
     )
     parser.add_argument(
@@ -81,7 +87,12 @@ def main():
         dest="goal",
         type=str,
         default=None,
-        choices=["csv-generator", "kml-generator", "initialize-geo-cache", "initialize-geo-cache-dryrun"]
+        choices=[
+            "csv-generator",
+            "kml-generator",
+            "initialize-geo-cache",
+            "initialize-geo-cache-dryrun",
+        ],
     )
     cli_args = parser.parse_args()
 
@@ -91,18 +102,17 @@ def main():
         logger.handlers.clear()
         logger.addHandler(rich_handler)
 
-
     logger.debug(f"Execution directory: '{bundle.get_execution_directory()}'")
     logger.debug(f"Bundle directory   : '{bundle.get_bundle_directory()}'")
     logger.debug(f"Root directory     : '{bundle.get_root_directory()}'")
-
 
     # ==================================================================
     #                       Controllo di versione
     # ==================================================================
     if not cli_args.enable_version_check:
         logger.warning(
-            "Il controllo versione è stato disattivato tramite CLI (--disable-version-check).")
+            "Il controllo versione è stato disattivato tramite CLI (--disable-version-check)."
+        )
     else:
         try:
             if updater.update_available():
@@ -111,8 +121,11 @@ def main():
                 current_version = Version(updater.get_current_version())
 
                 logger.warning(
-                    f"An update is available (remote is '{latest_version}', while current is '{current_version}')")
-                webbrowser.open(updater.get_latest_release()["url"], new=0, autoraise=True)
+                    f"An update is available (remote is '{latest_version}', while current is '{current_version}')"
+                )
+                webbrowser.open(
+                    updater.get_latest_release()["url"], new=0, autoraise=True
+                )
 
                 return False
             else:
@@ -121,17 +134,18 @@ def main():
             logger.exception("Errore in fase di controllo aggiornamenti")
 
             logger.fatal(
-                "Impossibile continuare. Assicurati di fare uno screenshot di questa schermata e condividerla con lo sviluppatore.")
+                "Impossibile continuare. Assicurati di fare uno screenshot di questa schermata e condividerla con lo sviluppatore."
+            )
 
             return False
-    
+
     try:
         application.main(cli_args.configuration_file, cli_args.goal)
     except Exception:
         logger.exception("Eccezione inaspettata nell'applicazione")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         main()
     except Exception as e:

@@ -1,6 +1,7 @@
 from pathlib import Path
 import winreg as _winreg
 
+
 def find_install_location(program_reg_key: str):
     """Finds the installation location of a program using the registry.
 
@@ -14,7 +15,7 @@ def find_install_location(program_reg_key: str):
         Path: The installation path of the program.
     """
     key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, program_reg_key)
-    
+
     search_targets = ["InstallPath", "InstallLocation"]
     for key_name in search_targets:
         try:
@@ -22,4 +23,6 @@ def find_install_location(program_reg_key: str):
         except FileNotFoundError:
             continue
     else:
-        raise Exception(f"Registry key '{program_reg_key}' not found [{'/'.join(search_targets)}]!")
+        raise Exception(
+            f"Registry key '{program_reg_key}' not found [{'/'.join(search_targets)}]!"
+        )

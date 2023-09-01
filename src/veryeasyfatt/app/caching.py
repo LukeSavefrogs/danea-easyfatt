@@ -9,11 +9,12 @@ import json as _json
 
 logger = logging.getLogger("danea-easyfatt.caching")
 
+
 def persist_to_file(
     file_name: _Union[str, _Path],
     backend: _Literal["json", "pickle"] = "pickle",
     include=[],
-    enabled: bool|str =True,
+    enabled: bool | str = True,
 ):
     """Decorator that caches the result of a function to a file.
 

@@ -46,13 +46,19 @@ class CustomerAddress(HashableBaseModel):
     def replace_none(cls, value):
         return value if value is not None else ""
 
+
 @caching.persist_to_file(
     file_name=(bundle.get_execution_directory() / ".cache" / "locations.pickle"),
     backend="pickle",
-    include=["address", 0], # Include the first positional argument or the keyword argument 'address'
-    enabled="cache"
+    include=[
+        "address",
+        0,
+    ],  # Include the first positional argument or the keyword argument 'address'
+    enabled="cache",
 )
-def search_location(address: str, google_api_key: str|None = None, geocoder = None, **kwargs) -> geopy.location.Location:
+def search_location(
+    address: str, google_api_key: str | None = None, geocoder=None, **kwargs
+) -> geopy.location.Location:
     """Search for a location.
 
     Args:
@@ -63,30 +69,37 @@ def search_location(address: str, google_api_key: str|None = None, geocoder = No
 
     Returns:
         geopy.location.Location: Location object.
-            
+
     Raises:
         Exception: If no geocoder is passed as argument and no Google API key is provided.
         Exception: If the location is not found.
     """
     if geocoder is None:
         if google_api_key is None or google_api_key.strip() == "":
-            raise Exception("Google API key MUST be provided if no geocoder is passed as argument.")
-        
+            raise Exception(
+                "Google API key MUST be provided if no geocoder is passed as argument."
+            )
+
         geolocator = geopy.geocoders.GoogleV3(api_key=google_api_key)
         geocoder = RateLimiter(
             geolocator.geocode,
-            min_delay_seconds=1/5, # Max 5 requests per second
+            min_delay_seconds=1 / 5,  # Max 5 requests per second
             swallow_exceptions=False,
         )
-    
-    location: Union[geopy.location.Location, None] = geocoder(address, language="it") # pyright: ignore[reportGeneralTypeIssues]
+
+    location: Union[geopy.location.Location, None] = geocoder(
+        address, language="it"
+    )  # pyright: ignore[reportGeneralTypeIssues]
 
     if location is None:
         raise Exception(f"Location '{address}' not found")
 
     return location
 
-def get_coordinates(address: str, google_api_key: str, caching=True) -> tuple[float, float, float]:
+
+def get_coordinates(
+    address: str, google_api_key: str, caching=True
+) -> tuple[float, float, float]:
     """Get the coordinates of an address.
 
     Args:
@@ -99,12 +112,13 @@ def get_coordinates(address: str, google_api_key: str, caching=True) -> tuple[fl
 
     return (location.longitude, location.latitude, location.altitude)
 
+
 def generate_kml(
     xml_filename: (Path | str),
     database_path: (Path | str),
     output_filename: (Path | str) = "export.kml",
-    google_api_key = None,
-    placemark_title = None,
+    google_api_key=None,
+    placemark_title=None,
 ):
     """Generate a KML file from an XML file and a database file.
 
@@ -116,13 +130,17 @@ def generate_kml(
         placemark_title ([type], optional): Title of the placemark. Defaults to None.
     """
     if google_api_key is None or google_api_key.strip() == "":
-        raise Exception("Google API key not found in the configuration file. Cannot continue.")
-    
+        raise Exception(
+            "Google API key not found in the configuration file. Cannot continue."
+        )
+
     if placemark_title is None:
-        placemark_title = "{customerName} ({customerCode}) {notes}" # "{name:.10} {code}"
-    
+        placemark_title = (
+            "{customerName} ({customerCode}) {notes}"  # "{name:.10} {code}"
+        )
+
     safe_formatter = SimpleFormatter()
-    
+
     logger.info("Start")
     logger.info(f"Database path: {database_path}")
     logger.info(f"XML path: {xml_filename}")
@@ -198,7 +216,10 @@ def generate_kml(
             supplier_locations.append(
                 kmlb.point(
                     name=f"{anagrafica.name}",
-                    coords=get_coordinates(f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}", google_api_key),
+                    coords=get_coordinates(
+                        f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}",
+                        google_api_key,
+                    ),
                     hidden=True,
                     style_to_use="Suppliers",
                 )
@@ -270,7 +291,7 @@ def generate_kml(
                     f"Added {len(known_addresses)} known addresses for customer {anagrafica.code} ({anagrafica.name})"
                 )
                 total_documents_processed += len(known_addresses)
-            
+
             else:
                 customer_locations.append(
                     kmlb.point(
@@ -280,7 +301,10 @@ def generate_kml(
                             customerCode=anagrafica.code,
                             notes="",
                         ),
-                        coords=get_coordinates(f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}", google_api_key),
+                        coords=get_coordinates(
+                            f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}",
+                            google_api_key,
+                        ),
                         hidden=True,
                         style_to_use="Customers",
                     )
@@ -311,7 +335,7 @@ def generate_kml(
                                 name=safe_formatter.format(
                                     placemark_title,
                                     customerName=unknown_address.customer.name,
-                                    customerCode=unknown_address.customer.code, 
+                                    customerCode=unknown_address.customer.code,
                                     notes="- NUOVO!",
                                 ),
                                 coords=get_coordinates(address_string, google_api_key),
@@ -331,7 +355,7 @@ def generate_kml(
             # endif
 
             del documents_by_customer[anagrafica.code]
-        # endif 
+        # endif
 
         else:
             # 2. This customer has no documents
@@ -349,12 +373,15 @@ def generate_kml(
                         customerCode=anagrafica.code,
                         notes="",
                     ),
-                    coords=get_coordinates(f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}", google_api_key),
+                    coords=get_coordinates(
+                        f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}",
+                        google_api_key,
+                    ),
                     hidden=True,
                     style_to_use="Customers",
                 )
             )
-    
+
     else:
         # Clear the buffer if there are still addresses in it
         if address_buffer:
@@ -388,7 +415,9 @@ def generate_kml(
                             customerCode=document.customer.code,
                             notes="- CLIENTE NON CENSITO!",
                         ),
-                        coords=get_coordinates(address_string, google_api_key, caching=False),
+                        coords=get_coordinates(
+                            address_string, google_api_key, caching=False
+                        ),
                         hidden=False,
                         style_to_use="Customers",
                     )
@@ -399,8 +428,9 @@ def generate_kml(
                 f"Added {len(documents)} unknown addresses for unknown customer {documents[0].customer.code} ({documents[0].customer.name})"
             )
 
-        logger.warning(f"Added a total of {unknown_customer_documents} unknown customers")
-
+        logger.warning(
+            f"Added a total of {unknown_customer_documents} unknown customers"
+        )
 
     kml = kmlb.kml(
         name="Estrazione clienti e fornitori",
@@ -451,53 +481,69 @@ def generate_kml(
 
     with open(output_filename, "w") as file:
         file.write(kml)
-    
+
     logger.info(f"KML file saved to '{output_filename}'")
 
 
-def populate_cache(google_api_key, addresses=None, database_path: Union[str, Path, None] = None, dry_run=False):
+def populate_cache(
+    google_api_key,
+    addresses=None,
+    database_path: Union[str, Path, None] = None,
+    dry_run=False,
+):
     if addresses is None and database_path is None:
         raise Exception("Addresses and database path cannot be both None")
-    
+
     if database_path is not None:
         addresses = get_all_addresses(database_path)
     else:
         if not isinstance(addresses, list):
             raise Exception("Addresses must be a list of CustomerAddress objects")
-        
+
         if not all([isinstance(address, CustomerAddress) for address in addresses]):
             raise Exception("Addresses must be a list of CustomerAddress objects")
-        
 
     # Use a rate limiter to avoid Google API rate limits
     bulk_geocoder = RateLimiter(
         geopy.geocoders.GoogleV3(api_key=google_api_key).geocode,
-        min_delay_seconds=1/5,  # Max 5 requests per second
+        min_delay_seconds=1 / 5,  # Max 5 requests per second
         swallow_exceptions=False,
     )
 
     logger.info("Cache initialization started (this may take a while...)")
     for address in addresses:
         if dry_run:
-            logger.debug(f"Search for '{address.address} {address.postcode}, {address.city}, {address.country}'")
+            logger.debug(
+                f"Search for '{address.address} {address.postcode}, {address.city}, {address.country}'"
+            )
             continue
 
         search_result = search_location(
             address=f"{address.address} {address.postcode}, {address.city}, {address.country}",
-            geocoder = bulk_geocoder       # Use the rate limited geocoder
+            geocoder=bulk_geocoder,  # Use the rate limited geocoder
         )
         logger.debug(f"Search returned {search_result}")
 
-    unique_customers = set([address.code for address in addresses if address.is_customer])
-    unique_suppliers = set([address.code for address in addresses if not address.is_customer])
+    unique_customers = set(
+        [address.code for address in addresses if address.is_customer]
+    )
+    unique_suppliers = set(
+        [address.code for address in addresses if not address.is_customer]
+    )
 
-    logger.info(f"Cache initialization completed successfully ({len(addresses)} addresses processed for {len(unique_customers) + len(unique_suppliers)} customers/suppliers)")
-    logger.info(f"Total processed customers: {len(unique_customers)} ({len([ addr for addr in addresses if addr.is_customer])} addresses)")
-    logger.info(f"Total processed suppliers: {len(unique_suppliers)} ({len([ addr for addr in addresses if not addr.is_customer])} addresses)")
+    logger.info(
+        f"Cache initialization completed successfully ({len(addresses)} addresses processed for {len(unique_customers) + len(unique_suppliers)} customers/suppliers)"
+    )
+    logger.info(
+        f"Total processed customers: {len(unique_customers)} ({len([ addr for addr in addresses if addr.is_customer])} addresses)"
+    )
+    logger.info(
+        f"Total processed suppliers: {len(unique_suppliers)} ({len([ addr for addr in addresses if not addr.is_customer])} addresses)"
+    )
 
 
 def get_all_addresses(database_path: Union[str, Path]) -> list[CustomerAddress]:
-    """ Get all the addresses from the database.
+    """Get all the addresses from the database.
 
     Args:
         database_path (Union[str, Path]): Path to the database file.
