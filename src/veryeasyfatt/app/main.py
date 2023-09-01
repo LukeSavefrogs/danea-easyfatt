@@ -4,23 +4,21 @@ import os
 from pathlib import Path
 import subprocess
 from typing import Optional
+import logging
+
+import pandas as pd
+import pint
+
+from rich.prompt import Confirm, IntPrompt
+
 from veryeasyfatt.app.process_kml import generate_kml, populate_cache
 from veryeasyfatt.app.process_xml import modifica_xml
 from veryeasyfatt.app.process_csv import genera_csv
 
 import veryeasyfatt.app.config_manager as configuration_manager
-
-import logging
-
 from veryeasyfatt.app.registry import find_install_location
 
 logger = logging.getLogger("danea-easyfatt.application.core")
-
-import pandas as pd
-import pint
-
-from rich.prompt import Prompt, Confirm, IntPrompt
-
 
 EASYFATT_DOCUMENT_DTYPE = {
     "CustomerCode": str,
@@ -178,6 +176,7 @@ def main(configuration_file: Optional[str] = None, goal: Optional[str] = None):
 
     elif goal == "kml-generator":
         output_file = Path("~/Desktop/test.kml").expanduser()
+
         generate_kml(
             xml_filename    = Path(configuration["files"]["input"]["easyfatt"]).resolve(),
             database_path   = Path(configuration["easyfatt"]["database"]["filename"]).expanduser().resolve(),
