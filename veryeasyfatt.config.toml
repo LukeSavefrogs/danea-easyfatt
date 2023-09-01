@@ -23,7 +23,7 @@ addition = ""                             # Percorso (relativo o assoluto) al fi
 
 [files.output]
 csv = "./Documenti.csv"                   # Percorso (relativo o assoluto) al file CSV di output.
-kml = ""                   # Percorso (relativo o assoluto) al file CSV di output.
+kml = ""                                  # Percorso (relativo o assoluto) al file KML di output.
 
 
 [options.output]
