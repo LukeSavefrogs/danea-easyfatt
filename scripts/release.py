@@ -1,125 +1,204 @@
-from random import randint
+import random
 import requests
 from pathlib import Path
 
 import logging
 from rich.logging import RichHandler
+import rich
 
 from git.exc import GitCommandError
 from git.repo import Repo
 
 import toml
+from urllib.parse import urlparse
+from packaging.version import Version
 
 logger = logging.getLogger(__name__)
-logger.addHandler(RichHandler(
-    rich_tracebacks=True,
-    omit_repeated_times=False,
-    log_time_format="[%d-%m-%Y %H:%M:%S]"
-))
+logger.addHandler(
+    RichHandler(
+        rich_tracebacks=True,
+        omit_repeated_times=False,
+        log_time_format="[%d-%m-%Y %H:%M:%S]",
+    )
+)
 logger.setLevel(logging.DEBUG)
 
 
-def main():
+def release(owner: str | None = None, repo: str | None = None, branch: str | None = None):
+    """ Release a new version of the project. 
+    
+    This function will check if the local repository is aligned with the remote one.
+    If the local repository is aligned, it will create a new tag and push it to the remote.
+    
+    :param owner: The owner of the repository (default: None)
+    :param repo: The name of the repository (default: None)
+    :param branch: The name of the branch (default: None)
+    :return: True if the release was successful, False otherwise
+    """
+    console = rich.console.Console()
+
     current_repo_dir = Path(".").resolve()
-    repo = Repo(current_repo_dir)
+    repository = Repo(current_repo_dir)
 
-    current_branch = repo.active_branch.name
+    if branch is None:
+        branch = repository.active_branch.name
 
-    local_toml_file = (Path(".") / 'pyproject.toml').resolve()
-    remote_toml_file = f"https://raw.githubusercontent.com/LukeSavefrogs/danea-easyfatt/{current_branch}/pyproject.toml?nocache={randint(0, 123456)}"
-
-    logger.debug(f"Requesting '{remote_toml_file}'")
-    try:
-        remote_toml_file_content = requests.get(remote_toml_file, headers={
-            "Cache-Control": "no-cache",
-            "Pragma": "no-cache"
-        }).text
-    except Exception as e:
-        logger.critical(
-            f"Errore in fase di recupero versione remota: {repr(e)}")
-        return False
-
+    # 1. Read local "pyproject.toml" file
+    local_toml_file = (Path(".") / "pyproject.toml").resolve()
     if not local_toml_file.exists() or not local_toml_file.is_file():
-        logger.fatal(f"File TOML '{local_toml_file}' non trovato.")
+        logger.fatal(f"File TOML '{local_toml_file}' couldn't be found.")
         return False
 
     local_poetry_config = toml.load(local_toml_file)
+
+    repository_url = urlparse(local_poetry_config["tool"]["poetry"]["repository"])
+    if repository_url.netloc != "github.com":
+        logger.fatal(f"Website '{repository_url}' is currently not supported.")
+        return False
+
+    repository_info = repository_url.path.strip("/").split("/")[:2]
+    if owner is None:
+        owner = repository_info[0]
+    if repo is None:
+        repo = repository_info[1]
+
+    remote_toml_file = f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/pyproject.toml?nocache={random.randint(0, 123456)}"
+
+    # 2. Read remote "pyproject.toml" file
+    try:
+        remote_toml_file_content = requests.get(
+            remote_toml_file,
+            headers={"Cache-Control": "no-cache", "Pragma": "no-cache", "Expires": "0"},
+        ).text
+    except Exception as e:
+        logger.critical(f"Error while fetching the remote TOML file: {repr(e)}")
+        return False
+
     remote_poetry_config = toml.loads(remote_toml_file_content)
 
-    local_version = "v" + local_poetry_config["tool"]["poetry"]["version"]
-    remote_version = "v" + remote_poetry_config["tool"]["poetry"]["version"]
+    # 3. Compare TOML files versions (must be both equal)
+    version_local = "v" + local_poetry_config["tool"]["poetry"]["version"]
+    version_remote = "v" + remote_poetry_config["tool"]["poetry"]["version"]
 
-    logger.info(f"Versione `pyproject.toml` locale: '{local_version}'")
-    logger.info(f"Versione `pyproject.toml` remoto: '{remote_version}'")
+    logger.debug(f"Local  → `pyproject.toml` version : '{version_local}'")
+    logger.debug(f"Remote → `pyproject.toml` version: '{version_remote}'")
 
-    if local_version != remote_version:
+    if version_local != version_remote:
         logger.critical(
-            "Prima di eseguire la release il file `pyproject.toml` deve essere SEMPRE aggiornato.")
-        logger.warning("Assicurarsi di pushare la nuova versione.")
+            "Before releasing the file `pyproject.toml` MUST ALWAYS BE UPDATED."
+        )
+        logger.warning("Please push the new version and retry.")
         return False
 
-    local_tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
-    latest_tag = local_tags[-1]
+    logger.info(f"TOML files are aligned with version '{version_local}'")
 
-    logger.info(f"Ultima versione rilasciata: '{latest_tag}'")
+    # 4. Check if the tags are aligned
+    latest_tag_local = sorted(
+        repository.tags, key=lambda t: t.commit.committed_datetime
+    )[-1]
+    try:
+        latest_tag_remote = requests.get(
+            f"https://api.github.com/repos/{owner}/{repo}/tags?nocache={random.randint(0, 123456)}",
+            headers={"Cache-Control": "no-cache", "Pragma": "no-cache", "Expires": "0"},
+        ).json()[0]["name"]
+    except Exception as e:
+        logger.critical(f"Error while fetching the remote tags: {repr(e)}")
+        return False
 
-    changed_files = [item.a_path for item in repo.index.diff(None)]
+    logger.info(f"Local  → Latest tag: '{latest_tag_local}'")
+    logger.info(f"Remote → Latest tag: '{latest_tag_remote}'")
 
-    uncommitted_changes = repo.index.diff('Head')
+    if Version(str(latest_tag_local)) < Version(latest_tag_remote):
+        logger.error(
+            f"Remote repository has newer tag: '{latest_tag_remote}' (local is '{latest_tag_local}')."
+        )
+        return False
+
+    # 5. Check if there are uncommitted changes
+    changed_files = [item.a_path for item in repository.index.diff(None)]
+
+    uncommitted_changes = repository.index.diff("Head")
     if len(uncommitted_changes) > 0:
         logger.critical(
-            f"Ci sono {len(uncommitted_changes)} modifiche non ancora committate.")
+            f"There are {len(uncommitted_changes)} uncommitted changes! Please commit them before releasing."
+        )
         return False
 
-    unpushed_commits = list(repo.iter_commits(
-        current_branch + '@{u}..' + current_branch))
+    # 6. Check if there are unpushed commits (both modified and untracked files)
+    unpushed_commits = list(repository.iter_commits(branch + "@{u}.." + branch))
     if unpushed_commits:
-        logger.critical(f"Ci sono {len(unpushed_commits)} commit da pushare.")
+        logger.critical(
+            f"There are {len(unpushed_commits)} commits that need to be pushed to the remote."
+        )
         for commit in unpushed_commits:
-            commit_time = commit.committed_datetime.strftime(
-                '%d-%m-%Y %H:%M:%S')
+            commit_time = commit.committed_datetime.strftime("%d-%m-%Y %H:%M:%S")
             commit_hash = commit.hexsha[-6:]
-            commit_message = commit.message.strip().splitlines()[0]
-            print(f"- [{commit_time}] {commit_hash} ➜ {commit_message}")
+            commit_message = str(commit.message).strip().splitlines()[0]
+            print(f"- [{commit_time}] {commit_hash} → {commit_message}")
 
         print("")
-        logger.warning(f"Esegui il comando 'git push' e ritenta.")
-
+        logger.warning(f"Please run 'git push' and retry...")
         return False
 
-    logger.debug("File modificati: \n\t- " + '\n\t- '.join(changed_files))
-    logger.debug("File non tracciati: \n\t- " +
-                 '\n\t- '.join(repo.untracked_files))
+    print("")
+    if changed_files:
+        console.print(
+            f"⚠️  You have uncommitted changes on {len(changed_files)} files:"
+        )
+        for file in changed_files:
+            console.print(f"\t- {Path(file)}")
+    else:
+        print("✔️  No uncommitted changes found.")
 
-    if len(repo.untracked_files) > 0:
-        logger.warning(
-            f"Attenzione: Ci sono {len(repo.untracked_files)} file non tracciati.")
+    print("")
 
-    if str(latest_tag) == str(local_version):
-        logger.error(
-            f"Tag '{local_version}' già esistente.\nAumenta il numero di versione con 'poetry version [patch/minor/major/prepatch/preminor/premajor/prerelease]'")
+    if repository.untracked_files:
+        console.print(f"📄 There are {len(repository.untracked_files)} untracked files:")
+        for file in repository.untracked_files:
+            console.print(f"\t- {Path(file)}")
+        print("")
+        logger.warning(f"There are {len(repository.untracked_files)} untracked files.")
+    else:
+        print("✔️  No untracked files found.")
+        print("")
+
+    # 7. Check if a tag with the current version already exists
+    if str(latest_tag_local) == str(version_local):
+        logger.critical(f"Tag '{version_local}' already exists.")
+        print("")
+        console.print(
+            "HINT - You can increment the version number using one of the following:"
+        )
+        for release_type in [
+            "major",
+            "minor",
+            "patch",
+            "premajor",
+            "preminor",
+            "prepatch",
+            "prerelease",
+        ]:
+            console.print(f"\t▶ poetry version {release_type}")
         return False
 
-    input(f"Premi [INVIO] per pubblicare la versione '{local_version}'...")
+    input(f"Press [ENTER] to release version '{version_local}'...")
 
+    # 8. Create a new tag and push it to the remote
     logger.info(
-        f"Creo release per la versione '{local_version}' (latest: '{latest_tag}')")
-    # logger.info(f"Creo release per la commit '{repo.head.commit}'")
-
+        f"Creating release for version '{version_local}' (latest: '{latest_tag_local}')"
+    )
     try:
-        tag = repo.create_tag(
-            # ref=repo.head.commit,
-            # force=True,
-            path=local_version,
-            message=f"Aggiornamento alla versione {local_version}"
+        tag = repository.create_tag(
+            path=version_local,
+            message=f"Aggiornamento alla versione {version_local}",
         )
 
-        logger.debug(f"Lancio comando push per tag '{tag.name}'")
-        repo.remote('origin').push(tag.name)
-        logger.info("Upload terminato con successo!")
+        logger.debug(f"Pushing tag '{tag.name}' to remote")
+        repository.remote("origin").push(tag.name)
+        logger.info("Upload ended successfully!")
     except GitCommandError as e:
-        logger.error(f"Creazione tag '{local_version}' fallita!")
+        logger.error(f"Error while trying to create tag '{version_local}': {repr(e)}")
 
 
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    release()
