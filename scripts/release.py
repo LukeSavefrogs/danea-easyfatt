@@ -24,16 +24,24 @@ logger.addHandler(
 logger.setLevel(logging.DEBUG)
 
 
-def release(owner: str | None = None, repo: str | None = None, branch: str | None = None):
-    """ Release a new version of the project. 
-    
+def release(
+    owner: str | None = None,
+    repo: str | None = None,
+    branch: str | None = None,
+    check_changelog: bool = True,
+):
+    """Release a new version of the project.
+
     This function will check if the local repository is aligned with the remote one.
     If the local repository is aligned, it will create a new tag and push it to the remote.
-    
-    :param owner: The owner of the repository (default: None)
-    :param repo: The name of the repository (default: None)
-    :param branch: The name of the branch (default: None)
-    :return: True if the release was successful, False otherwise
+
+    If properly configured, it will also check if the `CHANGELOG.md` file has been updated.
+
+    Args:
+        owner (str, optional): The owner of the repository. Defaults to None.
+        repo (str, optional): The name of the repository. Defaults to None.
+        branch (str, optional): The name of the branch. Defaults to None.
+        check_changelog (bool, optional): Check if the `CHANGELOG.md` file has been updated. Defaults to True.
     """
     console = rich.console.Console()
 
@@ -91,6 +99,26 @@ def release(owner: str | None = None, repo: str | None = None, branch: str | Non
         return False
 
     logger.info(f"TOML files are aligned with version '{version_local}'")
+
+    # EXTRA: Check if `CHANGELOG.md` has been updated
+    if check_changelog:
+        changelog_file = (Path(".") / "CHANGELOG.md").resolve()
+        if not changelog_file.exists() or not changelog_file.is_file():
+            logger.fatal(f"File 'CHANGELOG.md' couldn't be found.")
+            return False
+
+        changed_content = changelog_file.read_text()
+        if "## [Unreleased]" in changed_content:
+            logger.critical(
+                f"File 'CHANGELOG.md' still has an '## [Unreleased]' section."
+            )
+            return False
+
+        if f"## [{version_local}]" not in changed_content:
+            logger.critical(
+                f"File 'CHANGELOG.md' does NOT have the '## [{version_local}]' section."
+            )
+            return False
 
     # 4. Check if the tags are aligned
     latest_tag_local = sorted(
@@ -183,7 +211,7 @@ def release(owner: str | None = None, repo: str | None = None, branch: str | Non
 
     input(f"Press [ENTER] to release version '{version_local}'...")
 
-    # 8. Create a new tag and push it to the remote
+    # 9. Create a new tag and push it to the remote
     logger.info(
         f"Creating release for version '{version_local}' (latest: '{latest_tag_local}')"
     )
