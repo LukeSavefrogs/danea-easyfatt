@@ -18,6 +18,8 @@ from veryeasyfatt.app.process_csv import genera_csv
 import veryeasyfatt.app.config_manager as configuration_manager
 from veryeasyfatt.app.registry import find_install_location
 
+import veryeasyfatt.bundle as bundle
+
 logger = logging.getLogger("danea-easyfatt.application.core")
 
 EASYFATT_DOCUMENT_DTYPE = {
@@ -175,7 +177,9 @@ def main(configuration_file: Optional[str] = None, goal: Optional[str] = None):
         print("\n")
 
     elif goal == "kml-generator":
-        output_file = Path("~/Desktop/test.kml").expanduser()
+        output_file = str(configuration['files']['output']['kml']).strip()
+        if output_file == "":
+            output_file = bundle.get_execution_directory() / "output.kml"
 
         generate_kml(
             xml_filename    = Path(configuration["files"]["input"]["easyfatt"]).resolve(),
@@ -184,6 +188,7 @@ def main(configuration_file: Optional[str] = None, goal: Optional[str] = None):
             google_api_key  = configuration["features"]["kml_generation"]["google_api_key"],
             placemark_title = configuration["features"]["kml_generation"]["placemark_title"],
         )
+        logger.info(f"Creazione KMl '{output_file}' terminata..")
         
         try:
             google_earth_path = find_install_location(r"SOFTWARE\Google\Google Earth Pro")

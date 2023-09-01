@@ -209,11 +209,20 @@ Contiene impostazioni relative ai file creati dal programma.
 
 ### `files.output.csv`
 
-Percorso (relativo o assoluto) al file `csv` da generare.
+Percorso (relativo o assoluto) al file `.csv` da generare.
 
 > Valore di default
 >
 > `"./Documenti.csv"`
+{: .note-title .fs-3 }
+
+### `files.output.kml`
+
+Percorso (relativo o assoluto) al file `.kml` da generare.
+
+> Valore di default
+>
+> _Cartella root del programma_
 {: .note-title .fs-3 }
 
 ## `options.output`
