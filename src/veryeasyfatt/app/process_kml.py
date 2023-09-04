@@ -307,18 +307,18 @@ def generate_kml(
                     (
                         document.delivery is not None
                         and (
-                            document.delivery.address == anagrafica.address
-                            and document.delivery.postcode == anagrafica.postcode
-                            and document.delivery.city == anagrafica.city
-                            and document.delivery.country == anagrafica.country
+                            document.delivery.address.lower() == anagrafica.address.lower()
+                            and document.delivery.postcode.lower() == anagrafica.postcode.lower()
+                            and document.delivery.city.lower() == anagrafica.city.lower()
+                            and document.delivery.country.lower() == anagrafica.country.lower()
                         )
                     )
                     or (
                         document.customer is not None
-                        and document.customer.address == anagrafica.address
-                        and document.customer.postcode == anagrafica.postcode
-                        and document.customer.city == anagrafica.city
-                        and document.customer.country == anagrafica.country
+                        and document.customer.address.lower() == anagrafica.address.lower()
+                        and document.customer.postcode.lower() == anagrafica.postcode.lower()
+                        and document.customer.city.lower() == anagrafica.city.lower()
+                        and document.customer.country.lower() == anagrafica.country.lower()
                     )
                 )
             ]
