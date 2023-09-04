@@ -1,14 +1,14 @@
 name: Create Release
 
 on:
-    workflow_dispatch:
-    push:
-        tags:
-        - 'v[0-9]+.[0-9]+.[0-9]+**'
+  workflow_dispatch:
+  push:
+    tags:
+    - 'v[0-9]+.[0-9]+.[0-9]+**'
 
 
 permissions:
-    contents: write
+  contents: write
 
 jobs:
   tests:
