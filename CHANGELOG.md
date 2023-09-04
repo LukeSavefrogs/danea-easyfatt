@@ -2,10 +2,15 @@
 
 ## [Unreleased]
 
+### Added
+
+- Ora i segnaposti del KML vengono ordinati per nome prima di essere esportati su file. Risolve issue [#95](https://github.com/LukeSavefrogs/danea-easyfatt/issues/95).
+
 ### Fixed
 
 - Corretto `FutureWarning` mostrato in seguito all'aggiornamento di `pandas` alla versione `2.1.0`.
 - Corretto bug che causava un'eccezione se **nessun documento** (tag `Document`) di carico nel file `.DefXml` aveva il tag `TransportedWeight` valorizzato. Risolve issue [#90](https://github.com/LukeSavefrogs/danea-easyfatt/issues/90).
+- Corretto bug che causava la duplicazione di segnaposti nel caso in cui ci fossero documenti con indirizzi di consegna sconosciuti (non salvati su DB). Risolve issue [#86](https://github.com/LukeSavefrogs/danea-easyfatt/issues/86).
 
 ## [v1.3.1] - 2023-09-01
 

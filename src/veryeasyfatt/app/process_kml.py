@@ -113,6 +113,72 @@ def get_coordinates(
     return (location.longitude, location.latitude, location.altitude)
 
 
+class Placemark(object):
+    def __init__(self, name, coordinates, address="", description="", hidden=False, style=None) -> None:
+        self.name = name
+        self.coordinates = coordinates
+        self.address = address
+        self.description = description
+        self.hidden = hidden
+        self.style = style
+    
+    def __str__(self) -> str:
+        attributes = [
+            f"{key}={value}"
+            for key, value in self.__dict__.items()
+            if not key.startswith("_")
+        ]
+        return f"Placemark({', '.join(attributes)})"
+
+    def __repr__(self) -> str:
+        return str(self)
+    
+    def __eq__(self, o: object) -> bool:
+        if not isinstance(o, Placemark):
+            return False
+
+        return (
+            self.name == o.name
+            and self.coordinates == o.coordinates
+        )
+    
+    def __hash__(self) -> int:
+        return hash((self.name, self.coordinates))
+    
+    # Define dunder methods that will be used to enable sorting on a list of Placemark objects
+    def __lt__(self, o: object) -> bool:
+        if not isinstance(o, Placemark):
+            return False
+
+        return self.name < o.name
+    
+    def __le__(self, o: object) -> bool:
+        if not isinstance(o, Placemark):
+            return False
+
+        return self.name <= o.name
+    
+    def __gt__(self, o: object) -> bool:
+        if not isinstance(o, Placemark):
+            return False
+
+        return self.name > o.name
+    
+    def __ge__(self, o: object) -> bool:
+        if not isinstance(o, Placemark):
+            return False
+
+        return self.name >= o.name
+    
+    def to_kml(self):
+        """ Transforms the object into a KML string. """
+        return kmlb.point(
+            name=self.name,
+            coords=self.coordinates,
+            hidden=self.hidden,
+            style_to_use=self.style,
+        )
+
 def generate_kml(
     xml_filename: (Path | str),
     database_path: (Path | str),
@@ -151,8 +217,8 @@ def generate_kml(
     populate_cache(google_api_key, addresses=anagrafiche)
 
     # Lista di indirizzi
-    customer_locations = []
-    supplier_locations = []
+    customer_locations: list[Placemark] = []
+    supplier_locations: list[Placemark] = []
 
     total_documents_processed = 0
     customers_unknown_address = []
@@ -214,14 +280,14 @@ def generate_kml(
         # --------------- Fornitori ---------------
         if not anagrafica.is_customer:
             supplier_locations.append(
-                kmlb.point(
+                Placemark(
                     name=f"{anagrafica.name}",
-                    coords=get_coordinates(
+                    coordinates=get_coordinates(
                         f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}",
                         google_api_key,
                     ),
                     hidden=True,
-                    style_to_use="Suppliers",
+                    style="Suppliers",
                 )
             )
             continue
@@ -274,16 +340,16 @@ def generate_kml(
                     address_string = f"{address.customer.address} {address.customer.postcode}, {address.customer.city}, {address.customer.country}"
 
                 customer_locations.append(
-                    kmlb.point(
+                    Placemark(
                         name=safe_formatter.format(
                             placemark_title,
                             customerName=anagrafica.name,
                             customerCode=anagrafica.code,
                             notes="",
                         ),
-                        coords=get_coordinates(address_string, google_api_key),
+                        coordinates=get_coordinates(address_string, google_api_key),
                         hidden=False,
-                        style_to_use="Customers",
+                        style="Customers",
                     )
                 )
 
@@ -292,23 +358,6 @@ def generate_kml(
                 )
                 total_documents_processed += len(known_addresses)
 
-            else:
-                customer_locations.append(
-                    kmlb.point(
-                        name=safe_formatter.format(
-                            placemark_title,
-                            customerName=anagrafica.name,
-                            customerCode=anagrafica.code,
-                            notes="",
-                        ),
-                        coords=get_coordinates(
-                            f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}",
-                            google_api_key,
-                        ),
-                        hidden=True,
-                        style_to_use="Customers",
-                    )
-                )
 
             # Se ci sono documenti con indirizzi sconosciuti
             if unknown_addresses:
@@ -331,16 +380,16 @@ def generate_kml(
                     address_buffer.append(
                         {
                             "id": unknown_address.customer.code,
-                            "data": kmlb.point(
+                            "data": Placemark(
                                 name=safe_formatter.format(
                                     placemark_title,
                                     customerName=unknown_address.customer.name,
                                     customerCode=unknown_address.customer.code,
                                     notes="- NUOVO!",
                                 ),
-                                coords=get_coordinates(address_string, google_api_key),
+                                coordinates=get_coordinates(address_string, google_api_key),
                                 hidden=False,
-                                style_to_use="Customers",
+                                style="Customers",
                             ),
                         }
                     )
@@ -366,19 +415,19 @@ def generate_kml(
                 f"Aggiungo cliente {anagrafica.code} ({anagrafica.name}) - {'PRIMARIO' if anagrafica.is_primary else 'SECONDARIO'}"
             )
             customer_locations.append(
-                kmlb.point(
+                Placemark(
                     name=safe_formatter.format(
                         placemark_title,
                         customerName=anagrafica.name,
                         customerCode=anagrafica.code,
                         notes="",
                     ),
-                    coords=get_coordinates(
+                    coordinates=get_coordinates(
                         f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}",
                         google_api_key,
                     ),
                     hidden=True,
-                    style_to_use="Customers",
+                    style="Customers",
                 )
             )
 
@@ -408,18 +457,18 @@ def generate_kml(
                     address_string = f"{document.customer.address} {document.customer.postcode}, {document.customer.city}, {document.customer.country}"
 
                 customer_locations.append(
-                    kmlb.point(
+                    Placemark(
                         name=safe_formatter.format(
                             placemark_title,
                             customerName=document.customer.name,
                             customerCode=document.customer.code,
                             notes="- CLIENTE NON CENSITO!",
                         ),
-                        coords=get_coordinates(
+                        coordinates=get_coordinates(
                             address_string, google_api_key, caching=False
                         ),
                         hidden=False,
-                        style_to_use="Customers",
+                        style="Customers",
                     )
                 )
                 unknown_customer_documents += 1
@@ -440,13 +489,13 @@ def generate_kml(
             kmlb.folder(
                 "Clienti",
                 description="Elenco completo delle anagrafiche clienti",
-                loose_items=customer_locations,
+                loose_items=[ location.to_kml() for location in sorted(customer_locations) ],
                 collapsed=True,
             ),
             kmlb.folder(
                 "Fornitori",
                 description="Elenco completo delle anagrafiche fornitori",
-                loose_items=supplier_locations,
+                loose_items=[ location.to_kml() for location in sorted(supplier_locations) ],
                 collapsed=True,
             ),
         ],
