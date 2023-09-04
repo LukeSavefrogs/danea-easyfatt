@@ -179,7 +179,7 @@ def main(configuration_file: Optional[str] = None, goal: Optional[str] = None):
                 if not pd.isna(df_weight_sum)
                 else ureg.Quantity(0, "g")
             )
-            logger.info(
+            print(
                 f"Peso totale calcolato: {peso_totale.to('kg')} ({peso_totale.to('q')} / {peso_totale.to('t')})"
             )
 

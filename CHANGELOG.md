@@ -6,6 +6,10 @@
 
 - Ora i segnaposti del KML vengono ordinati per nome prima di essere esportati su file. Risolve issue [#95](https://github.com/LukeSavefrogs/danea-easyfatt/issues/95).
 
+### Changed
+
+- Ora il peso complessivo della spedizione viene direttamente stampato a schermo. In precedenza essendo stampato come log a livello `INFO` poteva sparire se il livello minimo veniva alzato (ad esempio a `WARNING`).
+
 ### Fixed
 
 - Corretto `FutureWarning` mostrato in seguito all'aggiornamento di `pandas` alla versione `2.1.0`.
