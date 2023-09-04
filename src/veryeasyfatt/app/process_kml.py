@@ -114,14 +114,16 @@ def get_coordinates(
 
 
 class Placemark(object):
-    def __init__(self, name, coordinates, address="", description="", hidden=False, style=None) -> None:
+    def __init__(
+        self, name, coordinates, address="", description="", hidden=False, style=None
+    ) -> None:
         self.name = name
         self.coordinates = coordinates
         self.address = address
         self.description = description
         self.hidden = hidden
         self.style = style
-    
+
     def __str__(self) -> str:
         attributes = [
             f"{key}={value}"
@@ -132,52 +134,56 @@ class Placemark(object):
 
     def __repr__(self) -> str:
         return str(self)
-    
+
     def __eq__(self, o: object) -> bool:
         if not isinstance(o, Placemark):
             return False
 
-        return (
-            self.name == o.name
-            and self.coordinates == o.coordinates
-        )
-    
+        return self.name == o.name and self.coordinates == o.coordinates
+
     def __hash__(self) -> int:
         return hash((self.name, self.coordinates))
-    
+
     # Define dunder methods that will be used to enable sorting on a list of Placemark objects
     def __lt__(self, o: object) -> bool:
         if not isinstance(o, Placemark):
             return False
 
         return self.name < o.name
-    
+
     def __le__(self, o: object) -> bool:
         if not isinstance(o, Placemark):
             return False
 
         return self.name <= o.name
-    
+
     def __gt__(self, o: object) -> bool:
         if not isinstance(o, Placemark):
             return False
 
         return self.name > o.name
-    
+
     def __ge__(self, o: object) -> bool:
         if not isinstance(o, Placemark):
             return False
 
         return self.name >= o.name
-    
+
     def to_kml(self):
-        """ Transforms the object into a KML string. """
-        return kmlb.point(
+        """Transforms the object into a KML string."""
+        placemark = kmlb.point(
             name=self.name,
             coords=self.coordinates,
             hidden=self.hidden,
             style_to_use=self.style,
         )
+
+        description_el = placemark.find("description")
+        if description_el is not None:
+            description_el.text = self.description
+
+        return placemark
+
 
 def generate_kml(
     xml_filename: (Path | str),
@@ -307,18 +313,25 @@ def generate_kml(
                     (
                         document.delivery is not None
                         and (
-                            document.delivery.address.lower() == anagrafica.address.lower()
-                            and document.delivery.postcode.lower() == anagrafica.postcode.lower()
-                            and document.delivery.city.lower() == anagrafica.city.lower()
-                            and document.delivery.country.lower() == anagrafica.country.lower()
+                            document.delivery.address.lower()
+                            == anagrafica.address.lower()
+                            and document.delivery.postcode.lower()
+                            == anagrafica.postcode.lower()
+                            and document.delivery.city.lower()
+                            == anagrafica.city.lower()
+                            and document.delivery.country.lower()
+                            == anagrafica.country.lower()
                         )
                     )
                     or (
                         document.customer is not None
-                        and document.customer.address.lower() == anagrafica.address.lower()
-                        and document.customer.postcode.lower() == anagrafica.postcode.lower()
+                        and document.customer.address.lower()
+                        == anagrafica.address.lower()
+                        and document.customer.postcode.lower()
+                        == anagrafica.postcode.lower()
                         and document.customer.city.lower() == anagrafica.city.lower()
-                        and document.customer.country.lower() == anagrafica.country.lower()
+                        and document.customer.country.lower()
+                        == anagrafica.country.lower()
                     )
                 )
             ]
@@ -358,7 +371,6 @@ def generate_kml(
                 )
                 total_documents_processed += len(known_addresses)
 
-
             # Se ci sono documenti con indirizzi sconosciuti
             if unknown_addresses:
                 # Salta se sono già stati processati
@@ -387,7 +399,9 @@ def generate_kml(
                                     customerCode=unknown_address.customer.code,
                                     notes="- NUOVO!",
                                 ),
-                                coordinates=get_coordinates(address_string, google_api_key),
+                                coordinates=get_coordinates(
+                                    address_string, google_api_key
+                                ),
                                 hidden=False,
                                 style="Customers",
                             ),
@@ -489,13 +503,17 @@ def generate_kml(
             kmlb.folder(
                 "Clienti",
                 description="Elenco completo delle anagrafiche clienti",
-                loose_items=[ location.to_kml() for location in sorted(customer_locations) ],
+                loose_items=[
+                    location.to_kml() for location in sorted(customer_locations)
+                ],
                 collapsed=True,
             ),
             kmlb.folder(
                 "Fornitori",
                 description="Elenco completo delle anagrafiche fornitori",
-                loose_items=[ location.to_kml() for location in sorted(supplier_locations) ],
+                loose_items=[
+                    location.to_kml() for location in sorted(supplier_locations)
+                ],
                 collapsed=True,
             ),
         ],
