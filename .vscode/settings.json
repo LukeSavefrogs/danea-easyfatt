@@ -11,7 +11,7 @@
     // When opening a file, `editor.tabSize` and `editor.insertSpaces`
     // will be detected based on the file contents. Set to false to keep
     // the values you've explicitly set, above.
-    "editor.detectIndentation": false,
+    "editor.detectIndentation": true,
 
     "python.analysis.typeCheckingMode": "basic",
 
@@ -26,4 +26,8 @@
         "no-hard-tabs": true,
         "MD049": false,
     },
+    "github.copilot.enable": {
+		"*": true,
+		"markdown": false
+	},
 }
