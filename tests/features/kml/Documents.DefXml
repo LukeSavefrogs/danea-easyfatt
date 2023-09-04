@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- File in formato Easyfatt-XML creato con Danea Easyfatt - www.danea.it/software/easyfatt -->
+<!-- Per importare o creare un file in formato Easyfatt-Xml, consultare la documentazione tecnica: www.danea.it/software/easyfatt/xml -->
+<EasyfattDocuments AppVersion="2" Creator="Danea Easyfatt Enterprise  2023.54b" CreatorUrl="http://www.danea.it/software/easyfatt" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://www.danea.it/public/easyfatt-xml.xsd">
+  <Company>
+    <Name>ACME Inc.</Name>
+    <Address>Via Anagnina, 0</Address>
+    <Postcode>00173</Postcode>
+    <City>Roma</City>
+    <Province>RM</Province>
+    <Country>Italia</Country>
+    <FiscalCode>00000000000</FiscalCode>
+    <VatCode>00000000000</VatCode>
+    <Tel>0000000000</Tel>
+    <Email>acme@acme.com</Email>
+    <HomePage>https://example.com/</HomePage>
+  </Company>
+  <Documents>
+    <Document>
+      <CustomerCode>99999</CustomerCode>
+      <CustomerWebLogin></CustomerWebLogin>
+      <CustomerName>TEST - Non dovrebbe andare in cache</CustomerName>
+      <CustomerAddress>VIA TUSCOLANA, 0</CustomerAddress>
+      <CustomerPostcode>00182</CustomerPostcode>
+      <CustomerCity>ROMA</CustomerCity>
+      <CustomerProvince>RM</CustomerProvince>
+      <CustomerCountry>Italia</CustomerCountry>
+      <CustomerFiscalCode>PDFDNR38H51B374Q</CustomerFiscalCode>
+      <CustomerReference>TEST</CustomerReference>
+      <CustomerCellPhone>0123456789</CustomerCellPhone>
+      <CustomerEmail>test@gmail.com</CustomerEmail>
+      <DeliveryName>TEST's temporary address</DeliveryName>
+      <DeliveryAddress>VIA TUSCOLANA, 1000</DeliveryAddress>
+      <DeliveryPostcode>00174</DeliveryPostcode>
+      <DeliveryCity>ROMA</DeliveryCity>
+      <DeliveryProvince>RM</DeliveryProvince>
+      <DeliveryCountry>Italia</DeliveryCountry>
+      <DocumentType>C</DocumentType>
+      <Date>2023-01-30</Date>
+      <Number>725</Number>
+      <Numbering></Numbering>
+      <CostDescription></CostDescription>
+      <CostVatCode></CostVatCode>
+      <CostAmount></CostAmount>
+      <ContribDescription></ContribDescription>
+      <ContribPerc></ContribPerc>
+      <ContribSubjectToWithholdingTax></ContribSubjectToWithholdingTax>
+      <ContribAmount></ContribAmount>
+      <ContribVatCode></ContribVatCode>
+      <TotalWithoutTax>92.21</TotalWithoutTax>
+      <VatAmount>20.29</VatAmount>
+      <WithholdingTaxAmount>0</WithholdingTaxAmount>
+      <WithholdingTaxAmountB>0</WithholdingTaxAmountB>
+      <WithholdingTaxNameB></WithholdingTaxNameB>
+      <Total>112.5</Total>
+      <PriceList>Dom. OFFERTA</PriceList>
+      <PricesIncludeVat>true</PricesIncludeVat>
+      <TotalSubjectToWithholdingTax>0</TotalSubjectToWithholdingTax>
+      <WithholdingTaxPerc>0</WithholdingTaxPerc>
+      <WithholdingTaxPerc2>0</WithholdingTaxPerc2>
+      <PaymentName></PaymentName>
+      <PaymentBank></PaymentBank>
+      <PaymentAdvanceAmount></PaymentAdvanceAmount>
+      <Carrier></Carrier>
+      <TransportReason></TransportReason>
+      <GoodsAppearance></GoodsAppearance>
+      <NumOfPieces></NumOfPieces>
+      <TransportDateTime></TransportDateTime>
+      <ShipmentTerms></ShipmentTerms>
+      <TransportedWeight></TransportedWeight>
+      <TrackingNumber></TrackingNumber>
+      <InternalComment></InternalComment>
+      <CustomField1>7:00&gt;&gt;18:00</CustomField1>
+      <CustomField2></CustomField2>
+      <CustomField3></CustomField3>
+      <CustomField4></CustomField4>
+      <FootNotes></FootNotes>
+      <ExpectedConclusionDate></ExpectedConclusionDate>
+      <SalesAgent></SalesAgent>
+      <Rows>
+        <Row>
+          <Code>000029</Code>
+          <Description>ACQUA EGERIA LT.1,5X6 PET EFFERVESCENTE NATURALE PLASTICA</Description>
+          <Qty>30</Qty>
+          <Um>CF</Um>
+          <Price>3.75</Price>
+          <Discounts></Discounts>
+          <VatCode Perc="22" Class="Imponibile" Description="Imponibile 22%">22</VatCode>
+          <Total>112.5</Total>
+          <Stock>true</Stock>
+          <Notes></Notes>
+        </Row>
+      </Rows>
+    </Document>
+    <Document>
+      <CustomerCode>99999</CustomerCode>
+      <CustomerWebLogin></CustomerWebLogin>
+      <CustomerName>TEST - Non dovrebbe andare in cache</CustomerName>
+      <CustomerAddress>VIA TUSCOLANA, 0</CustomerAddress>
+      <CustomerPostcode>00182</CustomerPostcode>
+      <CustomerCity>ROMA</CustomerCity>
+      <CustomerProvince>RM</CustomerProvince>
+      <CustomerCountry>Italia</CustomerCountry>
+      <CustomerFiscalCode>PDFDNR38H51B374Q</CustomerFiscalCode>
+      <CustomerReference>TEST</CustomerReference>
+      <CustomerCellPhone>0123456789</CustomerCellPhone>
+      <CustomerEmail>test@gmail.com</CustomerEmail>
+      <DeliveryName>TEST's temporary address</DeliveryName>
+      <DeliveryAddress>VIA TUSCOLANA, 1000</DeliveryAddress>
+      <DeliveryPostcode>00174</DeliveryPostcode>
+      <DeliveryCity>ROMA</DeliveryCity>
+      <DeliveryProvince>RM</DeliveryProvince>
+      <DeliveryCountry>Italia</DeliveryCountry>
+      <DocumentType>C</DocumentType>
+      <Date>2023-01-30</Date>
+      <Number>725</Number>
+      <Numbering></Numbering>
+      <CostDescription></CostDescription>
+      <CostVatCode></CostVatCode>
+      <CostAmount></CostAmount>
+      <ContribDescription></ContribDescription>
+      <ContribPerc></ContribPerc>
+      <ContribSubjectToWithholdingTax></ContribSubjectToWithholdingTax>
+      <ContribAmount></ContribAmount>
+      <ContribVatCode></ContribVatCode>
+      <TotalWithoutTax>92.21</TotalWithoutTax>
+      <VatAmount>20.29</VatAmount>
+      <WithholdingTaxAmount>0</WithholdingTaxAmount>
+      <WithholdingTaxAmountB>0</WithholdingTaxAmountB>
+      <WithholdingTaxNameB></WithholdingTaxNameB>
+      <Total>112.5</Total>
+      <PriceList>Dom. OFFERTA</PriceList>
+      <PricesIncludeVat>true</PricesIncludeVat>
+      <TotalSubjectToWithholdingTax>0</TotalSubjectToWithholdingTax>
+      <WithholdingTaxPerc>0</WithholdingTaxPerc>
+      <WithholdingTaxPerc2>0</WithholdingTaxPerc2>
+      <PaymentName></PaymentName>
+      <PaymentBank></PaymentBank>
+      <PaymentAdvanceAmount></PaymentAdvanceAmount>
+      <Carrier></Carrier>
+      <TransportReason></TransportReason>
+      <GoodsAppearance></GoodsAppearance>
+      <NumOfPieces></NumOfPieces>
+      <TransportDateTime></TransportDateTime>
+      <ShipmentTerms></ShipmentTerms>
+      <TransportedWeight></TransportedWeight>
+      <TrackingNumber></TrackingNumber>
+      <InternalComment></InternalComment>
+      <CustomField1>7:00&gt;&gt;18:00</CustomField1>
+      <CustomField2></CustomField2>
+      <CustomField3></CustomField3>
+      <CustomField4></CustomField4>
+      <FootNotes></FootNotes>
+      <ExpectedConclusionDate></ExpectedConclusionDate>
+      <SalesAgent></SalesAgent>
+      <Rows>
+        <Row>
+          <Code>000029</Code>
+          <Description>ACQUA EGERIA LT.1,5X6 PET EFFERVESCENTE NATURALE PLASTICA</Description>
+          <Qty>30</Qty>
+          <Um>CF</Um>
+          <Price>3.75</Price>
+          <Discounts></Discounts>
+          <VatCode Perc="22" Class="Imponibile" Description="Imponibile 22%">22</VatCode>
+          <Total>112.5</Total>
+          <Stock>true</Stock>
+          <Notes></Notes>
+        </Row>
+      </Rows>
+    </Document>
+  </Documents>
+</EasyfattDocuments>
