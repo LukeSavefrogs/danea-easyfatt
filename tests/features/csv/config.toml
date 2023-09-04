@@ -1,0 +1,5 @@
+[files.input]
+easyfatt = "./tests/features/csv/Documents.DefXml"
+
+[features.shipping]
+default_interval = "09:00-18:00"
