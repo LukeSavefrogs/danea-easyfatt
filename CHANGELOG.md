@@ -5,6 +5,7 @@
 ### Added
 
 - Ora i segnaposti del KML vengono ordinati per nome prima di essere esportati su file. Risolve issue [#95](https://github.com/LukeSavefrogs/danea-easyfatt/issues/95).
+- Aggiunta possibilità di copiare il contenuto del file CSV negli appunti. Risolve issue [#94](https://github.com/LukeSavefrogs/danea-easyfatt/issues/94).
 
 ### Changed
 

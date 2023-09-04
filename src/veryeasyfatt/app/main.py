@@ -9,6 +9,7 @@ import logging
 
 import pandas as pd
 import pint
+import pyperclip
 
 from rich.prompt import Confirm, IntPrompt
 
@@ -133,6 +134,13 @@ def main(configuration_file: Optional[str] = None, goal: Optional[str] = None):
                     "default_interval"
                 ],
             )
+
+            if Confirm.ask(
+                f"Copiare negli appunti il contenuto del CSV?",
+                choices=["s", "n"],
+            ):
+                pyperclip.copy("\n".join(righe_csv))
+                logger.info("Righe CSV copiate negli appunti.")
 
             # Salvo il csv su file
             with open(configuration["files"]["output"]["csv"], "w") as csv_file:
