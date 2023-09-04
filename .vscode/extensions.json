@@ -1,10 +1,11 @@
 {
 	"recommendations": [
-		"njpwerner.autodocstring",
-		"formulahendry.auto-rename-tag",
-		"tamasfe.even-better-toml",
-		"mechatroner.rainbow-csv",
-		"redhat.vscode-xml",
-		"grapecity.gc-excelviewer"
-	]
+        "njpwerner.autodocstring",
+        "formulahendry.auto-rename-tag",
+        "tamasfe.even-better-toml",
+        "mechatroner.rainbow-csv",
+        "redhat.vscode-xml",
+        "grapecity.gc-excelviewer",
+        "davidanson.vscode-markdownlint"
+    ]
 }
