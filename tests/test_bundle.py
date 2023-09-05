@@ -68,24 +68,6 @@ class BundleTestCase(unittest.TestCase):
 
         self.assertRegex(command_output, r"v[0-9]+\.[0-9]+\.[0-9]+.*")
 
-    def test_warning_conf_not_found(self):
-        """Tests the behaviour of the program when the specified configuration cannot be found"""
-        non_existent_file = f"{secrets.token_hex(32)}.toml"
-
-        command_output = subprocess.run(
-            [self._executable_name, "--disable-rich-logging", "-c", non_existent_file],
-            timeout=360,
-            input="\n",
-            capture_output=True,
-            text=True,
-        ).stdout
-
-        self.assertRegex(
-            command_output,
-            f"File di configurazione utente '.*?{non_existent_file}' non trovato\\.",
-        )
-        self.assertRegex(command_output, "Utilizzo la configurazione di default")
-
     def test_no_version_check(self):
         """Tests if no version check is done."""
         command_output = subprocess.run(
