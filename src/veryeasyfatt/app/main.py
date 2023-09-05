@@ -181,15 +181,7 @@ def main(goal: Optional[str] = None):
         print("\n")
 
     elif goal == "kml-generator":
-        generate_kml(
-            database_path=(
-                Path(settings["easyfatt"]["database"]["filename"])
-                .expanduser()
-                .resolve()
-            ),
-            google_api_key=settings["features"]["kml_generation"]["google_api_key"],
-            placemark_title=settings["features"]["kml_generation"]["placemark_title"],
-        )
+        generate_kml()
         logger.info(f"Creazione KMl '{settings.files.output.kml}' terminata..")
 
         try:

@@ -75,6 +75,22 @@ def _get_settings() -> Dynaconf:
                 if str(value).strip() == ""
                 else int(value),
             ),
+            Validator(
+                "features.kml_generation.google_api_key",
+                default=None,
+                when=Validator("features.kml_generation.google_api_key", eq=""),
+                cast=lambda value: None
+                if str(value).strip() == ""
+                else str(value),
+            ),
+            Validator(
+                "features.kml_generation.placemark_title",
+                default="{customerName} ({customerCode}) {notes}",
+                when=Validator("features.kml_generation.placemark_title", eq=""),
+                cast=lambda value: "{customerName} ({customerCode}) {notes}"
+                if str(value).strip() == ""
+                else value,
+            ),
         ],
         envvar_prefix="VERYEASYFATT",  # Prefix used by Dynaconf to load values from environment variables
     )

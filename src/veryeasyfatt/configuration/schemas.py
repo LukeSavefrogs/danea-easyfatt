@@ -22,7 +22,7 @@ class FilesSchema:
 @dataclasses.dataclass
 class InputFilesSchema:
     easyfatt: Path
-    addition: Path
+    addition: Path | None
 
 
 @dataclasses.dataclass
@@ -39,7 +39,7 @@ class EasyfattSchema:
 
 @dataclasses.dataclass
 class DatabaseEasyfattSchema:
-    filename: Path
+    filename: Path | None
 
 
 @dataclasses.dataclass
@@ -71,5 +71,5 @@ class ShippingFeaturesSchema:
 
 @dataclasses.dataclass
 class KmlGenerationFeaturesSchema:
-    google_api_key: str
+    google_api_key: str | None
     placemark_title: str
