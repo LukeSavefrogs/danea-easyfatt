@@ -119,3 +119,5 @@ vendor/
 # Rimuovere dopo la fase di sviluppo
 src/**/routexl/
 tests/data
+# Ignore dynaconf secret files
+.secrets.*
