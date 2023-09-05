@@ -55,7 +55,7 @@ class OptionsSchema:
 
 @dataclasses.dataclass
 class OutputOptionsSchema:
-    csv_template: Path
+    csv_template: str
 
 
 @dataclasses.dataclass
