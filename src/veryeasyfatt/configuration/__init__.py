@@ -67,6 +67,14 @@ def _get_settings() -> Dynaconf:
                 if str(value).strip() == ""
                 else Path(value),
             ),
+            Validator(
+                "easyfatt.customers.custom_field",
+                default=1,
+                when=Validator("easyfatt.customers.custom_field", eq=""),
+                cast=lambda value: 1
+                if str(value).strip() == ""
+                else int(value),
+            ),
         ],
         envvar_prefix="VERYEASYFATT",  # Prefix used by Dynaconf to load values from environment variables
     )

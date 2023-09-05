@@ -44,7 +44,7 @@ class DatabaseEasyfattSchema:
 
 @dataclasses.dataclass
 class CustomersEasyfattSchema:
-    custom_field: Path
+    custom_field: int
     export_filename: Path
 
 

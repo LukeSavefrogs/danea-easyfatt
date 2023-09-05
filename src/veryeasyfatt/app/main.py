@@ -108,12 +108,7 @@ def main(goal: Optional[str] = None):
         try:
             righe_csv = genera_csv(
                 xml_text=nuovo_xml,
-                template_riga=settings["options"]["output"]["csv_template"],
                 customer_files=settings["easyfatt"]["customers"]["export_filename"],
-                extra_field_id=settings["easyfatt"]["customers"]["custom_field"],
-                default_shipping_interval=settings["features"]["shipping"][
-                    "default_interval"
-                ],
             )
 
             if Confirm.ask(
