@@ -4,9 +4,10 @@ from dynaconf import Dynaconf, Validator
 from veryeasyfatt import bundle
 from veryeasyfatt.configuration.schemas import SettingsSchema
 
+
 def _get_settings() -> Dynaconf:
-    """ FOR INTERNAL USE ONLY!
-    
+    """FOR INTERNAL USE ONLY!
+
     Returns a `Dynaconf` object representing the application settings.
     This function can be used to test the configuration.
 
@@ -36,7 +37,9 @@ def _get_settings() -> Dynaconf:
                 "files.input.easyfatt",
                 default=bundle.get_execution_directory() / "Documenti.DefXml",
                 when=Validator("files.input.easyfatt", eq=""),
-                cast=lambda value: Path(bundle.get_execution_directory() / "Documenti.DefXml")
+                cast=lambda value: Path(
+                    bundle.get_execution_directory() / "Documenti.DefXml"
+                )
                 if str(value).strip() == ""
                 else Path(value),
             ),
@@ -44,15 +47,15 @@ def _get_settings() -> Dynaconf:
                 "files.input.addition",
                 default=None,
                 when=Validator("files.input.addition", eq=""),
-                cast=lambda value: None
-                if str(value).strip() == ""
-                else Path(value),
+                cast=lambda value: None if str(value).strip() == "" else Path(value),
             ),
             Validator(
                 "files.output.csv",
                 default=bundle.get_execution_directory() / "Documenti.csv",
                 when=Validator("files.output.csv", eq=""),
-                cast=lambda value: Path(bundle.get_execution_directory() / "Documenti.csv")
+                cast=lambda value: Path(
+                    bundle.get_execution_directory() / "Documenti.csv"
+                )
                 if str(value).strip() == ""
                 else Path(value),
             ),
@@ -68,7 +71,8 @@ def _get_settings() -> Dynaconf:
         envvar_prefix="VERYEASYFATT",  # Prefix used by Dynaconf to load values from environment variables
     )
 
-settings: SettingsSchema = _get_settings() # pyright: ignore[reportGeneralTypeIssues]
+
+settings: SettingsSchema = _get_settings()  # pyright: ignore[reportGeneralTypeIssues]
 
 # Setup default values for missing settings
 # if str(settings.files.output.kml).strip() == "":
