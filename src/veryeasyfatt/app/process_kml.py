@@ -19,6 +19,7 @@ from easyfatt_db_connector.xml.document import Document
 from veryeasyfatt.app import caching
 import veryeasyfatt.bundle as bundle
 from veryeasyfatt.formatter import SimpleFormatter
+from veryeasyfatt.configuration import settings
 
 logger = logging.getLogger("danea-easyfatt.kml")
 
@@ -186,9 +187,7 @@ class Placemark(object):
 
 
 def generate_kml(
-    xml_filename: (Path | str),
     database_path: (Path | str),
-    output_filename: (Path | str) = "export.kml",
     google_api_key=None,
     placemark_title=None,
 ):
@@ -215,9 +214,9 @@ def generate_kml(
 
     logger.info("Start")
     logger.info(f"Database path: {database_path}")
-    logger.info(f"XML path: {xml_filename}")
+    logger.info(f"XML path: '{settings.files.output.kml}'")
 
-    xml_object = read_xml(xml_filename)
+    xml_object = read_xml(settings.files.output.kml)
     anagrafiche = get_all_addresses(database_path)
 
     populate_cache(google_api_key, addresses=anagrafiche)
@@ -546,10 +545,10 @@ def generate_kml(
         ],
     )
 
-    with open(output_filename, "w") as file:
+    with open(settings.files.output.kml, "w") as file:
         file.write(kml)
 
-    logger.info(f"KML file saved to '{output_filename}'")
+    logger.info(f"KML file saved to '{settings.files.output.kml}'")
 
 
 def populate_cache(

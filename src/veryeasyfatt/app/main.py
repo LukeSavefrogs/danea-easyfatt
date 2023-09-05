@@ -17,10 +17,10 @@ from veryeasyfatt.app.process_kml import generate_kml, populate_cache
 from veryeasyfatt.app.process_xml import modifica_xml
 from veryeasyfatt.app.process_csv import genera_csv
 
-import veryeasyfatt.app.config_manager as configuration_manager
 from veryeasyfatt.app.registry import find_install_location
 
 import veryeasyfatt.bundle as bundle
+from veryeasyfatt.configuration import settings
 
 logger = logging.getLogger("danea-easyfatt.application.core")
 
@@ -35,28 +35,12 @@ EASYFATT_DOCUMENT_DTYPE = {
 # -----------------------------------------------------------
 #                        Inizio codice
 # -----------------------------------------------------------
-def main(configuration_file: Optional[str] = None, goal: Optional[str] = None):
-    # ==================================================================
-    #                       Lettura configurazione
-    # ==================================================================
-    try:
-        configuration = configuration_manager.get_configuration(configuration_file)
-    except Exception as e:
-        logger.critical(f"Errore in fase di recupero configurazione: {e}")
-        return False
-
-    if configuration["log_level"]:
-        logging.getLogger("danea-easyfatt").setLevel(
-            logging.getLevelName(configuration["log_level"])
-        )
-
-    logger.debug(f"Configurazione in uso: \n{json.dumps(configuration, indent=4)}")
-
+def main(goal: Optional[str] = None):
     # ==================================================================
     #                     Controllo file richiesti
     # ==================================================================
     REQUIRED_FILES = [
-        Path(configuration["files"]["input"]["easyfatt"]),
+        Path(settings.files.input.easyfatt),
     ]
     missing_required_file = False
     for required_file in REQUIRED_FILES:
@@ -100,15 +84,15 @@ def main(configuration_file: Optional[str] = None, goal: Optional[str] = None):
     if goal == "csv-generator":
         # 1. Modifico l'XML
         nuovo_xml: str
-        if configuration["files"]["input"]["addition"] != "":
+        if settings["files"]["input"]["addition"] != "":
             try:
                 # Aggiunge il contenuto di `additional_xml_file` all'interno di `easyfatt_xml`
                 nuovo_xml = modifica_xml(
                     easyfatt_xml_file=Path(
-                        configuration["files"]["input"]["easyfatt"]
+                        settings["files"]["input"]["easyfatt"]
                     ).resolve(),
                     additional_xml_file=Path(
-                        configuration["files"]["input"]["addition"]
+                        settings["files"]["input"]["addition"]
                     ).resolve(),
                 )
 
@@ -118,19 +102,17 @@ def main(configuration_file: Optional[str] = None, goal: Optional[str] = None):
                 return False
         else:
             nuovo_xml = (
-                Path(configuration["files"]["input"]["easyfatt"]).resolve().read_text()
+                Path(settings["files"]["input"]["easyfatt"]).resolve().read_text()
             )
 
         # 2. Genero il CSV sulla base del template
         try:
             righe_csv = genera_csv(
                 xml_text=nuovo_xml,
-                template_riga=configuration["options"]["output"]["csv_template"],
-                customer_files=configuration["easyfatt"]["customers"][
-                    "export_filename"
-                ],
-                extra_field_id=configuration["easyfatt"]["customers"]["custom_field"],
-                default_shipping_interval=configuration["features"]["shipping"][
+                template_riga=settings["options"]["output"]["csv_template"],
+                customer_files=settings["easyfatt"]["customers"]["export_filename"],
+                extra_field_id=settings["easyfatt"]["customers"]["custom_field"],
+                default_shipping_interval=settings["features"]["shipping"][
                     "default_interval"
                 ],
             )
@@ -143,11 +125,11 @@ def main(configuration_file: Optional[str] = None, goal: Optional[str] = None):
                 logger.info("Righe CSV copiate negli appunti.")
 
             # Salvo il csv su file
-            with open(configuration["files"]["output"]["csv"], "w") as csv_file:
+            with open(settings["files"]["output"]["csv"], "w") as csv_file:
                 csv_file.write("\n".join(righe_csv))
 
             logger.info(
-                f"Creazione CSV '{configuration['files']['output']['csv']}' terminata.."
+                f"Creazione CSV '{settings['files']['output']['csv']}' terminata.."
             )
         except Exception:
             logger.exception("Errore durante la generazione del file CSV.")
@@ -202,33 +184,23 @@ def main(configuration_file: Optional[str] = None, goal: Optional[str] = None):
         # Issue #20
         print("\n")
         if Confirm.ask(
-            f"Aprire il file '{configuration['files']['output']['csv']}'?",
+            f"Aprire il file '{settings['files']['output']['csv']}'?",
             choices=["s", "n"],
         ):
-            os.startfile(
-                Path(configuration["files"]["output"]["csv"]).resolve(), "open"
-            )
+            os.startfile(Path(settings["files"]["output"]["csv"]).resolve(), "open")
         print("\n")
 
     elif goal == "kml-generator":
-        output_file = str(configuration["files"]["output"]["kml"]).strip()
-        if output_file == "":
-            output_file = bundle.get_execution_directory() / "output.kml"
-
         generate_kml(
-            xml_filename=Path(configuration["files"]["input"]["easyfatt"]).resolve(),
-            database_path=Path(configuration["easyfatt"]["database"]["filename"])
-            .expanduser()
-            .resolve(),
-            output_filename=output_file,
-            google_api_key=configuration["features"]["kml_generation"][
-                "google_api_key"
-            ],
-            placemark_title=configuration["features"]["kml_generation"][
-                "placemark_title"
-            ],
+            database_path=(
+                Path(settings["easyfatt"]["database"]["filename"])
+                .expanduser()
+                .resolve()
+            ),
+            google_api_key=settings["features"]["kml_generation"]["google_api_key"],
+            placemark_title=settings["features"]["kml_generation"]["placemark_title"],
         )
-        logger.info(f"Creazione KMl '{output_file}' terminata..")
+        logger.info(f"Creazione KMl '{settings.files.output.kml}' terminata..")
 
         try:
             google_earth_path = find_install_location(
@@ -240,7 +212,7 @@ def main(configuration_file: Optional[str] = None, goal: Optional[str] = None):
                 subprocess.Popen(
                     [
                         str(Path(google_earth_path, "googleearth.exe").resolve()),
-                        str(output_file),
+                        str(settings.files.output.kml),
                     ],
                     shell=True,
                     cwd=str(google_earth_path),
@@ -250,12 +222,12 @@ def main(configuration_file: Optional[str] = None, goal: Optional[str] = None):
 
     elif goal.startswith("initialize-geo-cache"):
         populate_cache(
-            google_api_key=configuration["features"]["kml_generation"][
-                "google_api_key"
-            ],
-            database_path=Path(configuration["easyfatt"]["database"]["filename"])
-            .expanduser()
-            .resolve(),
+            google_api_key=settings.features.kml_generation.google_api_key,
+            database_path=(
+                Path(settings["easyfatt"]["database"]["filename"])
+                .expanduser()
+                .resolve()
+            ),
             dry_run=goal.endswith("-dryrun"),
         )
 

@@ -35,6 +35,7 @@ if sys.platform != "win32":
     sys.exit(1)
 
 import veryeasyfatt.app.main as application
+from veryeasyfatt.configuration import settings
 
 
 # -----------------------------------------------------------
@@ -96,11 +97,28 @@ def main():
     )
     cli_args = parser.parse_args()
 
-    logger.debug(f"CLI parameters: {cli_args}")
+    if cli_args.configuration_file is not None:
+        print("Loading custom configuration file: ", cli_args.configuration_file)
+        settings.load_file(cli_args.configuration_file)
+
+    logger.debug(f"Configurazione in uso: \n{settings}")
 
     if cli_args.enable_rich_logging:
         logger.handlers.clear()
         logger.addHandler(rich_handler)
+
+    try:
+        logging.getLogger("danea-easyfatt").setLevel(
+            logging.getLevelName(settings.get("log_level"))
+        )
+    except ValueError:
+        logger.warning(
+            f"Invalid log level '{settings.get('log_level')}'. Use one of the following: "
+            + ", ".join(logging._nameToLevel.keys())
+        )
+        return False
+
+    logger.debug(f"CLI parameters: {cli_args}")
 
     logger.debug(f"Execution directory: '{bundle.get_execution_directory()}'")
     logger.debug(f"Bundle directory   : '{bundle.get_bundle_directory()}'")
@@ -140,7 +158,7 @@ def main():
             return False
 
     try:
-        application.main(cli_args.configuration_file, cli_args.goal)
+        application.main(cli_args.goal)
     except Exception:
         logger.exception("Eccezione inaspettata nell'applicazione")
 
