@@ -8,7 +8,6 @@ from typing import Optional
 import logging
 
 import pandas as pd
-import pint
 import pyperclip
 
 from rich.prompt import Confirm, IntPrompt
@@ -16,8 +15,8 @@ from rich.prompt import Confirm, IntPrompt
 from veryeasyfatt.app.process_kml import generate_kml, populate_cache
 from veryeasyfatt.app.process_xml import modifica_xml
 from veryeasyfatt.app.process_csv import genera_csv
-
 from veryeasyfatt.app.registry import find_install_location
+from veryeasyfatt.shared.measuring import unit_registry
 
 import veryeasyfatt.bundle as bundle
 from veryeasyfatt.configuration import settings
@@ -137,12 +136,6 @@ def main(goal: Optional[str] = None):
 
         # 3. Calcolo il peso totale della spedizione
         try:
-            ureg = pint.UnitRegistry(
-                autoconvert_offset_to_baseunit=True, on_redefinition="raise"
-            )
-            ureg.default_format = "~P"
-            ureg.define("quintal = 100 * kg = q = centner")
-
             df = pd.read_xml(
                 StringIO(nuovo_xml),
                 parser="etree",
@@ -158,16 +151,18 @@ def main(goal: Optional[str] = None):
             df["TransportedWeight"] = df["TransportedWeight"].map(
                 lambda v: v
                 if (v is None or pd.isnull(v))
-                else ureg.Quantity(str(v).replace(".", "").replace(",", ".").lower())
+                else unit_registry.Quantity(
+                    str(v).replace(".", "").replace(",", ".").lower()
+                )
                 .to("g")
                 .magnitude
             )
 
             df_weight_sum = df["TransportedWeight"].sum()
             peso_totale = (
-                ureg.Quantity(df_weight_sum, "g")
+                unit_registry.Quantity(df_weight_sum, "g")
                 if not pd.isna(df_weight_sum)
-                else ureg.Quantity(0, "g")
+                else unit_registry.Quantity(0, "g")
             )
             print(
                 f"Peso totale calcolato: {peso_totale.to('kg')} ({peso_totale.to('q')} / {peso_totale.to('t')})"
