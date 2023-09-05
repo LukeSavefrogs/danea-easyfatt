@@ -50,7 +50,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 build = "scripts.build:main"
-release = "scripts.release:main"
+release = "scripts.release:release"
 
 
 [tool.poe.tasks.docs]
