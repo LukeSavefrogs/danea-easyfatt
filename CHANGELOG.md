@@ -29,7 +29,7 @@
 
 - Aggiunto supporto per formattazione user-friendly alle voci di configurazione `features.kml_generation.placemark_title` e `options.output.csv_template`. Risolve issue [#17](https://github.com/LukeSavefrogs/danea-easyfatt/issues/17).
 
-## [v1.3.0] - 2021-08-31
+## [v1.3.0] - 2023-08-31
 
 ### Added
 
