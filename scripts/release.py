@@ -70,13 +70,19 @@ def release(
     if repo is None:
         repo = repository_info[1]
 
-    remote_toml_file = f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/pyproject.toml?nocache={random.randint(0, 123456)}"
+    remote_toml_file = f"https://api.github.com/repos/{owner}/{repo}/contents/pyproject.toml"
 
     # 2. Read remote "pyproject.toml" file
     try:
         remote_toml_file_content = requests.get(
             remote_toml_file,
-            headers={"Cache-Control": "no-cache", "Pragma": "no-cache", "Expires": "0"},
+            headers={
+                "Cache-Control": "no-cache",
+                "Pragma": "no-cache",
+                "Expires": "0",
+                "Accept": "application/vnd.github.raw",
+                "X-GitHub-Api-Version": "2022-11-28",
+            },
         ).text
     except Exception as e:
         logger.critical(f"Error while fetching the remote TOML file: {repr(e)}")
@@ -126,7 +132,7 @@ def release(
     )[-1]
     try:
         latest_tag_remote = requests.get(
-            f"https://api.github.com/repos/{owner}/{repo}/tags?nocache={random.randint(0, 123456)}",
+            f"https://api.github.com/repos/{owner}/{repo}/tags",
             headers={"Cache-Control": "no-cache", "Pragma": "no-cache", "Expires": "0"},
         ).json()[0]["name"]
     except Exception as e:
