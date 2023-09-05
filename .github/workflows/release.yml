@@ -105,9 +105,9 @@ jobs:
           fi
 
           changelog_slug="$(node ./slugify.mjs "$changelog_slug")";
-          echo "Changelog slug: '$changelog_slug'"
+          echo "Generated changelog slug: '$changelog_slug'";
 
-          echo "::set-output name=changelog_slug::${changelog_slug}";
+          echo "changelog_slug='${changelog_slug}'" >> $GITHUB_OUTPUT;
 
       - name: "🏁 Create Release"
         uses: ncipollo/release-action@v1
