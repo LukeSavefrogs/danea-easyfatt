@@ -63,12 +63,59 @@ jobs:
           include-compare: true
           semver: false
 
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - run: npm install github-slugger
+
+      - name: "Create file"
+        uses: DamianReeves/write-file-action@master
+        with:
+          path: ./slugify.mjs
+          contents: |
+            import process from 'node:process';
+            import GithubSlugger from 'github-slugger';
+
+            const title = process.argv[2].replace(/^#*\s*/, "", "g");
+            const slugger = new GithubSlugger();
+            
+            console.log(slugger.slug(title));
+          write-mode: append
+
+        
+      - name: "Find changelog entry"
+        id: find_changelog
+        shell: bash
+        run: |
+          echo "Github ref: '${{ github.ref }}'";
+          tag_name="$(echo "${{ github.ref }}" | sed -r 's/refs\/tags\///')";
+          echo "Tag name: '$tag_name'";
+          changelog_slug="$(grep -P "^##\s*\[\s*${tag_name//./\\.}\s*\].*" CHANGELOG.md)";
+
+          echo "::debug::Changelog entry: '$changelog_slug'";
+
+          if [[ -z "$changelog_slug" ]]; then
+            echo "No changelog entry found for ${{ github.ref }}";
+            exit 1;
+          elif [[ "$(wc -l <<< "$changelog_slug")" -gt 1 ]]; then
+            echo "Multiple changelog entries found for ${{ github.ref }}";
+            exit 1;
+          fi
+
+          changelog_slug="$(node ./slugify.mjs "$changelog_slug")";
+          echo "Changelog slug: '$changelog_slug'"
+
+          echo "::set-output name=changelog_slug::${changelog_slug}";
+
       - name: "🏁 Create Release"
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: false
           body: |
             Di seguito l'elenco delle modifiche introdotte in questa versione.
+
+            [**Visualizza il changelog completo**](/CHANGELOG.md#${{ steps.find_changelog.outputs.changelog_slug }})
             
             ${{ steps.changelog.outputs.changelog }}
           # generateReleaseNotes: true
