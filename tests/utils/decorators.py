@@ -12,7 +12,7 @@ def with_temporary_file(content="", file_prefix="veryeasyfatt-", file_suffix=".c
     """
     def decorator(decorated_function):
         @functools.wraps(decorated_function)
-        def wrapper(self):
+        def wrapper(self, *args, **kwargs):
             """ Wrapper around the test method. """
             # Create temporary file
             (fd, temp_file) = tempfile.mkstemp(prefix=file_prefix, suffix=file_suffix, text=True)
@@ -23,7 +23,7 @@ def with_temporary_file(content="", file_prefix="veryeasyfatt-", file_suffix=".c
 
             try:
                 # Execute the test by passing the configuration file path as the first parameter
-                decorated_function(self, temp_config_file, *args, **kwargs)
+                decorated_function(self, *args, temp_config_file, **kwargs)
             except Exception:
                 raise
             finally:
