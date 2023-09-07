@@ -18,7 +18,6 @@ from veryeasyfatt.app.process_csv import genera_csv
 from veryeasyfatt.app.registry import find_install_location
 from veryeasyfatt.shared.measuring import unit_registry
 
-import veryeasyfatt.bundle as bundle
 from veryeasyfatt.configuration import settings
 
 logger = logging.getLogger("danea-easyfatt.application.core")
@@ -99,10 +98,7 @@ def main(goal: Optional[str] = None):
 
         # 2. Genero il CSV sulla base del template
         try:
-            righe_csv = genera_csv(
-                xml_text=nuovo_xml,
-                customer_files=settings["easyfatt"]["customers"]["export_filename"],
-            )
+            righe_csv = genera_csv(xml_text=nuovo_xml)
 
             if Confirm.ask(
                 f"Copiare negli appunti il contenuto del CSV?",
