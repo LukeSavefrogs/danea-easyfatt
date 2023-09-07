@@ -99,7 +99,7 @@ def main():
 
     if cli_args.configuration_file is not None:
         print("Loading custom configuration file: ", cli_args.configuration_file)
-        settings.load_file(cli_args.configuration_file)
+        settings.load_file(cli_args.configuration_file, validate=True)
 
     logger.debug(f"Configurazione in uso: \n{settings}")
 
