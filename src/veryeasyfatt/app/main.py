@@ -83,17 +83,10 @@ def main(goal: Optional[str] = None):
     if goal == "csv-generator":
         # 1. Modifico l'XML
         nuovo_xml: str
-        if settings["files"]["input"]["addition"] != "":
+        if settings.files.input.addition is not None:
             try:
                 # Aggiunge il contenuto di `additional_xml_file` all'interno di `easyfatt_xml`
-                nuovo_xml = modifica_xml(
-                    easyfatt_xml_file=Path(
-                        settings["files"]["input"]["easyfatt"]
-                    ).resolve(),
-                    additional_xml_file=Path(
-                        settings["files"]["input"]["addition"]
-                    ).resolve(),
-                )
+                nuovo_xml = modifica_xml()
 
                 logger.info(f"Analisi e modifica XML terminata..")
             except Exception as e:

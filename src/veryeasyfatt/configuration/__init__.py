@@ -71,17 +71,31 @@ def _get_settings() -> Dynaconf:
                 "easyfatt.customers.custom_field",
                 default=1,
                 when=Validator("easyfatt.customers.custom_field", eq=""),
-                cast=lambda value: 1
-                if str(value).strip() == ""
-                else int(value),
+                cast=lambda value: 1 if str(value).strip() == "" else int(value),
+            ),
+            Validator(
+                "easyfatt.customers.export_filename",
+                default=["Soggetti.xlsx", "Soggetti.ods"],
+                # when=Validator("easyfatt.customers.export_filename", eq=""),
+                cast=lambda value: (
+                    [Path("Soggetti.xlsx"), Path("Soggetti.ods")]
+                    if (
+                        str(value).strip() == ""
+                        or isinstance(value, list)
+                        and len(value) == 0
+                    )
+                    else (
+                        [Path(item) for item in value]
+                        if isinstance(value, list)
+                        else [Path(value)]
+                    )
+                ),
             ),
             Validator(
                 "features.kml_generation.google_api_key",
                 default=None,
                 when=Validator("features.kml_generation.google_api_key", eq=""),
-                cast=lambda value: None
-                if str(value).strip() == ""
-                else str(value),
+                cast=lambda value: None if str(value).strip() == "" else str(value),
             ),
             Validator(
                 "features.kml_generation.placemark_title",
@@ -99,6 +113,13 @@ def _get_settings() -> Dynaconf:
 settings: SettingsSchema = _get_settings()  # pyright: ignore[reportGeneralTypeIssues]
 
 # Setup default values for missing settings
-# if str(settings.files.output.kml).strip() == "":
-#     settings.files.output.kml = bundle.get_execution_directory() / "output.kml"
-# settings.features.kml_generation.google_api_key
+# if isinstance(settings.easyfatt.customers.export_filename, list):
+#     defaults = [ Path("Soggetti.xlsx"), Path("Soggetti.ods") ]
+
+#     if len(settings.easyfatt.customers.export_filename) == 0:
+#         settings.easyfatt.customers.export_filename = defaults
+#     else:
+#         settings.easyfatt.customers.export_filename = [
+#             Path(item)
+#             for item in settings.easyfatt.customers.export_filename
+#         ]
