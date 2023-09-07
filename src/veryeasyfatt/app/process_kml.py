@@ -187,7 +187,7 @@ class Placemark(object):
 
 
 def generate_kml():
-    """Generate a KML file from an XML file and a database file. """
+    """Generate a KML file from an XML file and a database file."""
     google_api_key = settings.features.kml_generation.google_api_key
     if google_api_key is None or google_api_key.strip() == "":
         raise Exception(
