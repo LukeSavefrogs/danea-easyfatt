@@ -19,7 +19,7 @@ class ConfigurationTestCase(unittest.TestCase):
     """)
     def test_changed_value(self, temp_config_file: Path):
         settings = _get_settings()
-        settings.load_file(temp_config_file, validate=True)
+        settings.reload_settings(temp_config_file)
 
         try:
             settings["features"]["shipping"]["default_interval"]
@@ -37,7 +37,7 @@ class ConfigurationTestCase(unittest.TestCase):
     """)
     def test_empty_value(self, temp_config_file: Path):
         settings = _get_settings()
-        settings.load_file(temp_config_file, validate=True)
+        settings.reload_settings(temp_config_file)
 
         try:
             settings["features"]["shipping"]["default_interval"]
@@ -54,7 +54,7 @@ class ConfigurationTestCase(unittest.TestCase):
     """)
     def test_default_value(self, temp_config_file: Path):
         settings = _get_settings()
-        settings.load_file(temp_config_file, validate=True)
+        settings.reload_settings(temp_config_file)
 
         try:
             settings["features"]["shipping"]["default_interval"]
@@ -87,20 +87,14 @@ class ConfigurationValuesTestCase(unittest.TestCase):
     """)
     def test_single_list(self, temp_config_file: Path):
         settings = _get_settings()
-        settings.load_file(temp_config_file, validate=True)
+        settings.reload_settings(temp_config_file)
 
         self.assertHasKey(settings, "easyfatt.customers.export_filename")
         
-        # See issue [#999](https://github.com/dynaconf/dynaconf/issues/999)
-        self.assertIn(
-            Path("file.xlsx"),
-            settings.easyfatt.customers.export_filename
+        self.assertEqual(
+            settings.easyfatt.customers.export_filename,
+            [Path("file.xlsx")],
         )
-        # FIXME: This assertion fails because the value gets merged with the default value
-        # self.assertEqual(
-        #     settings.easyfatt.customers.export_filename,
-        #     [Path("file.xlsx")],
-        # )
 
     @with_temporary_file(file_prefix="veryeasyfatt-", file_suffix=".toml", content="""
         [easyfatt.customers]
@@ -108,7 +102,7 @@ class ConfigurationValuesTestCase(unittest.TestCase):
     """)
     def test_single_string(self, temp_config_file: Path):
         settings = _get_settings()
-        settings.load_file(temp_config_file, validate=True)
+        settings.reload_settings(temp_config_file)
 
         self.assertHasKey(settings, "easyfatt.customers.export_filename")
         
@@ -122,7 +116,7 @@ class ConfigurationValuesTestCase(unittest.TestCase):
     """)
     def test_empty_value(self, temp_config_file: Path):
         settings = _get_settings()
-        settings.load_file(temp_config_file, validate=True)
+        settings.reload_settings(temp_config_file)
 
         self.assertHasKey(settings, "easyfatt.customers.export_filename")
         
