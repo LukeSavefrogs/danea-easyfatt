@@ -13,6 +13,19 @@ from tests.utils.decorators import with_temporary_file
 class ConfigurationTestCase(unittest.TestCase):
     maxDiff = None
 
+    def assertHasKey(self, obj, key, access_method: Literal["dict", "getattr"]="dict") -> None:
+        """ Assert that the given object has the given key. """
+        current_obj = obj
+        for k in key.split("."):
+            try:
+                if access_method == "dict":
+                    current_obj = current_obj[k]
+                elif access_method == "getattr":
+                    current_obj = getattr(current_obj, k)
+            except KeyError:
+                self.fail(f"Object '{current_obj}' does not have key '{k}'")
+
+
     @with_temporary_file(file_prefix="veryeasyfatt-", file_suffix=".toml", content="""
         [features.shipping]
         default_interval = "00:00-06:00"
@@ -21,10 +34,7 @@ class ConfigurationTestCase(unittest.TestCase):
         settings = _get_settings()
         settings.reload_settings(temp_config_file)
 
-        try:
-            settings["features"]["shipping"]["default_interval"]
-        except KeyError as e:
-            self.fail(f"Parsed configuration does not have key 'features.shipping.default_interval' (error: {e})")
+        self.assertHasKey(settings, "features.shipping.default_interval")
 
         self.assertEqual(
             settings["features"]["shipping"]["default_interval"],
@@ -39,10 +49,7 @@ class ConfigurationTestCase(unittest.TestCase):
         settings = _get_settings()
         settings.reload_settings(temp_config_file)
 
-        try:
-            settings["features"]["shipping"]["default_interval"]
-        except KeyError as e:
-            self.fail(f"Parsed configuration does not have key 'features.shipping.default_interval' (error: {e})")
+        self.assertHasKey(settings, "features.shipping.default_interval")
 
         self.assertEqual(
             settings["features"]["shipping"]["default_interval"],
@@ -56,10 +63,7 @@ class ConfigurationTestCase(unittest.TestCase):
         settings = _get_settings()
         settings.reload_settings(temp_config_file)
 
-        try:
-            settings["features"]["shipping"]["default_interval"]
-        except KeyError as e:
-            self.fail(f"Parsed configuration does not have key 'features.shipping.default_interval' (error: {e})")
+        self.assertHasKey(settings, "features.shipping.default_interval")
 
         self.assertEqual(
             settings["features"]["shipping"]["default_interval"],
