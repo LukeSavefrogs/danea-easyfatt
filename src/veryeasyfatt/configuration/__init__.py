@@ -32,45 +32,49 @@ def _get_settings() -> Dynaconf:
                 "easyfatt.database.filename",
                 default=None,
                 when=Validator("easyfatt.database.filename", eq=""),
-                cast=lambda value: None
-                if str(value).strip() == ""
-                else Path(value).expanduser().resolve(),
+                cast=lambda value: (
+                    None
+                    if value is None or str(value).strip() == ""
+                    else Path(value).expanduser().resolve()
+                ),
             ),
             Validator(
                 "files.input.easyfatt",
                 default=bundle.get_execution_directory() / "Documenti.DefXml",
                 when=Validator("files.input.easyfatt", eq=""),
-                cast=lambda value: Path(
-                    bundle.get_execution_directory() / "Documenti.DefXml"
-                )
-                if str(value).strip() == ""
-                else Path(value),
+                cast=lambda value: (
+                    Path(bundle.get_execution_directory() / "Documenti.DefXml")
+                    if value is None or str(value).strip() == ""
+                    else Path(value)
+                ),
             ),
             Validator(
                 "files.input.addition",
                 default=None,
                 when=Validator("files.input.addition", eq=""),
-                cast=lambda value: None
-                if str(value).strip() == "" or value is None
-                else Path(value),
+                cast=lambda value: (
+                    None if value is None or str(value).strip() == "" else Path(value)
+                ),
             ),
             Validator(
                 "files.output.csv",
                 default=bundle.get_execution_directory() / "Documenti.csv",
                 when=Validator("files.output.csv", eq=""),
-                cast=lambda value: Path(
-                    bundle.get_execution_directory() / "Documenti.csv"
-                )
-                if str(value).strip() == ""
-                else Path(value),
+                cast=lambda value: (
+                    Path(bundle.get_execution_directory() / "Documenti.csv")
+                    if value is None or str(value).strip() == ""
+                    else Path(value)
+                ),
             ),
             Validator(
                 "files.output.kml",
                 default=bundle.get_execution_directory() / "output.kml",
                 when=Validator("files.output.kml", eq=""),
-                cast=lambda value: Path(bundle.get_execution_directory() / "output.kml")
-                if str(value).strip() == ""
-                else Path(value),
+                cast=lambda value: (
+                    Path(bundle.get_execution_directory() / "output.kml")
+                    if value is None or str(value).strip() == ""
+                    else Path(value)
+                ),
             ),
             Validator(
                 "easyfatt.customers.custom_field",
@@ -100,15 +104,17 @@ def _get_settings() -> Dynaconf:
                 "features.kml_generation.google_api_key",
                 default=None,
                 when=Validator("features.kml_generation.google_api_key", eq=""),
-                cast=lambda value: None if str(value).strip() == "" else str(value),
+                cast=lambda value: (None if str(value).strip() == "" else str(value)),
             ),
             Validator(
                 "features.kml_generation.placemark_title",
                 default="{customerName} ({customerCode}) {notes}",
                 when=Validator("features.kml_generation.placemark_title", eq=""),
-                cast=lambda value: "{customerName} ({customerCode}) {notes}"
-                if str(value).strip() == ""
-                else value,
+                cast=lambda value: (
+                    "{customerName} ({customerCode}) {notes}"
+                    if value is None or str(value).strip() == ""
+                    else value
+                ),
             ),
         ],
         envvar_prefix="VERYEASYFATT",  # Prefix used by Dynaconf to load values from environment variables
