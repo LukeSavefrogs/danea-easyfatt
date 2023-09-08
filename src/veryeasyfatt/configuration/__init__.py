@@ -22,6 +22,7 @@ def _get_settings() -> Dynaconf:
     """
     return Dynaconf(
         settings_files=["veryeasyfatt.config.toml", ".secrets.toml"],
+        core_loaders=["toml"],  # Loaders used to load the settings files.
         merge_enabled=True,  # Merge all found files into one configuration.
         validate_on_update=False,  # Validate the configuration when it is updated.
         validators=[  # Custom validators.
