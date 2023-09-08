@@ -1,7 +1,7 @@
 import dataclasses
 from pathlib import Path
 
-from dynaconf import Dynaconf
+from veryeasyfatt.configuration.dynaconf_merge import Dynaconf
 
 
 @dataclasses.dataclass

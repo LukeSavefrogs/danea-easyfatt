@@ -1,8 +1,10 @@
 from pathlib import Path
-from dynaconf import Dynaconf, Validator
+
+from dynaconf import Validator
 
 from veryeasyfatt import bundle
 from veryeasyfatt.configuration.schemas import SettingsSchema
+from veryeasyfatt.configuration.dynaconf_merge import Dynaconf
 
 
 def _get_settings() -> Dynaconf:
@@ -48,7 +50,9 @@ def _get_settings() -> Dynaconf:
                 "files.input.addition",
                 default=None,
                 when=Validator("files.input.addition", eq=""),
-                cast=lambda value: None if str(value).strip() == "" else Path(value),
+                cast=lambda value: None
+                if str(value).strip() == "" or value is None
+                else Path(value),
             ),
             Validator(
                 "files.output.csv",
