@@ -142,15 +142,3 @@ def _get_settings() -> Dynaconf:
 
 
 settings: SettingsSchema = _get_settings()  # pyright: ignore[reportGeneralTypeIssues]
-
-# Setup default values for missing settings
-# if isinstance(settings.easyfatt.customers.export_filename, list):
-#     defaults = [ Path("Soggetti.xlsx"), Path("Soggetti.ods") ]
-
-#     if len(settings.easyfatt.customers.export_filename) == 0:
-#         settings.easyfatt.customers.export_filename = defaults
-#     else:
-#         settings.easyfatt.customers.export_filename = [
-#             Path(item)
-#             for item in settings.easyfatt.customers.export_filename
-#         ]
