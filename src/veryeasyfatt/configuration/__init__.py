@@ -101,6 +101,26 @@ def _get_settings() -> Dynaconf:
                 ),
             ),
             Validator(
+                "options.output.csv_template",
+                default="@{CustomerName} {CustomerCode}@{eval_IndirizzoSpedizione} {eval_CAPSpedizione} {eval_CittaSpedizione}(20){eval_intervalloSpedizione}^{eval_pesoSpedizione}^",
+                when=Validator("options.output.csv_template", eq=""),
+                cast=lambda value: (
+                    "@{CustomerName} {CustomerCode}@{eval_IndirizzoSpedizione} {eval_CAPSpedizione} {eval_CittaSpedizione}(20){eval_intervalloSpedizione}^{eval_pesoSpedizione}^"
+                    if value is None or str(value).strip() == ""
+                    else str(value)
+                ),
+            ),
+            Validator(
+                "features.shipping.default_interval",
+                default="07:00-16:00",
+                when=Validator("features.shipping.default_interval", eq=""),
+                cast=lambda value: (
+                    "07:00-16:00"
+                    if value is None or str(value).strip() == ""
+                    else str(value)
+                ),
+            ),
+            Validator(
                 "features.kml_generation.google_api_key",
                 default=None,
                 when=Validator("features.kml_generation.google_api_key", eq=""),
