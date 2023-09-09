@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Added
+
+**Tests**:
+
+- Aggiunti test funzionali e di no-regression per il modulo `veryeasyfatt.app.process_csv`.
+
 ### Changed
 
 - Aggiunto logging handler `logging.NullHandler()` ai logger dei moduli applicativi. In questo modo finchè viene inizializzato il root logger, i messaggi verranno mostrati a schermo, mentre durante i test automatici (in assenza di root logger) non verrà mostrato alcun log in output.
@@ -9,6 +15,7 @@
 
 ### Fixed
 
+- Corretto bug che causava il crash del programma in modalità "generazione CSV" se il file `.DefXml` passato conteneva un solo documento. Risolve issue [#89](https://github.com/LukeSavefrogs/danea-easyfatt/issues/89).
 - Corretto bug introdotto con la configurazione globale, che causava un mescolamento errato della configurazione se questa veniva ricaricata da un'altro file. La strategia di "merge" di `Dynaconf` nel caso di liste contenenti solo tipi primitivi (`str`, `int`, `bool`, ecc..) infatti prevedeva il merge, mentre era necessario che in tal caso sostituisse i valori. Per maggiori informazioni vedi issue [dynaconf/dynaconf#999](https://github.com/dynaconf/dynaconf/issues/999).
 
 ## [v1.3.2] - 2023-09-05

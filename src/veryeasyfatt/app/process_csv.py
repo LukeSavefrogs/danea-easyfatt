@@ -1,4 +1,7 @@
+from io import StringIO
 from pathlib import Path
+import sys
+import pandas as pd
 import xmltodict
 import re
 import logging
@@ -9,6 +12,15 @@ from veryeasyfatt.configuration import settings
 
 logger = logging.getLogger("danea-easyfatt.csv")
 logger.addHandler(logging.NullHandler())
+
+EASYFATT_DOCUMENT_DTYPE = {
+    "CustomerCode": str,
+    "CustomerPostcode": str,
+    "DeliveryPostcode": str,
+    "CustomerVatCode": str,
+    "CustomerTel": str,
+}
+
 
 def genera_csv(
     xml_text: str,
@@ -49,8 +61,17 @@ def genera_csv(
 
     logger.debug(f"Intervallo spedizioni:\n {intervallo_spedizioni}")
 
+    df = pd.read_xml(
+        StringIO(xml_text),
+        parser="etree",
+        xpath="./Documents/Document",
+        dtype=EASYFATT_DOCUMENT_DTYPE,  # type: ignore
+    )
+    df = df.reset_index()  # make sure indexes pair with number of rows
+
+    # TODO: Do not use `iterrows` since it could become very slow with large datasets (see https://stackoverflow.com/a/55557758/8965861).
     csv_lines = []
-    for document in xml_dict["EasyfattDocuments"]["Documents"]["Document"]:
+    for index, document in df.iterrows():
         indirizzo_spedizione = (
             document["DeliveryAddress"]
             if document.get("DeliveryAddress", None)
@@ -69,7 +90,7 @@ def genera_csv(
 
         if document.get("TransportedWeight", None) is not None:
             weight_matched = re.search(
-                pattern=r"([0-9,.]+)", string=document.get("TransportedWeight")
+                pattern=r"([0-9,.]+)", string=str(document.get("TransportedWeight", ""))
             )
             peso = weight_matched.group(0) if weight_matched is not None else 0
         else:
@@ -80,7 +101,9 @@ def genera_csv(
         # 2. Profilo clienti
         # 3. Default
         #
-        orario_spedizione_ordine = document.get(f"CustomField{extra_field_orario}", "")
+        orario_spedizione_ordine = str(
+            document.get(f"CustomField{extra_field_orario}", "")
+        )
         try:
             orario_spedizione = routexl_time_boundaries(orario_spedizione_ordine)
         except ValueError:
