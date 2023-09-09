@@ -1,8 +1,8 @@
 import xml.etree.ElementTree as ET
-
 from pathlib import Path
-
 import logging
+
+from veryeasyfatt.configuration import settings
 
 logger = logging.getLogger("danea-easyfatt.xml")
 
@@ -23,16 +23,18 @@ def is_valid_xml(value):
     return True
 
 
-def modifica_xml(easyfatt_xml_file: Path, additional_xml_file: Path) -> str:
+def modifica_xml() -> str:
     """Aggiunge il contenuto di `additional_xml_file` all'interno di `easyfatt_xml`
 
-    Args:
-            easyfatt_xml (Path): File `.DefXML` generato dal gestionale "Danea Easyfatt"
-            additional_xml_file (Path): File contenente i valori da inserire come primo figlio dell'elemento `Documents`
-
     Returns:
-            xml_text (str): Il testo XML modificato.
+        xml_text (str): Il testo XML modificato.
     """
+    easyfatt_xml_file = settings.files.input.easyfatt
+    additional_xml_file = settings.files.input.addition
+
+    if additional_xml_file is None:
+        raise ValueError("Il file da aggiungere non è stato specificato")
+
     logger.debug(
         f'File XML generato dal gestionale Danea Easyfatt: "{easyfatt_xml_file}"'
     )

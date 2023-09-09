@@ -5,32 +5,30 @@ import logging
 
 from veryeasyfatt.app.clienti import get_intervallo_spedizioni, routexl_time_boundaries
 from veryeasyfatt.formatter import SimpleFormatter
+from veryeasyfatt.configuration import settings
 
 logger = logging.getLogger("danea-easyfatt.csv")
 
 
 def genera_csv(
     xml_text: str,
-    template_riga: str,
-    default_shipping_interval: str,
-    customer_files: list | str,
-    extra_field_id=1,
     extra_field_orario=4,
 ):
+    lista_file_clienti = settings.easyfatt.customers.export_filename
+
     logger.debug(f"Trasformo l'XML in un dizionario")
     safe_formatter = SimpleFormatter()
 
-    default_time_boundary = routexl_time_boundaries(default_shipping_interval)
+    default_time_boundary = routexl_time_boundaries(
+        settings.features.shipping.default_interval
+    )
 
     # Trasformo il CSV in un dizionario, in modo da poterlo traversare facilmente.
     xml_dict = xmltodict.parse(xml_input=xml_text)
 
     intervallo_spedizioni = {}
 
-    lista_file_clienti = (
-        customer_files if isinstance(customer_files, list) else [customer_files]
-    )
-    logger.debug(f"Inizio ricerca file '{'|'.join(lista_file_clienti)}'")
+    logger.debug(f"Inizio ricerca file '{'|'.join(map(str, lista_file_clienti))}'")
 
     # Restituisci l'intervallo spedizioni trovato nel primo dei file cercati.
     for file in lista_file_clienti:
@@ -39,12 +37,13 @@ def genera_csv(
             logger.info(f"Trovato file '{file_clienti}'")
             logger.info(f"Gestione automatica degli orari di consegna abilitata.")
             intervallo_spedizioni = get_intervallo_spedizioni(
-                filename=file_clienti, extra_field_id=extra_field_id
+                filename=file_clienti,
+                extra_field_id=settings.easyfatt.customers.custom_field,
             )
             break
     else:
         logger.error(
-            f"Nessun file trovato che corrisponda al pattern '{'|'.join(lista_file_clienti)}'"
+            f"Nessun file trovato che corrisponda al pattern '{'|'.join(map(str, lista_file_clienti))}'"
         )
         logger.warning(f"Gestione automatica degli orari di consegna disabilitata.")
 
@@ -107,7 +106,7 @@ def genera_csv(
 
         csv_lines.append(
             safe_formatter.format(
-                template_riga,
+                settings.options.output.csv_template,
                 CustomerName=document["CustomerName"],
                 CustomerCode=document["CustomerCode"],
                 eval_IndirizzoSpedizione=indirizzo_spedizione,

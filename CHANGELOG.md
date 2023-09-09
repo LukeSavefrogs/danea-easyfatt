@@ -7,6 +7,7 @@
 - Ora i segnaposti del KML vengono ordinati per nome prima di essere esportati su file. Risolve issue [#95](https://github.com/LukeSavefrogs/danea-easyfatt/issues/95).
 - Aggiunta possibilità di copiare il contenuto del file CSV negli appunti. Risolve issue [#94](https://github.com/LukeSavefrogs/danea-easyfatt/issues/94).
 - Aggiunta possibilità di personalizzare il valore contenuto nel tag KML `<Placemark><description></description></Placemark>`
+- Adesso la configurazione è disponibile globalmente per tutti i moduli del progetto attraverso l'oggetto `settings` del modulo `veryeasyfatt.configuration`. Risolve issue [#96](https://github.com/LukeSavefrogs/danea-easyfatt/issues/96).
 
 ### Changed
 
@@ -18,6 +19,7 @@
 - Corretto bug che causava un'eccezione se **nessun documento** (tag `Document`) di carico nel file `.DefXml` aveva il tag `TransportedWeight` valorizzato. Risolve issue [#90](https://github.com/LukeSavefrogs/danea-easyfatt/issues/90).
 - Corretto bug che causava la duplicazione di segnaposti nel caso in cui ci fossero documenti con indirizzi di consegna sconosciuti (non salvati su DB). Risolve issue [#86](https://github.com/LukeSavefrogs/danea-easyfatt/issues/86).
 - Ora gli indirizzi nel documento e sul database vengono tutti trasformati in minuscolo prima di essere confrontati per evitare falsi positivi (es. `Via XX Settembre` e `VIA XX SETTEMBRE` interpretati come due indirizzi diversi).
+- Corretto bug introdotto con la configurazione globale, che causava un mescolamento errato della configurazione se questa veniva ricaricata da un'altro file. La strategia di "merge" di `Dynaconf` nel caso di liste contenenti solo tipi primitivi (`str`, `int`, `bool`, ecc..) infatti prevedeva il merge, mentre era necessario che in tal caso sostituisse i valori. Per maggiori informazioni vedi issue [dynaconf/dynaconf#999](https://github.com/dynaconf/dynaconf/issues/999).
 
 ## [v1.3.1] - 2023-09-01
 

@@ -19,6 +19,7 @@ from easyfatt_db_connector.xml.document import Document
 from veryeasyfatt.app import caching
 import veryeasyfatt.bundle as bundle
 from veryeasyfatt.formatter import SimpleFormatter
+from veryeasyfatt.configuration import settings
 
 logger = logging.getLogger("danea-easyfatt.kml")
 
@@ -185,39 +186,29 @@ class Placemark(object):
         return placemark
 
 
-def generate_kml(
-    xml_filename: (Path | str),
-    database_path: (Path | str),
-    output_filename: (Path | str) = "export.kml",
-    google_api_key=None,
-    placemark_title=None,
-):
-    """Generate a KML file from an XML file and a database file.
-
-    Args:
-        xml_filename (Path | str): Path to the XML file.
-        database_path (Path | str): Path to the database file.
-        output_filename (Path | str, optional): Path to the output KML file. Defaults to "export.kml".
-        google_api_key ([type], optional): Google API key. Defaults to None.
-        placemark_title ([type], optional): Title of the placemark. Defaults to None.
-    """
+def generate_kml():
+    """Generate a KML file from an XML file and a database file."""
+    google_api_key = settings.features.kml_generation.google_api_key
     if google_api_key is None or google_api_key.strip() == "":
         raise Exception(
             "Google API key not found in the configuration file. Cannot continue."
         )
 
-    if placemark_title is None:
-        placemark_title = (
-            "{customerName} ({customerCode}) {notes}"  # "{name:.10} {code}"
+    placemark_title = settings.features.kml_generation.placemark_title
+    database_path = settings.easyfatt.database.filename
+
+    if database_path is None:
+        raise Exception(
+            "Database path not found in the configuration file. Cannot continue."
         )
 
     safe_formatter = SimpleFormatter()
 
     logger.info("Start")
     logger.info(f"Database path: {database_path}")
-    logger.info(f"XML path: {xml_filename}")
+    logger.info(f"XML path: '{settings.files.input.easyfatt}'")
 
-    xml_object = read_xml(xml_filename)
+    xml_object = read_xml(settings.files.input.easyfatt)
     anagrafiche = get_all_addresses(database_path)
 
     populate_cache(google_api_key, addresses=anagrafiche)
@@ -546,10 +537,10 @@ def generate_kml(
         ],
     )
 
-    with open(output_filename, "w") as file:
+    with open(settings.files.output.kml, "w") as file:
         file.write(kml)
 
-    logger.info(f"KML file saved to '{output_filename}'")
+    logger.info(f"KML file saved to '{settings.files.output.kml}'")
 
 
 def populate_cache(

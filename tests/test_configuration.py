@@ -1,8 +1,9 @@
 from pathlib import Path
 import sys
+from typing import Literal
 import unittest
 
-from veryeasyfatt.app.config_manager import get_configuration
+from veryeasyfatt.configuration import _get_settings
 
 # Hack needed to include scripts from the `scripts` directory (under root)
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -12,65 +13,150 @@ from tests.utils.decorators import with_temporary_file
 class ConfigurationTestCase(unittest.TestCase):
     maxDiff = None
 
-    @with_temporary_file(file_prefix="veryeasyfatt-", file_suffix=".toml", content="""
+    def assertHasKey(
+        self, obj, key, access_method: Literal["dict", "getattr"] = "dict"
+    ) -> None:
+        """Assert that the given object has the given key."""
+        current_obj = obj
+        for k in key.split("."):
+            try:
+                if access_method == "dict":
+                    current_obj = current_obj[k]
+                elif access_method == "getattr":
+                    current_obj = getattr(current_obj, k)
+            except KeyError:
+                self.fail(f"Object '{current_obj}' does not have key '{k}'")
+
+    @with_temporary_file(
+        file_prefix="veryeasyfatt-",
+        file_suffix=".toml",
+        content="""
         [features.shipping]
         default_interval = "00:00-06:00"
-    """)
+    """,
+    )
     def test_changed_value(self, temp_config_file: Path):
-        parsed_configuration = get_configuration(temp_config_file)
-        
-        try:
-            parsed_configuration["features"]["shipping"]["default_interval"]
-        except KeyError as e:
-            self.fail(f"Parsed configuration does not have key 'features.shipping.default_interval' (error: {e})")
+        settings = _get_settings()
+        settings.reload_settings(temp_config_file)
+
+        self.assertHasKey(settings, "features.shipping.default_interval")
 
         self.assertEqual(
-            parsed_configuration["features"]["shipping"]["default_interval"],
-            '00:00-06:00'
+            settings.features.shipping.default_interval,
+            "00:00-06:00",
         )
 
-    @with_temporary_file(file_prefix="veryeasyfatt-", file_suffix=".toml", content="""
+    @with_temporary_file(
+        file_prefix="veryeasyfatt-",
+        file_suffix=".toml",
+        content="""
         [features.shipping]
         default_interval = ""
-    """)
+    """,
+    )
     def test_empty_value(self, temp_config_file: Path):
-        parsed_configuration = get_configuration(temp_config_file)
+        settings = _get_settings()
+        settings.reload_settings(temp_config_file)
 
-        try:
-            parsed_configuration["features"]["shipping"]["default_interval"]
-        except KeyError as e:
-            self.fail(f"Parsed configuration does not have key 'features.shipping.default_interval' (error: {e})")
+        self.assertHasKey(settings, "features.shipping.default_interval")
 
         self.assertEqual(
-            parsed_configuration["features"]["shipping"]["default_interval"],
-            ''
+            settings.features.shipping.default_interval,
+            "07:00-16:00",
         )
 
-    @with_temporary_file(file_prefix="veryeasyfatt-", file_suffix=".toml", content="""
+    @with_temporary_file(
+        file_prefix="veryeasyfatt-",
+        file_suffix=".toml",
+        content="""
         [features.shipping]
-    """)
+    """,
+    )
     def test_default_value(self, temp_config_file: Path):
-        parsed_configuration = get_configuration(temp_config_file)
-        
-        try:
-            parsed_configuration["features"]["shipping"]["default_interval"]
-        except KeyError as e:
-            self.fail(f"Parsed configuration does not have key 'features.shipping.default_interval' (error: {e})")
+        settings = _get_settings()
+        settings.reload_settings(temp_config_file)
+
+        self.assertHasKey(settings, "features.shipping.default_interval")
 
         self.assertEqual(
-            parsed_configuration["features"]["shipping"]["default_interval"],
-            '07:00-16:00'
+            settings.features.shipping.default_interval,
+            "07:00-16:00",
         )
 
-    @with_temporary_file(file_prefix="veryeasyfatt-", file_suffix=".toml", content="""
-        [features.shipping.default_interval]
-        test = ""
-    """)
-    def test_err_value(self, temp_config_file: Path):
-        """ The `get_configuration` function raises an Exception when a string leaf is being redefined as dict. """
-        with self.assertRaises(Exception):
-            get_configuration(temp_config_file)
+
+class ConfigurationValuesTestCase(unittest.TestCase):
+    maxDiff = None
+
+    def assertHasKey(
+        self, obj, key, access_method: Literal["dict", "getattr"] = "dict"
+    ) -> None:
+        """Assert that the given object has the given key."""
+        current_obj = obj
+        for k in key.split("."):
+            try:
+                if access_method == "dict":
+                    current_obj = current_obj[k]
+                elif access_method == "getattr":
+                    current_obj = getattr(current_obj, k)
+            except KeyError:
+                self.fail(f"Object '{current_obj}' does not have key '{k}'")
+
+    @with_temporary_file(
+        file_prefix="veryeasyfatt-",
+        file_suffix=".toml",
+        content="""
+        [easyfatt.customers]
+        export_filename = ["file.xlsx"]
+    """,
+    )
+    def test_single_list(self, temp_config_file: Path):
+        settings = _get_settings()
+        settings.reload_settings(temp_config_file)
+
+        self.assertHasKey(settings, "easyfatt.customers.export_filename")
+
+        self.assertEqual(
+            settings.easyfatt.customers.export_filename,
+            [Path("file.xlsx")],
+        )
+
+    @with_temporary_file(
+        file_prefix="veryeasyfatt-",
+        file_suffix=".toml",
+        content="""
+        [easyfatt.customers]
+        export_filename = "file.xlsx"
+    """,
+    )
+    def test_single_string(self, temp_config_file: Path):
+        settings = _get_settings()
+        settings.reload_settings(temp_config_file)
+
+        self.assertHasKey(settings, "easyfatt.customers.export_filename")
+
+        self.assertEqual(
+            settings.easyfatt.customers.export_filename,
+            [Path("file.xlsx")],
+        )
+
+    @with_temporary_file(
+        file_prefix="veryeasyfatt-",
+        file_suffix=".toml",
+        content="""
+        [easyfatt.customers]
+    """,
+    )
+    def test_empty_value(self, temp_config_file: Path):
+        settings = _get_settings()
+        settings.reload_settings(temp_config_file)
+
+        self.assertHasKey(settings, "easyfatt.customers.export_filename")
+
+        self.assertEqual(
+            settings.easyfatt.customers.export_filename,
+            [Path("Soggetti.xlsx"), Path("Soggetti.ods")],
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main(verbosity=2)
