@@ -1,8 +1,6 @@
 from io import StringIO
 from pathlib import Path
-import sys
 import pandas as pd
-import xmltodict
 import re
 import logging
 
@@ -36,8 +34,6 @@ def genera_csv(
     )
 
     # Trasformo il CSV in un dizionario, in modo da poterlo traversare facilmente.
-    xml_dict = xmltodict.parse(xml_input=xml_text)
-
     intervallo_spedizioni = {}
 
     logger.debug(f"Inizio ricerca file '{'|'.join(map(str, lista_file_clienti))}'")

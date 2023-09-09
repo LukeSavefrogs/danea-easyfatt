@@ -15,7 +15,6 @@ The following technologies were used:
 - [Textualize/Rich](https://github.com/Textualize/rich)
 - [Pandas](https://pandas.pydata.org/)
 - [toml](https://github.com/uiri/toml)
-- [xmltodict](https://github.com/martinblech/xmltodict)
 
 ## Tools
 
