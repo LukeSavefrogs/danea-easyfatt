@@ -5,6 +5,7 @@ import logging
 from veryeasyfatt.configuration import settings
 
 logger = logging.getLogger("danea-easyfatt.xml")
+logger.addHandler(logging.NullHandler())
 
 
 def is_valid_xml(value):

@@ -8,7 +8,7 @@ from veryeasyfatt.formatter import SimpleFormatter
 from veryeasyfatt.configuration import settings
 
 logger = logging.getLogger("danea-easyfatt.csv")
-
+logger.addHandler(logging.NullHandler())
 
 def genera_csv(
     xml_text: str,

@@ -13,6 +13,7 @@ import pickle
 import veryeasyfatt.bundle as bundle
 
 logger = logging.getLogger("danea-easyfatt.clienti")
+logger.addHandler(logging.NullHandler())
 
 
 CACHE_FILENAME = "customer_info.pickle"

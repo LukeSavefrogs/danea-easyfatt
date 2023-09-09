@@ -8,6 +8,7 @@ import pickle as _pickle
 import json as _json
 
 logger = logging.getLogger("danea-easyfatt.caching")
+logger.addHandler(logging.NullHandler())
 
 
 def persist_to_file(
