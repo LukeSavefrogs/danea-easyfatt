@@ -22,7 +22,10 @@ logger = logging.getLogger("danea-easyfatt")
 logger.addHandler(default_handler)
 logger.setLevel(logging.DEBUG)
 
-LOG_FILENAME = bundle.get_execution_directory() / f"logs/{datetime.datetime.today():%Y%m%d_%H%M%S}.log"
+LOG_FILENAME = (
+    bundle.get_execution_directory()
+    / f"logs/{datetime.datetime.today():%Y%m%d_%H%M%S}.log"
+)
 LOG_FILENAME.parent.mkdir(parents=True, exist_ok=True)
 FILE_HANDLER = logging.FileHandler(LOG_FILENAME, mode="w+", encoding="utf-8")
 FILE_HANDLER.setFormatter(
@@ -116,7 +119,11 @@ def main():
     logger.debug(f"Configurazione in uso: \n{settings.to_dict()}")
 
     if cli_args.enable_rich_logging:
-        stream_handlers = [handler for handler in logger.handlers if type(handler) == logging.StreamHandler]
+        stream_handlers = [
+            handler
+            for handler in logger.handlers
+            if type(handler) == logging.StreamHandler
+        ]
         for handler in stream_handlers:
             logger.removeHandler(handler)
         logger.addHandler(rich_handler)
