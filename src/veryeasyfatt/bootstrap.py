@@ -1,4 +1,5 @@
 """ Entry point of the wrapper. """
+import datetime
 import sys
 import webbrowser
 import argparse
@@ -20,6 +21,17 @@ default_handler.setFormatter(
 logger = logging.getLogger("danea-easyfatt")
 logger.addHandler(default_handler)
 logger.setLevel(logging.DEBUG)
+
+LOG_FILENAME = bundle.get_execution_directory() / f"logs/{datetime.datetime.today():%Y%m%d_%H%M%S}.log"
+LOG_FILENAME.parent.mkdir(parents=True, exist_ok=True)
+FILE_HANDLER = logging.FileHandler(LOG_FILENAME, mode="w+", encoding="utf-8")
+FILE_HANDLER.setFormatter(
+    logging.Formatter(
+        fmt="[%(asctime)s] %(levelname)-8s %(message)s", datefmt="%d-%m-%Y %H:%M:%S"
+    )
+)
+FILE_HANDLER.setLevel(logging.DEBUG)
+logger.addHandler(FILE_HANDLER)
 
 # The Rich handler will be used if `--disable-rich-handler` is not passed
 rich_handler = RichHandler(
@@ -101,10 +113,12 @@ def main():
         print("Loading custom configuration file: ", cli_args.configuration_file)
         settings.reload_settings(cli_args.configuration_file)
 
-    logger.debug(f"Configurazione in uso: \n{settings}")
+    logger.debug(f"Configurazione in uso: \n{settings.to_dict()}")
 
     if cli_args.enable_rich_logging:
-        logger.handlers.clear()
+        stream_handlers = [handler for handler in logger.handlers if type(handler) == logging.StreamHandler]
+        for handler in stream_handlers:
+            logger.removeHandler(handler)
         logger.addHandler(rich_handler)
 
     try:

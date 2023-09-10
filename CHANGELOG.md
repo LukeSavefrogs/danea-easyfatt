@@ -4,6 +4,8 @@
 
 ### Added
 
+- Aggiunto file di log a livello `DEBUG` nel percorso `./logs/YYYMMDD_hhmmss.log`. Risolve issue [#87](https://github.com/LukeSavefrogs/danea-easyfatt/issues/87).
+
 **Tests**:
 
 - Aggiunti test funzionali e di no-regression per il modulo `veryeasyfatt.app.process_csv`.
