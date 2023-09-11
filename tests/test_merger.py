@@ -1,5 +1,5 @@
 import unittest
-from veryeasyfatt.shared.merging import deepmerge
+from veryeasyfatt.shared.deepmerge import deepmerge
 
 
 class MergerTestCase(unittest.TestCase):

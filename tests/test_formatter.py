@@ -1,6 +1,6 @@
 import unittest
 
-import veryeasyfatt.formatter as simpleformatter
+import veryeasyfatt.shared.formatter as simpleformatter
 
 class FormatterCommandsTestCase(unittest.TestCase):
     def setUp(self) -> None:

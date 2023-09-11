@@ -18,7 +18,7 @@ from easyfatt_db_connector.xml.document import Document
 
 from veryeasyfatt.app import caching
 import veryeasyfatt.bundle as bundle
-from veryeasyfatt.formatter import SimpleFormatter
+from veryeasyfatt.shared.formatter import SimpleFormatter
 from veryeasyfatt.configuration import settings
 
 logger = logging.getLogger("danea-easyfatt.kml")

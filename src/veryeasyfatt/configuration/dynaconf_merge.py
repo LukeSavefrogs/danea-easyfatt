@@ -2,7 +2,7 @@ from pathlib import Path as _Path
 
 from dynaconf import Dynaconf as _Dynaconf
 
-from veryeasyfatt.shared.merging import deepmerge as _deepmerge
+from veryeasyfatt.shared.deepmerge import deepmerge as _deepmerge
 
 
 class Dynaconf(_Dynaconf):
