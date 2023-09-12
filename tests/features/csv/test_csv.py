@@ -194,7 +194,7 @@ class XMLDocumentTestCase(unittest.TestCase):
     """,
     )
     def test_special_characters(self, xml_document: Path):
-        xml_text = xml_document.read_text().strip()
+        xml_text = xml_document.read_text(encoding='utf8').strip()
         csv_content = csv.genera_csv(xml_text)
 
         self.assertEqual(
@@ -312,7 +312,7 @@ class XMLDocumentTestCase(unittest.TestCase):
 
         See [#89](https://github.com/LukeSavefrogs/danea-easyfatt/issues/89).
         """
-        xml_text = xml_document.read_text().strip()
+        xml_text = xml_document.read_text(encoding='utf8').strip()
         csv_content = csv.genera_csv(xml_text)
 
         self.assertEqual(
@@ -429,7 +429,7 @@ class XMLDocumentTestCase(unittest.TestCase):
 
         See [#89](https://github.com/LukeSavefrogs/danea-easyfatt/issues/89).
         """
-        xml_text = xml_document.read_text().strip()
+        xml_text = xml_document.read_text(encoding='utf8').strip()
         csv_content = csv.genera_csv(xml_text)
 
         self.assertEqual(
@@ -546,7 +546,7 @@ class XMLDocumentTestCase(unittest.TestCase):
 
         See [#89](https://github.com/LukeSavefrogs/danea-easyfatt/issues/89).
         """
-        base_xml_text = xml_document.read_text().strip()
+        base_xml_text = xml_document.read_text(encoding='utf8').strip()
 
         for boundary_format in [
             "09:00 >> 18:00",

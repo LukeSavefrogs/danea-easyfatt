@@ -42,7 +42,7 @@ def modifica_xml() -> str:
     logger.debug(f'File XML contenente il testo da inserire: "{additional_xml_file}"')
 
     additional_xml_content = ""
-    with open(additional_xml_file, "r") as file:
+    with open(additional_xml_file, "r", encoding="utf-8") as file:
         additional_xml_content = file.read()
 
     if not is_valid_xml(additional_xml_content):
