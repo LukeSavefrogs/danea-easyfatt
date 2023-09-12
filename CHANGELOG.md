@@ -9,6 +9,7 @@
 ### Fixed
 
 - Corretto bug introdotto con la versione `v1.4.0` che causava il mancato caricamento della configurazione utente presente nella cartella di esecuzione del programma. Risolve issue [#105](https://github.com/LukeSavefrogs/danea-easyfatt/issues/105).
+- Corretto bug che causava il crash del programma nel raro caso in cui fossero presenti caratteri non compatibili con l'encoding `cp1252`. Ora il file `.DefXml` viene aperto e letto con l'encoding `UTF8`. Risolve issue [#107](https://github.com/LukeSavefrogs/danea-easyfatt/issues/107).
 
 ## [v1.4.0] - 2023-09-11
 
