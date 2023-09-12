@@ -93,7 +93,9 @@ def main(goal: Optional[str] = None):
                 return False
         else:
             nuovo_xml = (
-                Path(settings["files"]["input"]["easyfatt"]).resolve().read_text(encoding='utf8')
+                Path(settings["files"]["input"]["easyfatt"])
+                .resolve()
+                .read_text(encoding="utf8")
             )
 
         # 2. Genero il CSV sulla base del template

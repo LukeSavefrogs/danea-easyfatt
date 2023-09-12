@@ -22,7 +22,7 @@ def _get_settings() -> Dynaconf:
 
         print(_get_settings() == _get_settings()) # False
     """
-    _settings =  Dynaconf(
+    _settings = Dynaconf(
         settings_files=["veryeasyfatt.config.toml"],
         core_loaders=["toml"],  # Loaders used to load the settings files.
         merge_enabled=True,  # Merge all found files into one configuration.
@@ -145,5 +145,6 @@ def _get_settings() -> Dynaconf:
         _settings.reload_settings(user_settings)
 
     return _settings
+
 
 settings: SettingsSchema = _get_settings()  # pyright: ignore[reportGeneralTypeIssues]
