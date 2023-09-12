@@ -6,6 +6,10 @@
 
 - Aggiunti i seguenti valori alla formattazione personalizzata del segnaposto nel KML: codice fiscale, partita IVA (vedi issue [#98](https://github.com/LukeSavefrogs/danea-easyfatt/issues/98)).
 
+### Fixed
+
+- Corretto bug introdotto con la versione `v1.4.0` che causava il mancato caricamento della configurazione utente presente nella cartella di esecuzione del programma. Risolve issue [#105](https://github.com/LukeSavefrogs/danea-easyfatt/issues/105).
+
 ## [v1.4.0] - 2023-09-11
 
 ### Added
