@@ -4,7 +4,7 @@
 
 ### Added
 
-- Aggiunti i seguenti valori alla formattazione personalizzata del segnaposto nel KML: _codice fiscale_, _partita IVA_ (vedi issue [#98](https://github.com/LukeSavefrogs/danea-easyfatt/issues/98)).
+- Aggiunti i seguenti valori alla **formattazione personalizzata** del segnaposto nel KML: `customerFiscalCode` (_codice fiscale_), `customerVatCode` (_partita IVA_), `customerHomepage` (_homepage_). Per maggiori informazioni vedi issue [#98](https://github.com/LukeSavefrogs/danea-easyfatt/issues/98).
 
 ### Fixed
 

@@ -40,11 +40,13 @@ class CustomerAddress(HashableBaseModel):
     city: str = pydantic.Field(alias="Citta", frozen=True)
     province: str = pydantic.Field(alias="Prov", frozen=True)
     country: str = pydantic.Field(alias="Nazione", frozen=True)
+    alias: str = pydantic.Field(alias="CodDest", default="", frozen=True)
+    fiscal_code: str = pydantic.Field(alias="CodiceFiscale", default="", frozen=True)
+    vat_code: str = pydantic.Field(alias="PartitaIva", default="", frozen=True)
+    homepage: str = pydantic.Field(alias="HomePage", default="", frozen=True)
+
     is_customer: bool = pydantic.Field(alias="IsCustomer", frozen=True)
     is_primary: bool = pydantic.Field()
-    alias: str = pydantic.Field(alias="CodDest", default="", frozen=True)
-    fiscal_code: str = pydantic.Field(alias="CodiceFiscale", default="")
-    vat_code: str = pydantic.Field(alias="PartitaIva", default="")
 
     @pydantic.validator(
         "address",
@@ -54,6 +56,7 @@ class CustomerAddress(HashableBaseModel):
         "country",
         "vat_code",
         "fiscal_code",
+        "homepage",
         pre=True,
     )
     def replace_none(cls, value):
@@ -294,6 +297,7 @@ def generate_kml() -> None:
                         customerCode=anagrafica.code,
                         customerFiscalCode=anagrafica.fiscal_code,
                         customerVatCode=anagrafica.vat_code,
+                        customerHomepage=anagrafica.homepage,
                         notes="",
                     ),
                     coordinates=get_coordinates(
@@ -368,6 +372,7 @@ def generate_kml() -> None:
                             customerCode=anagrafica.code,
                             customerFiscalCode=anagrafica.fiscal_code,
                             customerVatCode=anagrafica.vat_code,
+                            customerHomepage=anagrafica.homepage,
                             notes="",
                         ),
                         coordinates=get_coordinates(address_string, google_api_key),
@@ -409,6 +414,7 @@ def generate_kml() -> None:
                                     customerCode=unknown_address.customer.code,
                                     customerFiscalCode=unknown_address.customer.fiscal_code,
                                     customerVatCode=unknown_address.customer.vat_code,
+                                    customerHomepage=anagrafica.homepage,
                                     notes="- NUOVO!",
                                 ),
                                 coordinates=get_coordinates(
@@ -448,6 +454,7 @@ def generate_kml() -> None:
                         customerCode=anagrafica.code,
                         customerFiscalCode=anagrafica.fiscal_code,
                         customerVatCode=anagrafica.vat_code,
+                        customerHomepage=anagrafica.homepage,
                         notes="",
                     ),
                     coordinates=get_coordinates(
@@ -492,6 +499,7 @@ def generate_kml() -> None:
                             customerCode=document.customer.code,
                             customerFiscalCode=document.customer.fiscal_code,
                             customerVatCode=document.customer.vat_code,
+                            customerHomepage="N/D",
                             notes="- CLIENTE NON CENSITO!",
                         ),
                         coordinates=get_coordinates(
@@ -645,7 +653,7 @@ def get_all_addresses(database_path: Union[str, Path]) -> list[CustomerAddress]:
             for item in connection.cursor()
             .execute(
                 """
-                    SELECT anag."CodAnagr", ANAG."Nome", ANAG."Indirizzo", ANAG."Cap", ANAG."Citta", ANAG."Prov", IIF(naz."NomeNazionePrint" IS NULL, 'Italia', naz."NomeNazionePrint") AS "Nazione", IIF(anag."Cliente" = 1, 1, 0) AS "IsCustomer", anag."CodiceFiscale", anag."PartitaIva"
+                    SELECT anag."CodAnagr", ANAG."Nome", ANAG."Indirizzo", ANAG."Cap", ANAG."Citta", ANAG."Prov", IIF(naz."NomeNazionePrint" IS NULL, 'Italia', naz."NomeNazionePrint") AS "Nazione", IIF(anag."Cliente" = 1, 1, 0) AS "IsCustomer", anag."CodiceFiscale", anag."PartitaIva", anag."HomePage"
                     FROM "TAnagrafica" AS anag
                     LEFT JOIN "TNazioni" naz ON ANAG."Nazione" = naz."NomeNazione";
                 """
@@ -658,7 +666,7 @@ def get_all_addresses(database_path: Union[str, Path]) -> list[CustomerAddress]:
             for item in connection.cursor()
             .execute(
                 """
-                    SELECT anag."CodAnagr", td."Nome", td."Indirizzo", td."Cap", td."Citta", td."Prov", IIF(naz."NomeNazionePrint" IS NULL, 'Italia', naz."NomeNazionePrint") AS "Nazione", IIF(anag."Cliente" = 1, 1, 0) AS "IsCustomer", td."CodDest", anag."CodiceFiscale", anag."PartitaIva"
+                    SELECT anag."CodAnagr", td."Nome", td."Indirizzo", td."Cap", td."Citta", td."Prov", IIF(naz."NomeNazionePrint" IS NULL, 'Italia', naz."NomeNazionePrint") AS "Nazione", IIF(anag."Cliente" = 1, 1, 0) AS "IsCustomer", td."CodDest", anag."CodiceFiscale", anag."PartitaIva", anag."HomePage"
                     FROM "TAnagrafica" AS anag
                     RIGHT JOIN "TAnagraficaDest" td ON td."IDAnagr" = ANAG."IDAnagr"
                     LEFT JOIN "TNazioni" naz ON td."Nazione" = naz."NomeNazione";
