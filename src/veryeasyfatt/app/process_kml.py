@@ -46,7 +46,16 @@ class CustomerAddress(HashableBaseModel):
     fiscal_code: str = pydantic.Field(alias="CodiceFiscale", default="")
     vat_code: str = pydantic.Field(alias="PartitaIva", default="")
 
-    @pydantic.validator("address", "postcode", "city", "province", "country", "vat_code", "fiscal_code", pre=True)
+    @pydantic.validator(
+        "address",
+        "postcode",
+        "city",
+        "province",
+        "country",
+        "vat_code",
+        "fiscal_code",
+        pre=True,
+    )
     def replace_none(cls, value):
         return value if value is not None else ""
 
@@ -189,7 +198,7 @@ class Placemark(object):
         return placemark
 
 
-def generate_kml():
+def generate_kml() -> None:
     """Generate a KML file from an XML file and a database file."""
     google_api_key = settings.features.kml_generation.google_api_key
     if google_api_key is None or google_api_key.strip() == "":
@@ -207,11 +216,10 @@ def generate_kml():
 
     safe_formatter = SimpleFormatter()
 
-    logger.info("Start")
     logger.info(f"Database path: {database_path}")
     logger.info(f"XML path: '{settings.files.input.easyfatt}'")
 
-    xml_object = read_xml(settings.files.input.easyfatt)
+    xml_object = read_xml(settings.files.input.easyfatt, convert_types=False)
     anagrafiche = get_all_addresses(database_path)
 
     populate_cache(google_api_key, addresses=anagrafiche)
@@ -222,7 +230,6 @@ def generate_kml():
 
     total_documents_processed = 0
     customers_unknown_address = []
-    xml_documents = [document for document in xml_object.documents]
 
     # Lista di documenti raggruppati per codice cliente.
     documents_by_customer: defaultdict[str, list[Document]] = defaultdict(list)
@@ -463,7 +470,7 @@ def generate_kml():
             address_buffer.clear()
             logger.debug("Buffer cleared")
 
-    if total_documents_processed != len(xml_documents):
+    if total_documents_processed != len(xml_object.documents):
         logger.warning(
             f"Documenti processati: {total_documents_processed}/{len(documents_by_customer.keys())}"
         )

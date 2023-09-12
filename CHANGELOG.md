@@ -4,12 +4,13 @@
 
 ### Added
 
-- Aggiunti i seguenti valori alla formattazione personalizzata del segnaposto nel KML: codice fiscale, partita IVA (vedi issue [#98](https://github.com/LukeSavefrogs/danea-easyfatt/issues/98)).
+- Aggiunti i seguenti valori alla formattazione personalizzata del segnaposto nel KML: _codice fiscale_, _partita IVA_ (vedi issue [#98](https://github.com/LukeSavefrogs/danea-easyfatt/issues/98)).
 
 ### Fixed
 
 - Corretto bug introdotto con la versione `v1.4.0` che causava il mancato caricamento della configurazione utente presente nella cartella di esecuzione del programma. Risolve issue [#105](https://github.com/LukeSavefrogs/danea-easyfatt/issues/105).
 - Corretto bug che causava il crash del programma nel raro caso in cui fossero presenti caratteri non compatibili con l'encoding `cp1252`. Ora il file `.DefXml` viene aperto e letto con l'encoding `UTF8`. Risolve issue [#107](https://github.com/LukeSavefrogs/danea-easyfatt/issues/107).
+- Corretto bug che causava il crash del programma nel caso ci fossero prodotti all'interno del file `.DefXml` con quantità decimale. Risolve issue [#106](https://github.com/LukeSavefrogs/danea-easyfatt/issues/106).
 
 ## [v1.4.0] - 2023-09-11
 
