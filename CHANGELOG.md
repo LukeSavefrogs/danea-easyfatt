@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Corretto bug per cui il file di log veniva sempre scritto con il livello della configurazione utente invece di `DEBUG`.
+
 ## [v1.4.1] - 2023-09-12
 
 ### Added
