@@ -119,22 +119,27 @@ def main():
     logger.debug(f"Configurazione in uso: \n{settings.to_dict()}")
 
     # Configure loggers
-    stream_handlers = [
-        handler
-        for handler in logger.handlers
-        if type(handler) in [logging.StreamHandler, RichHandler]
-    ]
     if cli_args.enable_rich_logging:
+        stream_handlers = [
+            handler
+            for handler in logger.handlers
+            if type(handler) in [logging.StreamHandler, RichHandler]
+        ]
         for handler in stream_handlers:
             logger.removeHandler(handler)
         logger.addHandler(rich_handler)
 
     try:
+        stream_handlers = [
+            handler
+            for handler in logger.handlers
+            if type(handler) in [logging.StreamHandler, RichHandler]
+        ]
         for handler in stream_handlers:
-            handler.setLevel(logging.getLevelName(settings.get("log_level")))
+            handler.setLevel(logging.getLevelName(settings.log_level))
     except ValueError:
         logger.warning(
-            f"Invalid log level '{settings.get('log_level')}'. Use one of the following: "
+            f"Invalid log level '{settings.log_level}'. Use one of the following: "
             + ", ".join(logging._nameToLevel.keys())
         )
         return False

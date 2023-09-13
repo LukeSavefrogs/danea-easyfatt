@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.4.3] - 2023-09-13
+
+### Fixed
+
+- Corretto bug introdotto nella `v1.4.2` (_commit [`c0df440`](https://github.com/LukeSavefrogs/danea-easyfatt/commit/c0df4407014dd866342d0fe0a432bbdd089eb159)_) per cui il livello di logging dei messaggi mostrati a video era sempre impostato a `DEBUG`.
+
 ## [v1.4.2] - 2023-09-13
 
 ### Fixed
