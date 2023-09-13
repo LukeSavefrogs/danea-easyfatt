@@ -121,3 +121,5 @@ src/**/routexl/
 tests/data
 # Ignore dynaconf secret files
 .secrets.*
+
+**/logs/
