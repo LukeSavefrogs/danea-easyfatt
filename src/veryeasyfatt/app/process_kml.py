@@ -222,7 +222,7 @@ def generate_kml() -> None:
     logger.info(f"Database path: {database_path}")
     logger.info(f"XML path: '{settings.files.input.easyfatt}'")
 
-    xml_object = read_xml(settings.files.input.easyfatt, convert_types=False)
+    xml_object = read_xml(settings.files.input.easyfatt, convert_types=True)
     anagrafiche = get_all_addresses(database_path)
 
     populate_cache(google_api_key, addresses=anagrafiche)
@@ -278,6 +278,8 @@ def generate_kml() -> None:
     #           - sconosciuti (aggiungere)
     address_buffer: list[dict[str, Any]] = []
     for anagrafica in anagrafiche:
+        logger.debug(f"Anagrafica in corso: {anagrafica.code} ({anagrafica.name}) [{'cliente' if anagrafica.is_customer else 'fornitore'}]")
+
         if address_buffer and anagrafica.code != address_buffer[0]["id"]:
             customer_locations.extend([item["data"] for item in address_buffer])
 

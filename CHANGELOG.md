@@ -5,6 +5,7 @@
 ### Fixed
 
 - Corretto bug per cui il file di log veniva sempre scritto con il livello della configurazione utente invece di `DEBUG`.
+- Aggiornata versione di `easyfatt-db-connector` per correggere l'issue [#106](https://github.com/LukeSavefrogs/danea-easyfatt/issues/106) senza dover disattivare il cast ai tipi corretti.
 
 ## [v1.4.1] - 2023-09-12
 
