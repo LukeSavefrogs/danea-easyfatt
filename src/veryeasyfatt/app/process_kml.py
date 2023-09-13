@@ -278,7 +278,9 @@ def generate_kml() -> None:
     #           - sconosciuti (aggiungere)
     address_buffer: list[dict[str, Any]] = []
     for anagrafica in anagrafiche:
-        logger.debug(f"Anagrafica in corso: {anagrafica.code} ({anagrafica.name}) [{'cliente' if anagrafica.is_customer else 'fornitore'}]")
+        logger.debug(
+            f"Anagrafica in corso: {anagrafica.code} ({anagrafica.name}) [{'cliente' if anagrafica.is_customer else 'fornitore'}]"
+        )
 
         if address_buffer and anagrafica.code != address_buffer[0]["id"]:
             customer_locations.extend([item["data"] for item in address_buffer])
