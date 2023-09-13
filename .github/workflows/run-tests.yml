@@ -1,38 +1,38 @@
 name: "Run tests"
 
-on: 
-    - push
-    - workflow_call
+on:
+  - push
+  - workflow_call
 
 env:
-    PYTHON_VERSION: "3.10"
-    POETRY_VERSION: "1.4.2"
+  PYTHON_VERSION: "3.10"
+  POETRY_VERSION: "1.4.2"
 
 permissions:
-    contents: write
+  contents: write
 
 jobs:
-    test:
-      runs-on: windows-latest
-      steps:
-        - name: "🛒 Checkout repository"
-          uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
-          with:
-            fetch-depth: 0
-        
-        - name: "📜 Install Poetry"
-          run: pipx install poetry
-        
-        - name: "🐍 Install Python"
-          uses: actions/setup-python@v4
-          with:
-            python-version: ${{ env.PYTHON_VERSION }}
-            cache: 'poetry'
-            cache-dependency-path: poetry.lock
-  
-        - name: "🔍 Install dependencies"
-          run: poetry install --with dev
-  
-        - name: "🧪 Run tests"
-          run: |
-            poetry run poe test -- --verbose
+  test:
+    runs-on: windows-latest
+    steps:
+      - name: "🛒 Checkout repository"
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
+        with:
+          fetch-depth: 0
+
+      - name: "📜 Install Poetry"
+        run: pipx install poetry
+
+      - name: "🐍 Install Python"
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "poetry"
+          cache-dependency-path: poetry.lock
+
+      - name: "🔍 Install dependencies"
+        run: poetry install --with dev
+
+      - name: "🧪 Run tests"
+        run: |
+          poetry run poe test -- --verbose

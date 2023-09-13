@@ -4,32 +4,31 @@ on:
   workflow_dispatch:
   push:
     tags:
-    - 'v[0-9]+.[0-9]+.[0-9]+**'
-
+      - "v[0-9]+.[0-9]+.[0-9]+**"
 
 permissions:
   contents: write
 
 jobs:
   tests:
-    uses: ./.github/workflows/run-tests.yml  # use the callable tests job to run tests
+    uses: ./.github/workflows/run-tests.yml # use the callable tests job to run tests
 
   release:
-    needs: [tests]  # require tests to pass before deploy runs
+    needs: [tests] # require tests to pass before deploy runs
     runs-on: windows-latest
     if: startsWith(github.event.ref, 'refs/tags/v')
-    
+
     steps:
       - name: "🛒 Checkout repository"
         uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           fetch-depth: 0
-      
+
       - name: "🐍 Install Python"
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
-      
+          python-version: "3.10"
+
       - name: "📜 Install Poetry"
         uses: abatilo/actions-poetry@v2
         with:
@@ -79,11 +78,10 @@ jobs:
 
             const title = process.argv[2].replace(/^#*\s*/, "", "g");
             const slugger = new GithubSlugger();
-            
+
             console.log(slugger.slug(title));
           write-mode: append
 
-        
       - name: "Find changelog entry"
         id: find_changelog
         shell: bash
@@ -117,7 +115,7 @@ jobs:
             Di seguito l'elenco delle modifiche introdotte in questa versione.
 
             [**Visualizza il changelog completo**](/CHANGELOG.md#${{ steps.find_changelog.outputs.changelog_slug }})
-            
+
             ${{ steps.changelog.outputs.changelog }}
           # generateReleaseNotes: true
           makeLatest: true
