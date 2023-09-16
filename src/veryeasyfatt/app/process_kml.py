@@ -25,6 +25,7 @@ from veryeasyfatt.shared.pydantic.hashable import HashableBaseModel
 logger = logging.getLogger("danea-easyfatt.kml")
 logger.addHandler(logging.NullHandler())
 
+
 class CustomerAddress(HashableBaseModel):
     """Model for a customer address."""
 
