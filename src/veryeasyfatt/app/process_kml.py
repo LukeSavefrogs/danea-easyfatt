@@ -20,15 +20,10 @@ from veryeasyfatt.app import caching
 import veryeasyfatt.bundle as bundle
 from veryeasyfatt.shared.formatter import SimpleFormatter
 from veryeasyfatt.configuration import settings
+from veryeasyfatt.shared.pydantic.hashable import HashableBaseModel
 
 logger = logging.getLogger("danea-easyfatt.kml")
 logger.addHandler(logging.NullHandler())
-
-
-class HashableBaseModel(pydantic.BaseModel):
-    def __hash__(self):
-        return hash((type(self),) + tuple(self.__dict__.values()))
-
 
 class CustomerAddress(HashableBaseModel):
     """Model for a customer address."""
