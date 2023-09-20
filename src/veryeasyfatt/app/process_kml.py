@@ -42,6 +42,7 @@ class CustomerAddress(HashableBaseModel):
     homepage: str = pydantic.Field(alias="HomePage", default="", frozen=True)
 
     is_customer: bool = pydantic.Field(alias="IsCustomer", frozen=True)
+    is_supplier: bool = pydantic.Field(alias="IsSupplier", frozen=True)
     is_primary: bool = pydantic.Field()
 
     @pydantic.validator(
@@ -287,8 +288,9 @@ def generate_kml() -> None:
             address_buffer.clear()
             logger.debug("Buffer cleared")
 
+        # Un'anagrafica può essere sia cliente che fornitore
         # --------------- Fornitori ---------------
-        if not anagrafica.is_customer:
+        if anagrafica.is_supplier:
             supplier_locations.append(
                 Placemark(
                     name=safe_formatter.format(
@@ -308,62 +310,146 @@ def generate_kml() -> None:
                     style="Suppliers",
                 )
             )
-            continue
 
+
+        # Un'anagrafica può essere sia cliente che fornitore
         # --------------- Clienti ---------------
-        # 1. Controlla se ci sono documenti nell'XML per questo cliente
-        if anagrafica.code in documents_by_customer.keys():
-            logger.info(
-                f"Il cliente ha {len(documents_by_customer[anagrafica.code])} documenti nell'XML"
-            )
+        if anagrafica.is_customer:
+            # 1. Controlla se ci sono documenti nell'XML per questo cliente
+            if anagrafica.code in documents_by_customer.keys():
+                logger.info(
+                    f"Il cliente ha {len(documents_by_customer[anagrafica.code])} documenti nell'XML"
+                )
 
-            # 1a. Controlla se ci sono documenti con indirizzi sconosciuti
-            known_addresses = [
-                document
-                for document in documents_by_customer[anagrafica.code]
-                if (
-                    (
-                        document.delivery is not None
-                        and (
-                            document.delivery.address.lower()
+                # 1a. Controlla se ci sono documenti con indirizzi sconosciuti
+                known_addresses = [
+                    document
+                    for document in documents_by_customer[anagrafica.code]
+                    if (
+                        (
+                            document.delivery is not None
+                            and (
+                                document.delivery.address.lower()
+                                == anagrafica.address.lower()
+                                and document.delivery.postcode.lower()
+                                == anagrafica.postcode.lower()
+                                and document.delivery.city.lower()
+                                == anagrafica.city.lower()
+                                and document.delivery.country.lower()
+                                == anagrafica.country.lower()
+                            )
+                        )
+                        or (
+                            document.customer is not None
+                            and document.customer.address.lower()
                             == anagrafica.address.lower()
-                            and document.delivery.postcode.lower()
+                            and document.customer.postcode.lower()
                             == anagrafica.postcode.lower()
-                            and document.delivery.city.lower()
-                            == anagrafica.city.lower()
-                            and document.delivery.country.lower()
+                            and document.customer.city.lower() == anagrafica.city.lower()
+                            and document.customer.country.lower()
                             == anagrafica.country.lower()
                         )
                     )
-                    or (
-                        document.customer is not None
-                        and document.customer.address.lower()
-                        == anagrafica.address.lower()
-                        and document.customer.postcode.lower()
-                        == anagrafica.postcode.lower()
-                        and document.customer.city.lower() == anagrafica.city.lower()
-                        and document.customer.country.lower()
-                        == anagrafica.country.lower()
-                    )
+                ]
+                unknown_addresses = set(
+                    tuple(documents_by_customer[anagrafica.code])
+                ) - set(tuple(known_addresses))
+
+                logger.info(
+                    f"Il cliente ha {len(documents_by_customer[anagrafica.code])} documenti nell'XML (di cui {len(unknown_addresses)} sconosciuti)"
                 )
-            ]
-            unknown_addresses = set(
-                tuple(documents_by_customer[anagrafica.code])
-            ) - set(tuple(known_addresses))
 
-            logger.info(
-                f"Il cliente ha {len(documents_by_customer[anagrafica.code])} documenti nell'XML (di cui {len(unknown_addresses)} sconosciuti)"
-            )
+                if known_addresses:
+                    address = known_addresses[0]
 
-            if known_addresses:
-                address = known_addresses[0]
+                    # NOTA: L'indirizzo di spedizione ha sempre la precedenza su quello del cliente
+                    if address.delivery.address != "":
+                        address_string = f"{address.delivery.address} {address.delivery.postcode}, {address.delivery.city}, {address.delivery.country}"
+                    else:
+                        address_string = f"{address.customer.address} {address.customer.postcode}, {address.customer.city}, {address.customer.country}"
 
-                # NOTA: L'indirizzo di spedizione ha sempre la precedenza su quello del cliente
-                if address.delivery.address != "":
-                    address_string = f"{address.delivery.address} {address.delivery.postcode}, {address.delivery.city}, {address.delivery.country}"
-                else:
-                    address_string = f"{address.customer.address} {address.customer.postcode}, {address.customer.city}, {address.customer.country}"
+                    customer_locations.append(
+                        Placemark(
+                            name=safe_formatter.format(
+                                placemark_title,
+                                customerName=anagrafica.name,
+                                customerCode=anagrafica.code,
+                                customerFiscalCode=anagrafica.fiscal_code,
+                                customerVatCode=anagrafica.vat_code,
+                                customerHomepage=anagrafica.homepage,
+                                notes="",
+                            ),
+                            coordinates=get_coordinates(address_string, google_api_key),
+                            hidden=False,
+                            style="Customers",
+                        )
+                    )
 
+                    logger.info(
+                        f"Added {len(known_addresses)} known addresses for customer {anagrafica.code} ({anagrafica.name})"
+                    )
+                    total_documents_processed += len(known_addresses)
+
+                # Se ci sono documenti con indirizzi sconosciuti
+                if unknown_addresses:
+                    # Salta se sono già stati processati
+                    if anagrafica.code in customers_unknown_address:
+                        continue
+
+                    logger.debug(
+                        f"Customer {anagrafica.code} ({anagrafica.name}) has {len(unknown_addresses)}/{len(documents_by_customer[anagrafica.code])} unknown addresses"
+                    )
+                    customers_unknown_address.append(anagrafica.code)
+
+                    for unknown_address in unknown_addresses:
+                        # NOTA: L'indirizzo di spedizione ha sempre la precedenza su quello del cliente
+                        if unknown_address.delivery.address != "":
+                            address_string = f"{unknown_address.delivery.address} {unknown_address.delivery.postcode}, {unknown_address.delivery.city}, {unknown_address.delivery.country}"
+                        else:
+                            address_string = f"{unknown_address.customer.address} {unknown_address.customer.postcode}, {unknown_address.customer.city}, {unknown_address.customer.country}"
+
+                        address_buffer.append(
+                            {
+                                "id": unknown_address.customer.code,
+                                "data": Placemark(
+                                    name=safe_formatter.format(
+                                        placemark_title,
+                                        customerName=unknown_address.customer.name,
+                                        customerCode=unknown_address.customer.code,
+                                        customerFiscalCode=unknown_address.customer.fiscal_code,
+                                        customerVatCode=unknown_address.customer.vat_code,
+                                        customerHomepage=anagrafica.homepage,
+                                        notes="- NUOVO!",
+                                    ),
+                                    coordinates=get_coordinates(
+                                        address_string, google_api_key
+                                    ),
+                                    hidden=False,
+                                    style="Customers",
+                                ),
+                            }
+                        )
+                    else:
+                        logger.debug(
+                            f"Buffered {len(unknown_addresses)} unknown addresses for customer {anagrafica.code} ({anagrafica.name})"
+                        )
+
+                    total_documents_processed += len(
+                        documents_by_customer[anagrafica.code]
+                    ) - len(known_addresses)
+                # endif
+
+                del documents_by_customer[anagrafica.code]
+            # endif
+
+            else:
+                # 2. This customer has no documents
+                logger.debug(
+                    f"Customer {anagrafica.code} ({anagrafica.name}) has NO documents"
+                )
+                logger.debug(
+                    f"Aggiungo cliente {anagrafica.code} ({anagrafica.name}) - {'PRIMARIO' if anagrafica.is_primary else 'SECONDARIO'}"
+                )
                 customer_locations.append(
                     Placemark(
                         name=safe_formatter.format(
@@ -375,96 +461,14 @@ def generate_kml() -> None:
                             customerHomepage=anagrafica.homepage,
                             notes="",
                         ),
-                        coordinates=get_coordinates(address_string, google_api_key),
-                        hidden=False,
+                        coordinates=get_coordinates(
+                            f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}",
+                            google_api_key,
+                        ),
+                        hidden=True,
                         style="Customers",
                     )
                 )
-
-                logger.info(
-                    f"Added {len(known_addresses)} known addresses for customer {anagrafica.code} ({anagrafica.name})"
-                )
-                total_documents_processed += len(known_addresses)
-
-            # Se ci sono documenti con indirizzi sconosciuti
-            if unknown_addresses:
-                # Salta se sono già stati processati
-                if anagrafica.code in customers_unknown_address:
-                    continue
-
-                logger.debug(
-                    f"Customer {anagrafica.code} ({anagrafica.name}) has {len(unknown_addresses)}/{len(documents_by_customer[anagrafica.code])} unknown addresses"
-                )
-                customers_unknown_address.append(anagrafica.code)
-
-                for unknown_address in unknown_addresses:
-                    # NOTA: L'indirizzo di spedizione ha sempre la precedenza su quello del cliente
-                    if unknown_address.delivery.address != "":
-                        address_string = f"{unknown_address.delivery.address} {unknown_address.delivery.postcode}, {unknown_address.delivery.city}, {unknown_address.delivery.country}"
-                    else:
-                        address_string = f"{unknown_address.customer.address} {unknown_address.customer.postcode}, {unknown_address.customer.city}, {unknown_address.customer.country}"
-
-                    address_buffer.append(
-                        {
-                            "id": unknown_address.customer.code,
-                            "data": Placemark(
-                                name=safe_formatter.format(
-                                    placemark_title,
-                                    customerName=unknown_address.customer.name,
-                                    customerCode=unknown_address.customer.code,
-                                    customerFiscalCode=unknown_address.customer.fiscal_code,
-                                    customerVatCode=unknown_address.customer.vat_code,
-                                    customerHomepage=anagrafica.homepage,
-                                    notes="- NUOVO!",
-                                ),
-                                coordinates=get_coordinates(
-                                    address_string, google_api_key
-                                ),
-                                hidden=False,
-                                style="Customers",
-                            ),
-                        }
-                    )
-                else:
-                    logger.debug(
-                        f"Buffered {len(unknown_addresses)} unknown addresses for customer {anagrafica.code} ({anagrafica.name})"
-                    )
-
-                total_documents_processed += len(
-                    documents_by_customer[anagrafica.code]
-                ) - len(known_addresses)
-            # endif
-
-            del documents_by_customer[anagrafica.code]
-        # endif
-
-        else:
-            # 2. This customer has no documents
-            logger.debug(
-                f"Customer {anagrafica.code} ({anagrafica.name}) has NO documents"
-            )
-            logger.debug(
-                f"Aggiungo cliente {anagrafica.code} ({anagrafica.name}) - {'PRIMARIO' if anagrafica.is_primary else 'SECONDARIO'}"
-            )
-            customer_locations.append(
-                Placemark(
-                    name=safe_formatter.format(
-                        placemark_title,
-                        customerName=anagrafica.name,
-                        customerCode=anagrafica.code,
-                        customerFiscalCode=anagrafica.fiscal_code,
-                        customerVatCode=anagrafica.vat_code,
-                        customerHomepage=anagrafica.homepage,
-                        notes="",
-                    ),
-                    coordinates=get_coordinates(
-                        f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}",
-                        google_api_key,
-                    ),
-                    hidden=True,
-                    style="Customers",
-                )
-            )
 
     else:
         # Clear the buffer if there are still addresses in it
@@ -653,7 +657,7 @@ def get_all_addresses(database_path: Union[str, Path]) -> list[CustomerAddress]:
             for item in connection.cursor()
             .execute(
                 """
-                    SELECT anag."CodAnagr", ANAG."Nome", ANAG."Indirizzo", ANAG."Cap", ANAG."Citta", ANAG."Prov", IIF(naz."NomeNazionePrint" IS NULL, 'Italia', naz."NomeNazionePrint") AS "Nazione", IIF(anag."Cliente" = 1, 1, 0) AS "IsCustomer", anag."CodiceFiscale", anag."PartitaIva", anag."HomePage"
+                    SELECT anag."CodAnagr", ANAG."Nome", ANAG."Indirizzo", ANAG."Cap", ANAG."Citta", ANAG."Prov", IIF(naz."NomeNazionePrint" IS NULL, 'Italia', naz."NomeNazionePrint") AS "Nazione", IIF(anag."Cliente" = 1, 1, 0) AS "IsCustomer", IIF(anag."Fornitore" = 1, 1, 0) AS "IsSupplier", anag."CodiceFiscale", anag."PartitaIva", anag."HomePage"
                     FROM "TAnagrafica" AS anag
                     LEFT JOIN "TNazioni" naz ON ANAG."Nazione" = naz."NomeNazione";
                 """
@@ -666,7 +670,7 @@ def get_all_addresses(database_path: Union[str, Path]) -> list[CustomerAddress]:
             for item in connection.cursor()
             .execute(
                 """
-                    SELECT anag."CodAnagr", td."Nome", td."Indirizzo", td."Cap", td."Citta", td."Prov", IIF(naz."NomeNazionePrint" IS NULL, 'Italia', naz."NomeNazionePrint") AS "Nazione", IIF(anag."Cliente" = 1, 1, 0) AS "IsCustomer", td."CodDest", anag."CodiceFiscale", anag."PartitaIva", anag."HomePage"
+                    SELECT anag."CodAnagr", td."Nome", td."Indirizzo", td."Cap", td."Citta", td."Prov", IIF(naz."NomeNazionePrint" IS NULL, 'Italia', naz."NomeNazionePrint") AS "Nazione", IIF(anag."Cliente" = 1, 1, 0) AS "IsCustomer", IIF(anag."Fornitore" = 1, 1, 0) AS "IsSupplier", td."CodDest", anag."CodiceFiscale", anag."PartitaIva", anag."HomePage"
                     FROM "TAnagrafica" AS anag
                     RIGHT JOIN "TAnagraficaDest" td ON td."IDAnagr" = ANAG."IDAnagr"
                     LEFT JOIN "TNazioni" naz ON td."Nazione" = naz."NomeNazione";

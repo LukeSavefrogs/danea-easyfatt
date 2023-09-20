@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Ora nel caso di un'anagrafica sia cliente che fornitore, il segnaposto viene creato in entrambe le cartelle invece di solo la cartella "Fornitori". Risolve issue [#112](https://github.com/LukeSavefrogs/danea-easyfatt/issues/112).
+
 ## [v1.4.3] - 2023-09-13
 
 ### Fixed
