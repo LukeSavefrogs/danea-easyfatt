@@ -311,7 +311,6 @@ def generate_kml() -> None:
                 )
             )
 
-
         # Un'anagrafica può essere sia cliente che fornitore
         # --------------- Clienti ---------------
         if anagrafica.is_customer:
@@ -345,7 +344,8 @@ def generate_kml() -> None:
                             == anagrafica.address.lower()
                             and document.customer.postcode.lower()
                             == anagrafica.postcode.lower()
-                            and document.customer.city.lower() == anagrafica.city.lower()
+                            and document.customer.city.lower()
+                            == anagrafica.city.lower()
                             and document.customer.country.lower()
                             == anagrafica.country.lower()
                         )
