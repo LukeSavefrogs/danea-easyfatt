@@ -904,13 +904,13 @@ xarray = ["xarray"]
 
 [[package]]
 name = "poethepoet"
-version = "0.22.1"
+version = "0.23.0"
 description = "A task runner that works well with poetry."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "poethepoet-0.22.1-py3-none-any.whl", hash = "sha256:1da4cd00d3b2c44b811c91616a744cf71094a26a299ea9956025162d34eef1a5"},
-    {file = "poethepoet-0.22.1.tar.gz", hash = "sha256:e758bcac731fa9ac0b812389589541e32b825c4a1894e16fa90aeb1946ba2823"},
+    {file = "poethepoet-0.23.0-py3-none-any.whl", hash = "sha256:d573ff31d7678e62b6f9bc9a1291ae2009ac14e0eead0a450598f9f05abb27a3"},
+    {file = "poethepoet-0.23.0.tar.gz", hash = "sha256:62a0a6a518df5985c191aee0c1fcd2bb6a0a04eb102997786fcdf118e4147d22"},
 ]
 
 [package.dependencies]
@@ -1504,4 +1504,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "ecba0206d877392811a6953335d263d0b1ba8d07a8e459cd87780bbfe8d68b61"
+content-hash = "9e07e821f6d44d128afe9f623c1335b8d1f72747e6ac476a4eaae45919dc5b73"
