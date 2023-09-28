@@ -7,6 +7,7 @@ from typing import Any, Union
 import pydantic
 
 import kmlb
+import xml.etree.ElementTree as ET
 
 import geopy.geocoders
 import geopy.location
@@ -182,9 +183,13 @@ class Placemark(object):
 
         return self.name >= o.name
 
-    def to_kml(self):
-        """Transforms the object into a KML string."""
-        placemark = kmlb.point(
+    def to_kml(self) -> ET.Element:
+        """Transforms the object into a KML string.
+
+        Returns:
+            ET.Element: KML element.
+        """
+        placemark: ET.Element = kmlb.point(
             name=self.name,
             coords=self.coordinates,
             hidden=self.hidden,
