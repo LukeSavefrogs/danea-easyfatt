@@ -542,10 +542,7 @@ class XMLDocumentTestCase(unittest.TestCase):
     """,
     )
     def test_time_boundaries(self, xml_document: Path):
-        """Test that the CSV is generated correctly when there is only one document in the XML file.
-
-        See [#89](https://github.com/LukeSavefrogs/danea-easyfatt/issues/89).
-        """
+        """Test that differennt time boundaries formats are supported."""
         base_xml_text = xml_document.read_text(encoding='utf8').strip()
 
         for boundary_format in [
