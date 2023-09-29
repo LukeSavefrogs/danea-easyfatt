@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Ora la funzione `generate_kml` restituisce una stringa KML invece di creare il file.
+
 ## [v1.4.4] - 2023-09-20
 
 ### Fixed
