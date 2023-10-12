@@ -5,6 +5,7 @@
 ### Changed
 
 - Rinominato parametro `geocoder` in `geocoder_fn` per la funzione `search_location` per esprimere meglio la tipologia di parametro richiesta.
+- Corretto bug che causava la visualizzazione dei messaggi di logging a livello `DEBUG` anche se nel file di configurazione era impostato ad un altro livello. Questo bug avveniva solo durante la generazione del KML. Risolve issue [#129](https://github.com/LukeSavefrogs/danea-easyfatt/issues/129).
 
 ## [v1.4.5] - 2023-10-12
 

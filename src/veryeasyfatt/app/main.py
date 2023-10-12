@@ -172,7 +172,7 @@ def main(goal: Optional[str] = None):
         print("\n")
 
     elif goal == "kml-generator":
-        logging.info("Inizio generazione contenuto KML...")
+        logger.info("Inizio generazione contenuto KML...")
 
         kml_string = generate_kml()
         with open(settings.files.output.kml, "w") as file:
