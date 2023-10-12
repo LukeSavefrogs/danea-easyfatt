@@ -109,10 +109,12 @@ def search_location(
 
     if location is None or (isinstance(location, list) and len(location) == 0):
         raise Exception(f"Location '{address.title()}' not found")
-    
-    _location_separator = '\n → '
+
+    _location_separator = "\n → "
     if len(location) > 1:
-        raise Exception(f"Multiple locations found for '{address}':{_location_separator}{_location_separator.join([str(l) for l in location])}")
+        raise Exception(
+            f"Multiple locations found for '{address}':{_location_separator}{_location_separator.join([str(l) for l in location])}"
+        )
 
     return location[0]
 
@@ -131,7 +133,7 @@ def get_coordinates(
     logger.debug(f"Searching for '{address}'")
     location = search_location(address, google_api_key, cache=caching)
     logger.debug(f"Found location: {location}")
-    
+
     return (location.longitude, location.latitude, location.altitude)
 
 
