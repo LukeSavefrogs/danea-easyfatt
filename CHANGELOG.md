@@ -5,6 +5,7 @@
 ### Changed
 
 - Ora la funzione `generate_kml` restituisce una stringa KML invece di creare il file.
+- Ora la funzione `search_location` restituisce errore nel caso la chiamata al Geocoder di Google trovasse più risultati per un unico indirizzo (vedi issue [#126](https://github.com/LukeSavefrogs/danea-easyfatt/issues/126)).
 
 ## [v1.4.4] - 2023-09-20
 

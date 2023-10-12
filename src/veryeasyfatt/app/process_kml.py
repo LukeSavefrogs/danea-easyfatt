@@ -102,13 +102,19 @@ def search_location(
         )
 
     location: Union[geopy.location.Location, None] = geocoder(
-        address, language="it"
+        address.title(),
+        language="it",
+        exactly_one=False,
     )  # pyright: ignore[reportGeneralTypeIssues]
 
-    if location is None:
-        raise Exception(f"Location '{address}' not found")
+    if location is None or (isinstance(location, list) and len(location) == 0):
+        raise Exception(f"Location '{address.title()}' not found")
+    
+    _location_separator = '\n → '
+    if len(location) > 1:
+        raise Exception(f"Multiple locations found for '{address}':{_location_separator}{_location_separator.join([str(l) for l in location])}")
 
-    return location
+    return location[0]
 
 
 def get_coordinates(
@@ -122,8 +128,10 @@ def get_coordinates(
     Returns:
         tuple[float, float]: Tuple containing the latitude and longitude of the address.
     """
+    logger.debug(f"Searching for '{address}'")
     location = search_location(address, google_api_key, cache=caching)
-
+    logger.debug(f"Found location: {location}")
+    
     return (location.longitude, location.latitude, location.altitude)
 
 
