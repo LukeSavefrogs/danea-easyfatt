@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Rinominato parametro `geocoder` in `geocoder_fn` per la funzione `search_location` per esprimere meglio la tipologia di parametro richiesta.
+
 ## [v1.4.5] - 2023-10-12
 
 ### Changed

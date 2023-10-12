@@ -71,14 +71,14 @@ class CustomerAddress(HashableBaseModel):
     enabled="cache",
 )
 def search_location(
-    address: str, google_api_key: str | None = None, geocoder=None, **kwargs
+    address: str, google_api_key: str | None = None, geocoder_fn=None, **kwargs
 ) -> geopy.location.Location:
     """Search for a location.
 
     Args:
         address (str): Address to search.
         google_api_key (str, optional): Google API key. Defaults to None.
-        geocoder (Geocoder, optional): Geocoder to use. Defaults to None.
+        geocoder_fn (Geocoder, optional): Geocoder to use; needs to be a callable object or a function. Defaults to None.
         cache (bool, optional): Whether to cache the result or not. Defaults to True.
 
     Returns:
@@ -88,24 +88,24 @@ def search_location(
         Exception: If no geocoder is passed as argument and no Google API key is provided.
         Exception: If the location is not found.
     """
-    if geocoder is None:
+    if geocoder_fn is None:
         if google_api_key is None or google_api_key.strip() == "":
             raise Exception(
                 "Google API key MUST be provided if no geocoder is passed as argument."
             )
 
         geolocator = geopy.geocoders.GoogleV3(api_key=google_api_key)
-        geocoder = RateLimiter(
+        geocoder_fn = RateLimiter(
             geolocator.geocode,
             min_delay_seconds=1 / 5,  # Max 5 requests per second
             swallow_exceptions=False,
         )
 
-    location: Union[geopy.location.Location, None] = geocoder(
+    location: Union[geopy.location.Location, None] = geocoder_fn(
         address.title(),
         language="it",
         exactly_one=False,
-    )  # pyright: ignore[reportGeneralTypeIssues]
+    )
 
     if location is None or (isinstance(location, list) and len(location) == 0):
         raise Exception(f"Location '{address.title()}' not found")
@@ -625,7 +625,7 @@ def populate_cache(
 
         search_result = search_location(
             address=f"{address.address} {address.postcode}, {address.city}, {address.country}",
-            geocoder=bulk_geocoder,  # Use the rate limited geocoder
+            geocoder_fn=bulk_geocoder,  # Use the rate limited geocoder
         )
         logger.debug(f"Search returned {search_result}")
 
