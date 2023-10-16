@@ -5,6 +5,7 @@ from pathlib import Path
 import logging
 from rich.logging import RichHandler
 import rich
+from rich.panel import Panel
 
 from git.exc import GitCommandError
 from git.repo import Repo
@@ -199,20 +200,24 @@ def release(
     # 7. Check if a tag with the current version already exists
     if str(latest_tag_local) == str(version_local):
         logger.critical(f"Tag '{version_local}' already exists.")
+        
         print("")
-        console.print(
-            "HINT - You can increment the version number using one of the following:"
-        )
-        for release_type in [
-            "major",
-            "minor",
-            "patch",
-            "premajor",
-            "preminor",
-            "prepatch",
-            "prerelease",
-        ]:
-            console.print(f"\t▶ poetry version {release_type}")
+        with console.capture() as capture:
+            console.print(
+                "You can increment the version number using one of the following:"
+            )
+            for release_type in [
+                "major",
+                "minor",
+                "patch",
+                "premajor",
+                "preminor",
+                "prepatch",
+                "prerelease",
+            ]:
+                console.print(f"\t▶ poetry version {release_type}")
+        
+        console.print(Panel(capture.get(), title="Hint", highlight=True, border_style="cyan"))
         return False
 
     input(f"Press [ENTER] to release version '{version_local}'...")
