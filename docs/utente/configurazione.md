@@ -290,7 +290,7 @@ Permette di personalizzare il metodo di ricerca degli indirizzi tramite Google G
 Valori disponibili:
 
 - `strict`: E' il metodo più conservativo, lo script si interrompe se l'API restituisce più di un indirizzo.
-- `postalcode`: Se viene trovato più di un indirizzo corrispondente, restituisce quello con lo stesso CAP dell'indirizzo richiesto (fallisce comunque se ne trova più di uno).
+- `postcode`: Se viene trovato più di un indirizzo corrispondente, restituisce quello con lo stesso CAP dell'indirizzo richiesto (fallisce comunque se ne trova più di uno).
 
 > Valore di default
 >
