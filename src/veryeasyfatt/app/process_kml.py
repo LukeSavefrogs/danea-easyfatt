@@ -99,7 +99,7 @@ def search_location(
         raise Exception(
             f"Invalid search type '{search_type}'. Valid values are 'strict' and 'postcode'"
         )
-    
+
     if geocoder_fn is None:
         if google_api_key is None or google_api_key.strip() == "":
             raise Exception(
@@ -274,12 +274,12 @@ def generate_kml() -> str:
         raise Exception(
             "Google API key not found in the configuration file. Cannot continue."
         )
-    
+
     print(settings.features.kml_generation.location_search_type)
     _get_coordinates = partial(
         get_coordinates,
         google_api_key=google_api_key,
-        search_type = settings.features.kml_generation.location_search_type,
+        search_type=settings.features.kml_generation.location_search_type,
     )
 
     placemark_title = settings.features.kml_generation.placemark_title
@@ -496,9 +496,7 @@ def generate_kml() -> str:
                                         customerHomepage=anagrafica.homepage,
                                         notes="- NUOVO!",
                                     ),
-                                    coordinates=_get_coordinates(
-                                        address_string
-                                    ),
+                                    coordinates=_get_coordinates(address_string),
                                     hidden=False,
                                     style="Customers",
                                 ),
@@ -580,9 +578,7 @@ def generate_kml() -> str:
                             customerHomepage="N/D",
                             notes="- CLIENTE NON CENSITO!",
                         ),
-                        coordinates=_get_coordinates(
-                            address_string, caching=False
-                        ),
+                        coordinates=_get_coordinates(address_string, caching=False),
                         hidden=False,
                         style="Customers",
                     )
