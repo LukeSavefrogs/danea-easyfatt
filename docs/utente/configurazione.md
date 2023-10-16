@@ -15,29 +15,32 @@ Un esempio di file di configurazione è il seguente, tratto dalla [configurazion
 # --------------------------------------------------------------
 #                 Default configuration file
 # --------------------------------------------------------------
-log_level = "DEBUG"                       # Per la lista completa dei livelli di logging: https://docs.python.org/3/library/logging.html#logging-levels
+# --------------------------------------------------------------
+#                 Default configuration file
+# --------------------------------------------------------------
+log_level = "INFO"                       	# Per la lista completa dei livelli di logging: https://docs.python.org/3/library/logging.html#logging-levels
 
 
 [easyfatt.database]
-filename = ""                             # Percorso (relativo o assoluto) al database (`*.eft`) di EasyFatt
+filename = ""
 
 
 [easyfatt.customers]
-custom_field = 1                          # Numero del campo "Extra {N}"
-export_filename = [                       # Nome del file esportato dalla sezione clienti di EasyFatt
+custom_field = 1                          	# Numero del campo "Extra {N}"
+export_filename = [                       	# Nome del file esportato dalla sezione clienti di EasyFatt
     "Soggetti.xlsx", 
-    "Soggetti.ods"
+	"Soggetti.ods"
 ]
 
 
 [files.input]
-easyfatt = "./Documenti.DefXml"           # Percorso (relativo o assoluto) al file `*.DefXML` generato dal gestionale "Danea Easyfatt".
-addition = ""                             # Percorso (relativo o assoluto) al file `*.xml` con le righe da aggiungere come primo figlio del tag `Documents`.
+easyfatt = "./Documenti.DefXml"           	# Percorso (relativo o assoluto) al file `*.DefXML` generato dal gestionale "Danea Easyfatt".
+addition = ""                             	# Percorso (relativo o assoluto) al file `*.xml` con le righe da aggiungere come primo figlio del tag `Documents`.
 
 
 [files.output]
-csv = "./Documenti.csv"                   # Percorso (relativo o assoluto) al file CSV di output.
-kml = ""                                  # Percorso (relativo o assoluto) al file KML di output.
+csv = "./Documenti.csv"                   	# Percorso (relativo o assoluto) al file CSV di output.
+kml = ""                                  	# Percorso (relativo o assoluto) al file KML di output.
 
 
 [options.output]
@@ -47,12 +50,15 @@ csv_template = "@{CustomerName} {CustomerCode}@{eval_IndirizzoSpedizione} {eval_
 
 
 [features.shipping]
-default_interval = "07:00-16:00"          # Intervallo orario di spedizione di default
+default_interval = "07:00-16:00"          	# Intervallo orario di spedizione di default
 
 
 [features.kml_generation]
-google_api_key = ""                       # Chiave API di Google Maps per la generazione del KML
+google_api_key = ""                       	# Chiave API di Google Maps per la generazione del KML
 placemark_title = "{customerName} ({customerCode}) {notes}" # Formato del nome del segnaposto nel KML
+location_search_type = "strict"		   		# Tipo di ricerca da effettuare per la localizzazione del cliente:
+											#   - "strict": mostra errore se non viene trovato esattamente un indirizzo
+											#   - "postcode": usa il CAP per fare un controllo aggiuntivo
 ```
 
 > Essendo ancora in **fase di sviluppo** il nome di queste impostazioni potrebbe **cambiare nel tempo**!
@@ -276,3 +282,19 @@ Permette di personalizzare il titolo del nome del segnaposto nel file KML genera
 >
 > `"{customerName} ({customerCode}) {notes}"`
 {: .note-title .fs-3 }
+
+### `features.kml_generation.location_search_type`
+
+Permette di personalizzare il metodo di ricerca degli indirizzi tramite Google Geocoding API.
+
+Valori disponibili:
+
+- `strict`: E' il metodo più conservativo, lo script si interrompe se l'API restituisce più di un indirizzo.
+- `postalcode`: Se viene trovato più di un indirizzo corrispondente, restituisce quello con lo stesso CAP dell'indirizzo richiesto (fallisce comunque se ne trova più di uno).
+
+> Valore di default
+>
+> `"strict"`
+{: .note-title .fs-3 }
+
+> Questa voce nella configurazione è nata per contrastare il problema presentato nell'issue [#126](https://github.com/LukeSavefrogs/danea-easyfatt/issues/126).

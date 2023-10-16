@@ -1,5 +1,6 @@
 import dataclasses
 from pathlib import Path
+from typing import Literal as _Literal
 
 from veryeasyfatt.configuration.dynaconf_merge import Dynaconf
 
@@ -73,3 +74,4 @@ class ShippingFeaturesSchema:
 class KmlGenerationFeaturesSchema:
     google_api_key: str | None
     placemark_title: str
+    location_search_type: _Literal["strict", "postcode"]

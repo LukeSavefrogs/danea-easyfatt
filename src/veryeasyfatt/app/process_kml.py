@@ -1,8 +1,9 @@
 import datetime
+from functools import partial
 import logging
 from collections import defaultdict
 from pathlib import Path
-from typing import Any, Union
+from typing import Any, Literal, Union
 
 import pydantic
 
@@ -71,7 +72,11 @@ class CustomerAddress(HashableBaseModel):
     enabled="cache",
 )
 def search_location(
-    address: str, google_api_key: str | None = None, geocoder_fn=None, **kwargs
+    address: str,
+    google_api_key: str | None = None,
+    geocoder_fn=None,
+    search_type: Literal["strict", "postcode"] = "strict",
+    **kwargs,
 ) -> geopy.location.Location:
     """Search for a location.
 
@@ -88,6 +93,13 @@ def search_location(
         Exception: If no geocoder is passed as argument and no Google API key is provided.
         Exception: If the location is not found.
     """
+    _location_separator = "\n → "
+
+    if search_type not in ["strict", "postcode"]:
+        raise Exception(
+            f"Invalid search type '{search_type}'. Valid values are 'strict' and 'postcode'"
+        )
+    
     if geocoder_fn is None:
         if google_api_key is None or google_api_key.strip() == "":
             raise Exception(
@@ -101,7 +113,7 @@ def search_location(
             swallow_exceptions=False,
         )
 
-    location: Union[geopy.location.Location, None] = geocoder_fn(
+    location: Union[list[geopy.location.Location], None] = geocoder_fn(
         address.title(),
         language="it",
         exactly_one=False,
@@ -110,17 +122,57 @@ def search_location(
     if location is None or (isinstance(location, list) and len(location) == 0):
         raise Exception(f"Location '{address.title()}' not found")
 
-    _location_separator = "\n → "
-    if len(location) > 1:
+    print(search_type)
+    if search_type == "strict":
+        if len(location) > 1:
+            raise Exception(
+                f"Too many locations found for '{address.title()}':{_location_separator}{_location_separator.join([str(l) for l in location])}"
+            )
+
+        return location[0]
+
+    same_postal_code = []
+    for loc in location:
+        postal_code = [
+            comp
+            for comp in loc.raw["address_components"]
+            if "postal_code" in comp["types"]
+        ]
+
+        # Province or cities have no postal code
+        if len(postal_code) == 0:
+            continue
+
+        if len(postal_code) > 1:
+            raise Exception(
+                f"Too many postal codes found for '{address.title()}': {postal_code}"
+            )
+
+        postal_code = postal_code[0]["long_name"]
+
+        if postal_code in address.replace(",", " ").split():
+            same_postal_code.append(loc)
+
+    # Workaround for issue GH-126 (https://github.com/LukeSavefrogs/danea-easyfatt/issues/126).
+    # Try to exclude locations with different postal codes
+    if not same_postal_code:
         raise Exception(
-            f"Multiple locations found for '{address}':{_location_separator}{_location_separator.join([str(l) for l in location])}"
+            f"No locations found with the right Postal Code for '{address}':{_location_separator}{_location_separator.join([str(l) for l in location])}"
         )
 
-    return location[0]
+    if len(same_postal_code) > 1:
+        raise Exception(
+            f"Too many locations found ({len(same_postal_code)}) with same Postal Code for '{address}':{_location_separator}{_location_separator.join([str(l) for l in same_postal_code])}"
+        )
+
+    return same_postal_code[0]
 
 
 def get_coordinates(
-    address: str, google_api_key: str, caching=True
+    address: str,
+    google_api_key: str,
+    caching=True,
+    search_type: Literal["strict", "postcode"] = "strict",
 ) -> tuple[float, float, float]:
     """Get the coordinates of an address.
 
@@ -130,8 +182,10 @@ def get_coordinates(
     Returns:
         tuple[float, float]: Tuple containing the latitude and longitude of the address.
     """
-    logger.debug(f"Searching for '{address}'")
-    location = search_location(address, google_api_key, cache=caching)
+    logger.debug(f"Searching for '{address}' (search type: {search_type})")
+    location = search_location(
+        address, google_api_key, cache=caching, search_type=search_type
+    )
     logger.debug(f"Found location: {location}")
 
     return (location.longitude, location.latitude, location.altitude)
@@ -220,6 +274,13 @@ def generate_kml() -> str:
         raise Exception(
             "Google API key not found in the configuration file. Cannot continue."
         )
+    
+    print(settings.features.kml_generation.location_search_type)
+    _get_coordinates = partial(
+        get_coordinates,
+        google_api_key=google_api_key,
+        search_type = settings.features.kml_generation.location_search_type,
+    )
 
     placemark_title = settings.features.kml_generation.placemark_title
     database_path = settings.easyfatt.database.filename
@@ -317,9 +378,8 @@ def generate_kml() -> str:
                         customerHomepage=anagrafica.homepage,
                         notes="",
                     ),
-                    coordinates=get_coordinates(
+                    coordinates=_get_coordinates(
                         f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}",
-                        google_api_key,
                     ),
                     hidden=True,
                     style="Suppliers",
@@ -394,7 +454,7 @@ def generate_kml() -> str:
                                 customerHomepage=anagrafica.homepage,
                                 notes="",
                             ),
-                            coordinates=get_coordinates(address_string, google_api_key),
+                            coordinates=_get_coordinates(address_string),
                             hidden=False,
                             style="Customers",
                         )
@@ -436,8 +496,8 @@ def generate_kml() -> str:
                                         customerHomepage=anagrafica.homepage,
                                         notes="- NUOVO!",
                                     ),
-                                    coordinates=get_coordinates(
-                                        address_string, google_api_key
+                                    coordinates=_get_coordinates(
+                                        address_string
                                     ),
                                     hidden=False,
                                     style="Customers",
@@ -476,9 +536,8 @@ def generate_kml() -> str:
                             customerHomepage=anagrafica.homepage,
                             notes="",
                         ),
-                        coordinates=get_coordinates(
+                        coordinates=_get_coordinates(
                             f"{anagrafica.address} {anagrafica.postcode}, {anagrafica.city}, {anagrafica.country}",
-                            google_api_key,
                         ),
                         hidden=True,
                         style="Customers",
@@ -521,8 +580,8 @@ def generate_kml() -> str:
                             customerHomepage="N/D",
                             notes="- CLIENTE NON CENSITO!",
                         ),
-                        coordinates=get_coordinates(
-                            address_string, google_api_key, caching=False
+                        coordinates=_get_coordinates(
+                            address_string, caching=False
                         ),
                         hidden=False,
                         style="Customers",
@@ -626,6 +685,7 @@ def populate_cache(
         search_result = search_location(
             address=f"{address.address} {address.postcode}, {address.city}, {address.country}",
             geocoder_fn=bulk_geocoder,  # Use the rate limited geocoder
+            search_type=settings.features.kml_generation.location_search_type,
         )
         logger.debug(f"Search returned {search_result}")
 
