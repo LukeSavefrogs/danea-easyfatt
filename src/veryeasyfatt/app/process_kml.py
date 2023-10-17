@@ -122,7 +122,6 @@ def search_location(
     if location is None or (isinstance(location, list) and len(location) == 0):
         raise Exception(f"Location '{address.title()}' not found")
 
-    print(search_type)
     if search_type == "strict":
         if len(location) > 1:
             raise Exception(
@@ -275,7 +274,6 @@ def generate_kml() -> str:
             "Google API key not found in the configuration file. Cannot continue."
         )
 
-    print(settings.features.kml_generation.location_search_type)
     _get_coordinates = partial(
         get_coordinates,
         google_api_key=google_api_key,
