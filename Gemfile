@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 gem 'jekyll', '~> 4.2'
 
-gem "just-the-docs", "0.6.2" # currently the latest pre-release
+gem "just-the-docs", "0.7.0" # currently the latest pre-release
 # gem "just-the-docs"            # the latest release - currently 0.3.3
 
 # gem "bulma-clean-theme"
