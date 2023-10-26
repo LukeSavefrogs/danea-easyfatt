@@ -1,7 +1,10 @@
 import enum
 import string
 
-from veryeasyfatt.shared.formatter.exceptions import InvalidFormatError, UnknownCommandError
+from veryeasyfatt.shared.formatter.exceptions import (
+    InvalidFormatError,
+    UnknownCommandError,
+)
 
 
 class FormatterCommands(enum.Enum):
@@ -49,7 +52,6 @@ class SimpleFormatter(string.Formatter):
         super().__init__()
 
     def get_field(self, field_name, args, kwargs):
-        print(f"Field name: {field_name}")
         if self.sandboxed and ("." in field_name or "[" in field_name):
             raise InvalidFormatError(
                 'Invalid format string (field name cannot contain "." or "[")'
@@ -122,14 +124,12 @@ class SimpleFormatter(string.Formatter):
         return super().format_field(value, format_spec)
 
 
-
 if __name__ == "__main__":
     f = SimpleFormatter()
 
     variable = "heLlo WoRld"
 
     SECRET = "this-is-a-secret"
-
 
     class Error:
         def __init__(self):
