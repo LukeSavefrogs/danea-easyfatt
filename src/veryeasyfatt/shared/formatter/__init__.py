@@ -1,9 +1,7 @@
-from collections.abc import Mapping
 import enum
 import string
 
-COMMANDS_PREFIX = "s"
-COMMANDS_SEPARATOR = "->"
+from veryeasyfatt.shared.formatter.exceptions import InvalidFormatError, UnknownCommandError
 
 
 class FormatterCommands(enum.Enum):
@@ -17,48 +15,53 @@ class FormatterCommands(enum.Enum):
 
 
 class SimpleFormatter(string.Formatter):
-    def __init__(self, allow_attribute_access=False):
+    def __init__(self, separator="->", prefix="s", sandboxed=True):
         """Formatter that allows to use user-friendly commands to format strings.
 
         By default it does not allow to access attributes of variables, but this
-        can be changed by setting `allow_attribute_access` to `True`.
+        can be changed by setting `sandboxed` to `False`.
         This choice has been made as a basic security measure to avoid the user to
         access sensitive data.
         See [this blog post](https://lucumr.pocoo.org/2016/12/29/careful-with-str-format/)
         for more information.
 
         Args:
-            allow_attribute_access (bool, optional): Allow or deny access to variable attributes. Defaults to False.
+            separator (str, optional): Separator between commands. Defaults to "->".
+            prefix (str, optional): Prefix used to identify commands. Defaults to "s".
+            sandboxed (bool, optional): Deny access to variable attributes (both via dot operator and square bracket notation). Defaults to True.
 
         Example:
             ```pycon
-            >>> unsafe_formatter = UserFormatter(allow_attribute_access=True)
+            >>> unsafe_formatter = UserFormatter(sandboxed=False)
             >>> unsafe_formatter.format('{var[test]}', var={"test": "value"})
             'value'
-            >>> safe_formatter = UserFormatter() # by default `allow_attribute_access=False`
+            >>> safe_formatter = UserFormatter() # by default `sandboxed=True`
             >>> safe_formatter.format('{var[test]}', var={"test": "value"})
             Traceback (most recent call last):
             ...
             Exception: Invalid format string (field name cannot contain "." or "[")
             ```
         """
-        self.allow_attribute_access = allow_attribute_access
+        self.sandboxed = sandboxed
+        self.command_separator = separator
+        self.command_prefix = prefix
+
         super().__init__()
 
     def get_field(self, field_name, args, kwargs):
-        if self.allow_attribute_access == False and (
-            "." in field_name or "[" in field_name
-        ):
-            raise Exception(
+        print(f"Field name: {field_name}")
+        if self.sandboxed and ("." in field_name or "[" in field_name):
+            raise InvalidFormatError(
                 'Invalid format string (field name cannot contain "." or "[")'
             )
 
         return super().get_field(field_name, args, kwargs)
 
     def format_field(self, value, format_spec):
-        if isinstance(value, str) and format_spec.startswith(COMMANDS_PREFIX):
+        if isinstance(value, str) and format_spec.startswith(self.command_prefix):
             command_stack = [
-                command.strip() for command in format_spec.split(COMMANDS_SEPARATOR)[1:]
+                command.strip()
+                for command in format_spec.split(self.command_separator)[1:]
             ]
             format_spec = ""
 
@@ -114,17 +117,10 @@ class SimpleFormatter(string.Formatter):
                     value = value.replace(search, replace)
 
                 else:
-                    raise ValueError(f"Invalid formatting command {command}")
+                    raise UnknownCommandError(f"Invalid formatting command {command}")
 
         return super().format_field(value, format_spec)
 
-
-SECRET = "this-is-a-secret"
-
-
-class Error:
-    def __init__(self):
-        pass
 
 
 if __name__ == "__main__":
@@ -132,11 +128,18 @@ if __name__ == "__main__":
 
     variable = "heLlo WoRld"
 
+    SECRET = "this-is-a-secret"
+
+
+    class Error:
+        def __init__(self):
+            pass
+
     # Results in accessing the globals dictionary of the object and then the value of secret
     # err = Error()
     # print(f.format('{error.__init__.__globals__[SECRET]:s->uppercase}', error = err))
 
-    print(f.format("{0:s->uppercase->substring(6)}", variable))
+    print(f.format("{var:s->uppercase->substring(6)}", var=variable))
     print(f.format("{0:s->lowercase}", variable))
     print(f.format("{0:s->capitalize}", variable))
     print(f.format("{0:s->title}", variable))

@@ -1,5 +1,21 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+**Formatter**:
+
+- Aggiunti parametri `separator` e `prefix`
+- Aggiunte `Exception` personalizzate per il progetto
+
+### Changed
+
+**Formatter**:
+
+- Rinominato parametro `allow_attribute_access` in `sandboxed`
+- Spostato modulo `shared.formatter` in un pacchetto separato
+
 ## [v1.4.7] - 2023-10-16
 
 ### Added
