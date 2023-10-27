@@ -97,21 +97,19 @@ class SimpleFormatter(string.Formatter):
                     if command.count("(") != 1 or command.count(")") != 1:
                         raise ValueError(f"Command '{command}' MUST have parameters")
 
+                    # Remove quotes only if they are at the beginning and at the end of the string
                     command_args = [
-                        arg[1:-1]
-                        if (arg.startswith('"') and arg.endswith('"'))
-                        or (arg.startswith("'") and arg.endswith("'"))
-                        else arg
+                        (
+                            arg[1:-1]
+                            if (arg.startswith('"') and arg.endswith('"'))
+                            or (arg.startswith("'") and arg.endswith("'"))
+                            else arg
+                        )
                         for arg in (
                             arg.strip()
                             for arg in command.split("(")[1].split(")")[0].split(",")
                         )
                     ]
-
-                    # Remove quotes only if they are at the beginning and at the end of the string
-                    # for i, arg in enumerate(command_args):
-                    #     if (arg.startswith('"') and arg.endswith('"')) or (arg.startswith("'") and arg.endswith("'")):
-                    #         command_args[i] = arg[1:-1]
 
                     search = str(command_args[0])
                     replace = str(command_args[1])
