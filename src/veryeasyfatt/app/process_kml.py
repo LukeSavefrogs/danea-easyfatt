@@ -6,6 +6,8 @@ from pathlib import Path
 from typing import Any, Literal, Union
 
 import pydantic
+import rich
+from rich.panel import Panel
 
 import kmlb
 import xml.etree.ElementTree as ET
@@ -62,6 +64,10 @@ class CustomerAddress(HashableBaseModel):
         return value if value is not None else ""
 
 
+class GeocodingError(Exception):
+    """Exception raised when a geocoding error occurs."""
+
+
 @caching.persist_to_file(
     file_name=(bundle.get_execution_directory() / ".cache" / "locations.pickle"),
     backend="pickle",
@@ -91,7 +97,7 @@ def search_location(
 
     Raises:
         Exception: If no geocoder is passed as argument and no Google API key is provided.
-        Exception: If the location is not found.
+        GeocodingError: If the location is not found.
     """
     _location_separator = "\n → "
 
@@ -120,11 +126,11 @@ def search_location(
     )
 
     if location is None or (isinstance(location, list) and len(location) == 0):
-        raise Exception(f"Location '{address.title()}' not found")
+        raise GeocodingError(f"Location '{address.title()}' not found")
 
     if search_type == "strict":
         if len(location) > 1:
-            raise Exception(
+            raise GeocodingError(
                 f"Too many locations found for '{address.title()}':{_location_separator}{_location_separator.join([str(l) for l in location])}"
             )
 
@@ -155,12 +161,12 @@ def search_location(
     # Workaround for issue GH-126 (https://github.com/LukeSavefrogs/danea-easyfatt/issues/126).
     # Try to exclude locations with different postal codes
     if not same_postal_code:
-        raise Exception(
+        raise GeocodingError(
             f"No locations found with the right Postal Code for '{address}':{_location_separator}{_location_separator.join([str(l) for l in location])}"
         )
 
     if len(same_postal_code) > 1:
-        raise Exception(
+        raise GeocodingError(
             f"Too many locations found ({len(same_postal_code)}) with same Postal Code for '{address}':{_location_separator}{_location_separator.join([str(l) for l in same_postal_code])}"
         )
 
@@ -669,19 +675,25 @@ def populate_cache(
     )
 
     logger.info("Cache initialization started (this may take a while...)")
+    geocoding_errors = []
     for address in addresses:
         if dry_run:
             logger.debug(
-                f"Search for '{address.address} {address.postcode}, {address.city}, {address.country}'"
+                f"Search for '{address.address} {address.postcode}, {address.city}, {address.country}' ({address.code} - {address.name})"
             )
             continue
 
-        search_result = search_location(
-            address=f"{address.address} {address.postcode}, {address.city}, {address.country}",
-            geocoder_fn=bulk_geocoder,  # Use the rate limited geocoder
-            search_type=settings.features.kml_generation.location_search_type,
-        )
-        logger.debug(f"Search returned {search_result}")
+        try:
+            search_result = search_location(
+                address=f"{address.address} {address.postcode}, {address.city}, {address.country}",
+                geocoder_fn=bulk_geocoder,  # Use the rate limited geocoder
+                search_type=settings.features.kml_generation.location_search_type,
+            )
+            logger.debug(f"Search returned {search_result}")
+        except GeocodingError as e:
+            logger.warning(f"Geocoding error: {e}")
+            geocoding_errors.append(str(e))
+            continue
 
     unique_customers = set(
         [address.code for address in addresses if address.is_customer]
@@ -699,6 +711,16 @@ def populate_cache(
     logger.info(
         f"Total processed suppliers: {len(unique_suppliers)} ({len([ addr for addr in addresses if not addr.is_customer])} addresses)"
     )
+
+    if geocoding_errors:
+        rich.console.Console().print(
+            Panel(
+                "\n\n".join(geocoding_errors),
+                title="Geocoding errors",
+                border_style="yellow",
+            )
+        )
+        raise Exception("Geocoding errors occurred. Fix them, then retry")
 
 
 def get_all_addresses(database_path: Union[str, Path]) -> list[CustomerAddress]:
@@ -744,7 +766,11 @@ def get_all_addresses(database_path: Union[str, Path]) -> list[CustomerAddress]:
         ]
 
     # Elenco ordinato di tutte le anagrafiche (con indirizzi primari e secondari)
-    return sorted(
-        anagrafiche + anagrafiche_indirizzi_extra,
-        key=lambda x: (x.code, not x.is_primary, x.alias),
-    )
+    return [
+        anag
+        for anag in sorted(
+            anagrafiche + anagrafiche_indirizzi_extra,
+            key=lambda x: (x.code, not x.is_primary, x.alias),
+        )
+        if anag.address != ""  # Ignore all empty addresses
+    ]

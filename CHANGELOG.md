@@ -11,6 +11,8 @@
 
 ### Changed
 
+- Ora durante la fase di Geocoding degli indirizzi tramite l'API Google Geocoding, se vengono riscontrati errori, questi vengono mostrati tutti insieme solo al termine dell'intera operazione.
+
 **Formatter**:
 
 - Rinominato parametro `allow_attribute_access` in `sandboxed`
