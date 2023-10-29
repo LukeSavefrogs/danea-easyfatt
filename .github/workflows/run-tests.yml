@@ -3,6 +3,7 @@ name: "Run tests"
 on:
   - push
   - workflow_call
+  - workflow_dispatch
 
 env:
   PYTHON_VERSION: "3.10"
