@@ -11,6 +11,7 @@ import pandas as pd
 import pyperclip
 
 from rich.prompt import Confirm, IntPrompt
+from veryeasyfatt.app.constants import ApplicationGoals
 
 from veryeasyfatt.app.process_kml import generate_kml, populate_cache
 from veryeasyfatt.app.process_xml import modifica_xml
@@ -84,7 +85,7 @@ def main(goal: Optional[str] = None):
             logger.error("Scelta non valida.")
             return False
 
-    if goal == "csv-generator":
+    if goal == ApplicationGoals.CSV_GENERATOR.value:
         try:
             require_files([settings.files.input.easyfatt])
         except FileNotFoundError as e:
@@ -182,7 +183,7 @@ def main(goal: Optional[str] = None):
             os.startfile(Path(settings["files"]["output"]["csv"]).resolve(), "open")
         print("\n")
 
-    elif goal == "kml-generator":
+    elif goal == ApplicationGoals.KML_GENERATOR.value:
         try:
             require_files([settings.files.input.easyfatt])
         except Exception as e:
@@ -215,7 +216,7 @@ def main(goal: Optional[str] = None):
         except Exception as e:
             logger.error(f"Errore in fase di apertura Google Earth: {e}")
 
-    elif goal.startswith("initialize-geo-cache"):
+    elif goal in [ApplicationGoals.INITIALIZE_GEO_CACHE.value, ApplicationGoals.INITIALIZE_GEO_CACHE_DRYRUN.value]:
         populate_cache(
             google_api_key=settings.features.kml_generation.google_api_key,
             database_path=(
@@ -223,7 +224,7 @@ def main(goal: Optional[str] = None):
                 .expanduser()
                 .resolve()
             ),
-            dry_run=goal.endswith("-dryrun"),
+            dry_run=goal == ApplicationGoals.INITIALIZE_GEO_CACHE_DRYRUN.value,
         )
 
 

@@ -3,6 +3,7 @@ import datetime
 import sys
 import webbrowser
 import argparse
+from veryeasyfatt.app.constants import ApplicationGoals
 
 import veryeasyfatt.bundle as bundle
 import veryeasyfatt.updater as updater
@@ -103,12 +104,7 @@ def main():
         dest="goal",
         type=str,
         default=None,
-        choices=[
-            "csv-generator",
-            "kml-generator",
-            "initialize-geo-cache",
-            "initialize-geo-cache-dryrun",
-        ],
+        choices=ApplicationGoals.values(),
     )
     cli_args = parser.parse_args()
 
