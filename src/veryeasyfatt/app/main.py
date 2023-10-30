@@ -30,27 +30,32 @@ EASYFATT_DOCUMENT_DTYPE = {
 }
 
 
+def require_files(required_files: list[Path]) -> None:
+    """Verifica che i file richiesti esistano.
+
+    Args:
+        required_files (list[Path]): Lista di file richiesti.
+
+    Raises:
+        Exception: Se uno dei file richiesti non esiste.
+    """
+    _separator = "\n → "
+
+    missing_files = [
+        file
+        for file in map(Path, required_files)  # enforce Path type for all list elements
+        if not file.resolve().exists()
+    ]
+    if missing_files:
+        raise Exception(
+            f"The following required files were not found:{_separator}{_separator.join([str(file.resolve()) for file in missing_files])}"
+        )
+
+
 # -----------------------------------------------------------
 #                        Inizio codice
 # -----------------------------------------------------------
 def main(goal: Optional[str] = None):
-    # ==================================================================
-    #                     Controllo file richiesti
-    # ==================================================================
-    REQUIRED_FILES = [
-        Path(settings.files.input.easyfatt),
-    ]
-    missing_required_file = False
-    for required_file in REQUIRED_FILES:
-        if not required_file.resolve().exists():
-            logger.critical(
-                f"File richiesto '{required_file.resolve().absolute()}' non trovato."
-            )
-            missing_required_file = True
-
-    if missing_required_file:
-        return False
-
     if goal is None:
         print("Scegli l'operazione da effettuare:")
         print("1) Generatore CSV per RouteXL")
@@ -80,6 +85,12 @@ def main(goal: Optional[str] = None):
             return False
 
     if goal == "csv-generator":
+        try:
+            require_files([settings.files.input.easyfatt])
+        except Exception as e:
+            logger.critical(e)
+            return False
+
         # 1. Modifico l'XML
         nuovo_xml: str
         if settings.files.input.addition is not None:
@@ -172,6 +183,12 @@ def main(goal: Optional[str] = None):
         print("\n")
 
     elif goal == "kml-generator":
+        try:
+            require_files([settings.files.input.easyfatt])
+        except Exception as e:
+            logger.critical(e)
+            return False
+
         logger.info("Inizio generazione contenuto KML...")
 
         kml_string = generate_kml()
@@ -210,7 +227,6 @@ def main(goal: Optional[str] = None):
         )
 
 
-# Per compilare: pyinstaller --onefile --clean .\src\main.py
 if __name__ == "__main__":
     try:
         main(r"D:\Progetti\danea-automation\tests\data\veryeasyfatt.config.toml")

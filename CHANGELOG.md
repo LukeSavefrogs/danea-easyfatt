@@ -12,6 +12,7 @@
 ### Changed
 
 - Ora durante la fase di Geocoding degli indirizzi tramite l'API Google Geocoding, se vengono riscontrati errori, questi vengono mostrati tutti insieme solo al termine dell'intera operazione.
+- Rimosso il controllo dei file obbligatori prima che venga mostrato il menu di scelta operazione. Risolve issue [#140](https://github.com/LukeSavefrogs/danea-easyfatt/issues/140).
 
 **Formatter**:
 
