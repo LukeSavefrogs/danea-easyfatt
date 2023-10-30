@@ -39,7 +39,7 @@ def require_files(required_files: list[Path]) -> None:
     Raises:
         Exception: Se uno dei file richiesti non esiste.
     """
-    _separator = "\n → "
+    _separator = "\n - "
 
     missing_files = [
         file
@@ -47,7 +47,7 @@ def require_files(required_files: list[Path]) -> None:
         if not file.resolve().exists()
     ]
     if missing_files:
-        raise Exception(
+        raise FileNotFoundError(
             f"The following required files were not found:{_separator}{_separator.join([str(file.resolve()) for file in missing_files])}"
         )
 
@@ -87,7 +87,7 @@ def main(goal: Optional[str] = None):
     if goal == "csv-generator":
         try:
             require_files([settings.files.input.easyfatt])
-        except Exception as e:
+        except FileNotFoundError as e:
             logger.critical(e)
             return False
 
