@@ -114,7 +114,8 @@ class BundleTestCase(unittest.TestCase):
             text=True,
         ).stdout
 
-        self.assertRegex(command_output, r"File richiesto '.*\.DefXml' non trovato\.")
+        # self.assertRegex(command_output, r"File richiesto '.*\.DefXml' non trovato\.")
+        self.assertRegex(command_output, r"The following required files were not found:")
 
 
 if __name__ == "__main__":
