@@ -37,6 +37,9 @@ jobs:
           tag_name="$(echo "${{ github.ref }}" | sed -r 's/refs\/tags\///')";
           echo "Tag name: '$tag_name'";
           file -i CHANGELOG.md;
+          
+          cat CHANGELOG.md;
+
           changelog_slug="$(cat CHANGELOG.md | iconv -f ISO-8859-1 -t UTF-8 | grep -a -E "^##\s*\[\s*${tag_name//./\\.}\s*\].*" CHANGELOG.md)";
 
           echo "::debug::Changelog entry: '$changelog_slug'";
