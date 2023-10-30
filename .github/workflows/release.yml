@@ -33,6 +33,7 @@ jobs:
         id: slugify
         shell: bash
         run: |
+          set -v;
           echo "Github ref: '${{ github.ref }}'";
           tag_name="$(echo "${{ github.ref }}" | sed -r 's/refs\/tags\///')";
           echo "Tag name: '$tag_name'";
