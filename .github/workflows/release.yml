@@ -33,27 +33,33 @@ jobs:
         id: slugify
         shell: bash
         run: |
-          set -x;
-          echo "Github ref: '${{ github.ref }}'";
+          set +e; # Disable error handling, because we want to handle the error ourselves
+
           tag_name="$(echo "${{ github.ref }}" | sed -r 's/refs\/tags\///')";
           echo "Tag name: '$tag_name'";
           file -i CHANGELOG.md;
-
-          changelog_text="$(cat CHANGELOG.md)";
-          changelog_slug="$(echo "$changelog_text" | grep -a -E "^##\s*\[\s*${tag_name//./\\.}\s*\].*" )";
+          changelog_slug="$(cat CHANGELOG.md | grep -a -E "^##\s*\[\s*${tag_name//./\\.}\s*\].*")";
 
           echo "::debug::Changelog entry: '$changelog_slug'";
 
           if [[ -z "$changelog_slug" ]]; then
-            echo "No changelog entry found for ${{ github.ref }}";
+            echo "::error::No changelog entry found for ${{ github.ref }}";
             exit 1;
           elif [[ "$(wc -l <<< "$changelog_slug")" -gt 1 ]]; then
-            echo "Multiple changelog entries found for ${{ github.ref }}";
+            echo "::error::Multiple changelog entries found for ${{ github.ref }}";
             exit 1;
           fi
 
-          changelog_slug="$(node ./scripts/slugify.mjs "$changelog_slug")";
+          if ! changelog_slug="$(node ./scripts/slugify.mjs "$changelog_slug")"; then
+            echo "::error::Failed to generate changelog slug for ${{ github.ref }}";
+            exit 1;
+          fi
           echo "Generated changelog slug: '$changelog_slug'";
+
+          if [[ -z "$changelog_slug" ]]; then
+            echo "::error::Changelog slug for cannot be empty";
+            exit 1;
+          fi
 
           echo "changelog_slug=${changelog_slug}" >> $GITHUB_OUTPUT;
   
