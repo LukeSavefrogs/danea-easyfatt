@@ -184,6 +184,19 @@ def main(goal: Optional[str] = None):
         print("\n")
 
     elif goal == ApplicationGoals.KML_GENERATOR.value:
+        if settings.easyfatt.database.filename is None:
+            logger.error(
+                "Il file di database non è stato specificato nel file di configurazione."
+            )
+            return False
+
+        if settings.features.kml_generation.google_api_key in [None, ""]:
+            logger.error(
+                "La chiave API di Google Geocoding non è stata specificata nel file di configurazione. "
+                + "Seguire la guida al seguente URL: 'https://github.com/LukeSavefrogs/danea-easyfatt/issues/17#issuecomment-1699004094'"
+            )
+            return False
+
         try:
             require_files([settings.files.input.easyfatt])
         except Exception as e:
@@ -220,6 +233,19 @@ def main(goal: Optional[str] = None):
         ApplicationGoals.INITIALIZE_GEO_CACHE.value,
         ApplicationGoals.INITIALIZE_GEO_CACHE_DRYRUN.value,
     ]:
+        if settings.easyfatt.database.filename is None:
+            logger.error(
+                "Il file di database non è stato specificato nel file di configurazione."
+            )
+            return False
+
+        if settings.features.kml_generation.google_api_key in [None, ""]:
+            logger.error(
+                "La chiave API di Google Geocoding non è stata specificata nel file di configurazione. "
+                + "Seguire la guida al seguente URL: 'https://github.com/LukeSavefrogs/danea-easyfatt/issues/17#issuecomment-1699004094'"
+            )
+            return False
+
         populate_cache(
             google_api_key=settings.features.kml_generation.google_api_key,
             database_path=(
