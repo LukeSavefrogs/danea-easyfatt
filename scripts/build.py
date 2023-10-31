@@ -62,6 +62,7 @@ def build(filename: str, output_name: str|None = None, clean=True):
             '--add-data', r'./veryeasyfatt.config.toml;.',
             '--version-file', temporary_version_file,
             '--noupx',
+            '--python-option', 'X utf8',
             # '--path', r'./src/',
         ]
 

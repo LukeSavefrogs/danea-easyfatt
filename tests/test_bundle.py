@@ -52,6 +52,7 @@ class BundleTestCase(unittest.TestCase):
             capture_output=True,
             check=True,
             text=True,
+            encoding="utf8",
         ).stdout
 
         self.assertRegex(command_output, r"usage:.*")
@@ -64,6 +65,7 @@ class BundleTestCase(unittest.TestCase):
             capture_output=True,
             check=True,
             text=True,
+            encoding="utf8",
         ).stdout
 
         self.assertRegex(command_output, r"v[0-9]+\.[0-9]+\.[0-9]+.*")
@@ -82,6 +84,7 @@ class BundleTestCase(unittest.TestCase):
             input="\nn\nn\n",
             capture_output=True,
             text=True,
+            encoding="utf8",
         ).stdout
 
         self.assertRegex(
@@ -112,10 +115,12 @@ class BundleTestCase(unittest.TestCase):
             input="\nn\nn\n",
             capture_output=True,
             text=True,
+            encoding="utf8",
         ).stdout
 
-        # self.assertRegex(command_output, r"File richiesto '.*\.DefXml' non trovato\.")
-        self.assertRegex(command_output, r"The following required files were not found:")
+        self.assertRegex(
+            command_output, r"The following required files were not found:"
+        )
 
 
 if __name__ == "__main__":

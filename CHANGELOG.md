@@ -9,6 +9,10 @@
 - Aggiunti parametri `separator` e `prefix`
 - Aggiunte `Exception` personalizzate per il progetto
 
+### Fixed
+
+- Ora l'**encoding** di default dell'interprete Python è impostato a **`UTF-8`** invece di essere platform-dependent. Il programma non crasherà più in caso di caratteri speciali (come `→`), nemmeno durante i test automatici. Risolve issue [#141](https://github.com/LukeSavefrogs/danea-easyfatt/issues/141).
+
 ### Changed
 
 - Ora durante la fase di Geocoding degli indirizzi tramite l'API Google Geocoding, se vengono riscontrati errori, questi vengono mostrati tutti insieme solo al termine dell'intera operazione.
