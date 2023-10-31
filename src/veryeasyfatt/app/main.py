@@ -40,7 +40,7 @@ def require_files(required_files: list[Path]) -> None:
     Raises:
         Exception: Se uno dei file richiesti non esiste.
     """
-    _separator = "\n - "
+    _separator = "\n → "
 
     missing_files = [
         file
