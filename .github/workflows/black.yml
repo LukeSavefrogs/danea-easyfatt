@@ -2,6 +2,10 @@ name: Check Python code formatting
 
 on:
   push:
+    paths:
+      - '**.py'
+      - '**.pyw'
+      - '**.pyi'
   workflow_call:
   workflow_dispatch:
 
