@@ -112,8 +112,6 @@ def main():
         print("Loading custom configuration file: ", cli_args.configuration_file)
         settings.reload_settings(cli_args.configuration_file)
 
-    logger.debug(f"Configurazione in uso: \n{settings.to_dict()}")
-
     # Configure loggers
     if cli_args.enable_rich_logging:
         stream_handlers = [
@@ -140,6 +138,7 @@ def main():
         )
         return False
 
+    logger.debug(f"Configurazione in uso: \n{settings.to_dict()}")
     logger.debug(f"CLI parameters: {cli_args}")
 
     logger.debug(f"Execution directory: '{bundle.get_execution_directory()}'")
