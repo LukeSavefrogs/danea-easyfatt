@@ -1,7 +1,9 @@
 from enum import Enum
 
+
 class SuperEnum(Enum):
-    """ Source: https://stackoverflow.com/a/76867417/8965861. """
+    """Source: https://stackoverflow.com/a/76867417/8965861."""
+
     @classmethod
     def to_dict(cls):
         """Returns a dictionary representation of the enum."""
@@ -16,7 +18,7 @@ class SuperEnum(Enum):
     def keys(cls):
         """Returns a list of all the enum keys."""
         return [e.name for e in cls]
-    
+
     @classmethod
     def values(cls):
         """Returns a list of all the enum values."""

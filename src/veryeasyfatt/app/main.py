@@ -216,7 +216,10 @@ def main(goal: Optional[str] = None):
         except Exception as e:
             logger.error(f"Errore in fase di apertura Google Earth: {e}")
 
-    elif goal in [ApplicationGoals.INITIALIZE_GEO_CACHE.value, ApplicationGoals.INITIALIZE_GEO_CACHE_DRYRUN.value]:
+    elif goal in [
+        ApplicationGoals.INITIALIZE_GEO_CACHE.value,
+        ApplicationGoals.INITIALIZE_GEO_CACHE_DRYRUN.value,
+    ]:
         populate_cache(
             google_api_key=settings.features.kml_generation.google_api_key,
             database_path=(
