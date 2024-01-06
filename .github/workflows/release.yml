@@ -74,7 +74,7 @@ jobs:
           fetch-depth: 0
 
       - name: "🧬 Generate Changelog"
-        uses: ardalanamini/auto-changelog@v3
+        uses: ardalanamini/auto-changelog@v4
         id: changelog
         with:
           commit-types: |
