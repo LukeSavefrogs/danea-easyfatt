@@ -34,7 +34,7 @@ dynaconf = "^3.2.2"
 
 
 [tool.poetry.group.dev.dependencies]
-gitpython = "^3.1.30"
+gitpython = "^3.1.41"
 pyinstaller = "^6.0.0"
 poethepoet = "^0.24.0"
 autopep8 = "^2.0.2"
