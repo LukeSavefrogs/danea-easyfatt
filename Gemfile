@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
-gem 'jekyll', '~> 4.2'
+gem 'jekyll', '~> 4.3', '>= 4.3.4'
 
-gem "just-the-docs", "0.7.0" # currently the latest pre-release
+gem "just-the-docs", "0.8.0" # currently the latest pre-release
 # gem "just-the-docs"            # the latest release - currently 0.3.3
 
 # gem "bulma-clean-theme"
@@ -14,7 +14,7 @@ group :jekyll_plugins do
   gem 'jekyll-timeago', '~> 0.15.0'
   gem "jekyll-default-layout"
 end
-gem "jekyll-glossary_tooltip", "~> 1.5", :group => :jekyll_plugins
+gem "jekyll-glossary_tooltip", "~> 1.5", ">= 1.5.1", :group => :jekyll_plugins
 
 gem "jemoji", "~> 0.13.0", :group => :jekyll_plugins
 
