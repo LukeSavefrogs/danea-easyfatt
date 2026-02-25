@@ -25,6 +25,7 @@ import veryeasyfatt.bundle as bundle
 from veryeasyfatt.shared.formatter import SimpleFormatter
 from veryeasyfatt.configuration import settings
 from veryeasyfatt.shared.pydantic.hashable import HashableBaseModel
+from veryeasyfatt.shared.ui.SelectableMenu import SelectableMenu
 
 logger = logging.getLogger("danea-easyfatt.kml")
 logger.addHandler(logging.NullHandler())
@@ -81,7 +82,7 @@ def search_location(
     address: str,
     google_api_key: str | None = None,
     geocoder_fn=None,
-    search_type: Literal["strict", "postcode"] = "strict",
+    search_type: Literal["strict", "manual", "postcode"] = "strict",
     **kwargs,
 ) -> geopy.location.Location:
     """Search for a location.
@@ -101,9 +102,9 @@ def search_location(
     """
     _location_separator = "\n → "
 
-    if search_type not in ["strict", "postcode"]:
+    if search_type not in ["strict", "manual", "postcode"]:
         raise Exception(
-            f"Invalid search type '{search_type}'. Valid values are 'strict' and 'postcode'"
+            f"Invalid search type '{search_type}'. Valid values are 'strict', 'manual' and 'postcode'"
         )
 
     if geocoder_fn is None:
@@ -136,6 +137,23 @@ def search_location(
 
         return location[0]
 
+    elif search_type == "manual":
+        menu = SelectableMenu(
+            options=[
+                (f"{loc.address} (lat: {loc.latitude}, lon: {loc.longitude})", loc)
+                for loc in location
+            ],
+            title=f"Multiple locations found for '{address.title()}', please select the correct one:",
+            highlight_style="bold white on blue",
+        )
+
+        result = menu.run()
+
+        if type(result) != geopy.location.Location:
+            raise GeocodingError(f"Invalid location selected (expected a geopy.location.Location object, got {type(result)})")
+        
+        return result
+        
     same_postal_code = []
     for loc in location:
         postal_code = [
@@ -177,7 +195,7 @@ def get_coordinates(
     address: str,
     google_api_key: str,
     caching=True,
-    search_type: Literal["strict", "postcode"] = "strict",
+    search_type: Literal["strict", "manual", "postcode"] = "strict",
 ) -> tuple[float, float, float]:
     """Get the coordinates of an address.
 

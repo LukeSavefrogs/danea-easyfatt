@@ -74,4 +74,4 @@ class ShippingFeaturesSchema:
 class KmlGenerationFeaturesSchema:
     google_api_key: str | None
     placemark_title: str
-    location_search_type: _Literal["strict", "postcode"]
+    location_search_type: _Literal["strict", "manual", "postcode"]
