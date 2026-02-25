@@ -4,6 +4,7 @@ import subprocess
 import tempfile
 from rich.logging import RichHandler
 import logging
+import platform
 
 from pathlib import Path
 
@@ -57,9 +58,9 @@ def build(filename: str, output_name: str|None = None, clean=True):
             '--log-level', 'ERROR',
             '--noconfirm',
             '--onefile', 
-            # '--add-data', r'./src/;./src/',
-            '--add-data', r'./pyproject.toml;.',
-            '--add-data', r'./veryeasyfatt.config.toml;.',
+            # '--add-data', rf'./src/{os.pathsep}./src/',
+            '--add-data', rf'./pyproject.toml{os.pathsep}.',
+            '--add-data', rf'./veryeasyfatt.config.toml{os.pathsep}.',
             '--version-file', temporary_version_file,
             '--noupx',
             '--python-option', 'X utf8',
@@ -101,7 +102,7 @@ def build(filename: str, output_name: str|None = None, clean=True):
 
     if output_name:
         logger.info("Renaming to final output executable...")
-        input_file = Path("dist") / f"{temporary_exe_file}.exe"
+        input_file = Path("dist") / (f"{temporary_exe_file}.exe" if platform.system() == "Windows" else temporary_exe_file)
         output_file = Path("dist") / f"{output_name}.exe"
                 
         if output_file.exists():
