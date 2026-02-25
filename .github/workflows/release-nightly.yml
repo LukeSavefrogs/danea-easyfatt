@@ -1,0 +1,137 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+  push:
+
+permissions:
+  contents: write
+
+jobs:
+  tests:
+    uses: ./.github/workflows/run-tests.yml
+
+  latest_changelog:
+    runs-on: ubuntu-latest
+    outputs:
+      changelog_slug: ${{ steps.slugify.outputs.changelog_slug }}
+    steps:
+      - name: "🛒 Checkout repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - run: npm install github-slugger
+
+      - name: "Find changelog entry"
+        id: slugify
+        shell: bash
+        run: |
+          set +e; # Disable error handling, because we want to handle the error ourselves
+
+          tag_name="$(echo "${{ github.ref }}" | sed -r 's/refs\/tags\///')";
+          echo "Tag name: '$tag_name'";
+          file -i CHANGELOG.md;
+          changelog_slug="$(cat CHANGELOG.md | grep -a -E "^##\s*\[\s*${tag_name//./\\.}\s*\].*")";
+
+          echo "::debug::Changelog entry: '$changelog_slug'";
+
+          if [[ -z "$changelog_slug" ]]; then
+            echo "::error::No changelog entry found for ${{ github.ref }}";
+            exit 1;
+          elif [[ "$(wc -l <<< "$changelog_slug")" -gt 1 ]]; then
+            echo "::error::Multiple changelog entries found for ${{ github.ref }}";
+            exit 1;
+          fi
+
+          if ! changelog_slug="$(node ./scripts/slugify.mjs "$changelog_slug")"; then
+            echo "::error::Failed to generate changelog slug for ${{ github.ref }}";
+            exit 1;
+          fi
+          echo "Generated changelog slug: '$changelog_slug'";
+
+          if [[ -z "$changelog_slug" ]]; then
+            echo "::error::Changelog slug for cannot be empty";
+            exit 1;
+          fi
+
+          echo "changelog_slug=${changelog_slug}" >> $GITHUB_OUTPUT;
+  
+  release_body:
+    runs-on: ubuntu-latest
+    outputs:
+      changelog: ${{ steps.changelog.outputs.changelog }}
+    steps:
+      - name: "🛒 Checkout repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: "🧬 Generate Changelog"
+        uses: ardalanamini/auto-changelog@v3
+        id: changelog
+        with:
+          commit-types: |
+            breaking: ⚠ Breaking Changes ⚠
+            feat: ✨ Features ✨
+            ✨ feat: ✨ Features ✨
+            fix: 🐛 Risoluzione bug 🐛
+            🐞 fix: 🐛 Risoluzione bug 🐛
+            perf: 🚀 Performance 🚀
+            🚀 perf: 🚀 Performance 🚀
+            docs: 📄 Documentazione 📄
+            📄 docs: 📄 Documentazione 📄
+            other: Altre modifiche
+          default-commit-type: Altre modifiche
+          mention-authors: false
+          mention-new-contributors: true
+          include-compare: true
+          semver: false
+  
+  build-and-release:
+    runs-on: windows-latest
+    needs: [tests, latest_changelog, release_body] # Require dependencies to finish
+    if: startsWith(github.event.ref, 'refs/tags/v')
+    steps:
+      - name: "🛒 Checkout repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: "🐍 Install Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: 'poetry'
+
+      - name: "📜 Install Poetry"
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: 1.3.2
+        
+      - name: "🔍 Install dependencies"
+        run: poetry install
+
+      - name: "🎉 Generate artifacts"
+        run: |
+          poetry run build
+      
+      - name: "🏁 Create Release"
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          name: "Nightly Release"
+          body: |
+            Di seguito l'elenco delle modifiche introdotte in questa versione.
+
+            [**Visualizza il changelog completo**](/CHANGELOG.md#${{ needs.latest_changelog.outputs.changelog_slug }})
+
+            ${{ needs.release_body.outputs.changelog }}
+          # generateReleaseNotes: true
+          makeLatest: false
+          prerelease: true
+          artifacts: "dist/*.exe"
