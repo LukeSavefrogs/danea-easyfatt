@@ -110,6 +110,11 @@ def update_available() -> bool:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="[%(asctime)s] %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
     toml_file = (bundle.get_root_directory() / "pyproject.toml").resolve()
     logger.info(f"TOML File: '{toml_file}'")
 
