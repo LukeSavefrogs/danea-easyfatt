@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Impostando la configurazione `features.kml_generation.location_search_type` a `manual`, ora è possibile scegliere manualmente l'indirizzo da restituire per ogni segnaposto del KML tra quelli trovati tramite l'API di Geocoding di Google nel caso in cui questa restituisca più risultati per un unico indirizzo. Vedi issue [#172](https://github.com/LukeSavefrogs/danea-easyfatt/issues/172).
+
 **Formatter**:
 
 - Aggiunti parametri `separator` e `prefix`
