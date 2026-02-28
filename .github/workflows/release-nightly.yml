@@ -1,4 +1,4 @@
-name: Create Release
+name: Create Nightly Release
 
 on:
   workflow_dispatch:
