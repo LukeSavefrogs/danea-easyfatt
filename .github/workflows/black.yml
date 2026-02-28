@@ -20,8 +20,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - uses: psf/black@stable
+
+      - name: "📜 Install Poetry"
+        uses: abatilo/actions-poetry@v2
         with:
-          options: "--check"
-          src: "./src/"
-          version: "~= 22.0"
+          poetry-version: 2.3.2
+        
+      - name: "🔍 Install dependencies"
+        run: poetry install --with dev
+
+      - name: "🖤 Check code formatting with Black"
+        run: poetry run black --check ./src/
