@@ -150,10 +150,12 @@ def search_location(
         result = menu.run()
 
         if type(result) != geopy.location.Location:
-            raise GeocodingError(f"Invalid location selected (expected a geopy.location.Location object, got {type(result)})")
-        
+            raise GeocodingError(
+                f"Invalid location selected (expected a geopy.location.Location object, got {type(result)})"
+            )
+
         return result
-        
+
     same_postal_code = []
     for loc in location:
         postal_code = [

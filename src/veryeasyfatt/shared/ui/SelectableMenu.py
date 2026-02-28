@@ -5,15 +5,22 @@ import readchar
 
 from typing import Any
 
+
 class Option(object):
-    def __init__(self, label: str, value: Any, highlight_style: str | None = None, indicator: str | None = None):
+    def __init__(
+        self,
+        label: str,
+        value: Any,
+        highlight_style: str | None = None,
+        indicator: str | None = None,
+    ):
         if type(label) != str:
             raise ValueError("Label must be a string")
         if highlight_style is not None and type(highlight_style) != str:
             raise ValueError("Highlight style must be a string")
         if indicator is not None and type(indicator) != str:
             raise ValueError("Indicator must be a string")
-        
+
         self.label = label
         self.value = value
         self.highlight_style = highlight_style
@@ -21,9 +28,10 @@ class Option(object):
 
     def __str__(self):
         return self.label
-    
+
     def __repr__(self) -> str:
         return f"Option({','.join(f'{k}={v}' for k,v in self.__dict__.items())})"
+
 
 class SelectableMenu(object):
     _options: list[Option]
@@ -37,9 +45,9 @@ class SelectableMenu(object):
     ):
         """
         Args:
-            options (list[str | tuple[str, Any] | Option]): List of options. Each option can be either 
-                a string (label and value will be the same), 
-                a tuple of (label, value) or 
+            options (list[str | tuple[str, Any] | Option]): List of options. Each option can be either
+                a string (label and value will be the same),
+                a tuple of (label, value) or
                 an Option instance (gives more control).
             title (str, optional): Title of the menu. Defaults to None.
             highlight_style (str, optional): Rich style for the highlighted option. Defaults to "bold white on blue".
@@ -53,9 +61,23 @@ class SelectableMenu(object):
         self._options = []
         for option in options:
             if isinstance(option, str):
-                self._options.append(Option(label=option, value=option, highlight_style=highlight_style, indicator=indicator))
+                self._options.append(
+                    Option(
+                        label=option,
+                        value=option,
+                        highlight_style=highlight_style,
+                        indicator=indicator,
+                    )
+                )
             elif isinstance(option, tuple) and len(option) == 2:
-                self._options.append(Option(label=option[0], value=option[1], highlight_style=highlight_style, indicator=indicator))
+                self._options.append(
+                    Option(
+                        label=option[0],
+                        value=option[1],
+                        highlight_style=highlight_style,
+                        indicator=indicator,
+                    )
+                )
             elif isinstance(option, Option):
                 if option.highlight_style is None:
                     option.highlight_style = highlight_style
@@ -97,14 +119,10 @@ class SelectableMenu(object):
     # ------------------------
 
     def _move_up(self):
-        self._selected_index = (
-            self._selected_index - 1
-        ) % len(self._options)
+        self._selected_index = (self._selected_index - 1) % len(self._options)
 
     def _move_down(self):
-        self._selected_index = (
-            self._selected_index + 1
-        ) % len(self._options)
+        self._selected_index = (self._selected_index + 1) % len(self._options)
 
     # ------------------------
     # Public API
@@ -112,11 +130,11 @@ class SelectableMenu(object):
 
     def get_options(self) -> list[Option]:
         return self._options
-    
+
     def run(self, exit_on_esc: bool = True) -> Any | None:
         """
         Run the menu and wait for the user to select an option.
-        
+
         Args:
             exit_on_esc (bool, optional): Whether to exit the menu and return None when the ESC key is pressed. Defaults to True.
 
@@ -146,14 +164,20 @@ class SelectableMenu(object):
                     return None
 
                 live.update(self._render())
-    
+
+
 if __name__ == "__main__":
     menu = SelectableMenu(
         options=[
             ("Option 1", "value1"),
             ("Option 2", "value2"),
             ("Option 3", "value3"),
-            Option(label="Exit the program", value="exit", highlight_style="bold white on red", indicator="!"),
+            Option(
+                label="Exit the program",
+                value="exit",
+                highlight_style="bold white on red",
+                indicator="!",
+            ),
         ],
         title="Select an option",
     )
