@@ -113,11 +113,15 @@ class SelectableMenu(object):
     def get_options(self) -> list[Option]:
         return self._options
     
-    def run(self):
+    def run(self, exit_on_esc: bool = True) -> Any | None:
         """
+        Run the menu and wait for the user to select an option.
+        
+        Args:
+            exit_on_esc (bool, optional): Whether to exit the menu and return None when the ESC key is pressed. Defaults to True.
+
         Returns:
-            selected value
-            None if ESC pressed
+            The value of the selected option, or None if exited with ESC (if exit_on_esc is True).
         """
 
         with Live(
@@ -138,7 +142,7 @@ class SelectableMenu(object):
                 elif key == readchar.key.ENTER:
                     return self._options[self._selected_index].value
 
-                elif key == readchar.key.ESC:
+                elif key == readchar.key.ESC and exit_on_esc:
                     return None
 
                 live.update(self._render())
