@@ -47,7 +47,6 @@ jobs:
   build-and-release:
     runs-on: windows-latest
     needs: [tests, release_body] # Require dependencies to finish
-    if: startsWith(github.event.ref, 'refs/tags/v')
     steps:
       - name: "🛒 Checkout repository"
         uses: actions/checkout@v4
