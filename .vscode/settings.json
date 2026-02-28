@@ -28,6 +28,9 @@
     },
     "github.copilot.enable": {
 		"*": true,
-		"markdown": false
+		"markdown": true
 	},
+    "render-special-chars.except": [
+        "é ò à ù ì",
+    ]
 }
