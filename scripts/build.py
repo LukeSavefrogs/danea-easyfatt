@@ -61,6 +61,7 @@ def build(filename: str, output_name: str|None = None, clean=True):
             # '--add-data', rf'./src/{os.pathsep}./src/',
             '--add-data', rf'./pyproject.toml{os.pathsep}.',
             '--add-data', rf'./veryeasyfatt.config.toml{os.pathsep}.',
+            '--copy-metadata', 'readchar',
             '--version-file', temporary_version_file,
             '--noupx',
             '--python-option', 'X utf8',
