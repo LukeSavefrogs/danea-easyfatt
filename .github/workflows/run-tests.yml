@@ -8,7 +8,6 @@ on:
   workflow_dispatch:
 
 env:
-  PYTHON_VERSION: "3.10"
   POETRY_VERSION: "1.4.2"
 
 permissions:
@@ -29,7 +28,6 @@ jobs:
       - name: "🐍 Install Python"
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
           cache: "poetry"
           cache-dependency-path: poetry.lock
 
