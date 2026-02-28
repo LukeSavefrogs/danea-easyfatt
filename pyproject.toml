@@ -70,3 +70,7 @@ cmd = "python -m unittest discover --catch"
 
 [tool.mypy]
 ignore_missing_imports = true
+
+[tool.black]
+include = '\.pyi?$'
+target-version = ["py310", "py311", "py312", "py313"]
