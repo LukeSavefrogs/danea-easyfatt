@@ -3,28 +3,67 @@ from rich.table import Table
 from rich.live import Live
 import readchar
 
+from typing import Any
 
-class SelectableMenu:
+class Option(object):
+    def __init__(self, label: str, value: Any, highlight_style: str | None = None, indicator: str | None = None):
+        if type(label) != str:
+            raise ValueError("Label must be a string")
+        if highlight_style is not None and type(highlight_style) != str:
+            raise ValueError("Highlight style must be a string")
+        if indicator is not None and type(indicator) != str:
+            raise ValueError("Indicator must be a string")
+        
+        self.label = label
+        self.value = value
+        self.highlight_style = highlight_style
+        self.indicator = indicator
+
+    def __str__(self):
+        return self.label
+    
+    def __repr__(self) -> str:
+        return f"Option({','.join(f'{k}={v}' for k,v in self.__dict__.items())})"
+
+class SelectableMenu(object):
+    _options: list[Option]
+
     def __init__(
         self,
-        options,
-        title=None,
-        highlight_style="bold white on blue",
+        options: list[str | tuple[str, Any] | Option],
+        title: str | None = None,
+        highlight_style: str = "bold white on blue",
+        indicator: str = ">",
     ):
         """
-        options: list[str] OR list[tuple[label, value]]
-        title: optional title
-        highlight_style: Rich style for selected row
+        Args:
+            options (list[str | tuple[str, Any] | Option]): List of options. Each option can be either 
+                a string (label and value will be the same), 
+                a tuple of (label, value) or 
+                an Option instance (gives more control).
+            title (str, optional): Title of the menu. Defaults to None.
+            highlight_style (str, optional): Rich style for the highlighted option. Defaults to "bold white on blue".
+            indicator (str, optional): Indicator symbol for the selected option. Defaults to ">".
         """
 
         if not options:
             raise ValueError("Options cannot be empty")
 
-        # Normalize to (label, value)
-        self._options = [
-            (opt, opt) if isinstance(opt, str) else opt
-            for opt in options
-        ]
+        # Normalize options
+        self._options = []
+        for option in options:
+            if isinstance(option, str):
+                self._options.append(Option(label=option, value=option, highlight_style=highlight_style, indicator=indicator))
+            elif isinstance(option, tuple) and len(option) == 2:
+                self._options.append(Option(label=option[0], value=option[1], highlight_style=highlight_style, indicator=indicator))
+            elif isinstance(option, Option):
+                if option.highlight_style is None:
+                    option.highlight_style = highlight_style
+                if option.indicator is None:
+                    option.indicator = indicator
+                self._options.append(option)
+            else:
+                raise ValueError(f"Invalid option format: {option}")
 
         self._title = title
         self._highlight_style = highlight_style
@@ -43,13 +82,13 @@ class SelectableMenu:
         )
         table.add_column()
 
-        for i, (label, _) in enumerate(self._options):
+        for i, option in enumerate(self._options):
             if i == self._selected_index:
                 table.add_row(
-                    f"[{self._highlight_style}]> {label}[/{self._highlight_style}]"
+                    f"[{option.highlight_style}]{option.indicator} {option.label}[/{option.highlight_style}]"
                 )
             else:
-                table.add_row(f"  {label}")
+                table.add_row(f"  {option.label}")
 
         return table
 
@@ -71,6 +110,9 @@ class SelectableMenu:
     # Public API
     # ------------------------
 
+    def get_options(self) -> list[Option]:
+        return self._options
+    
     def run(self):
         """
         Returns:
@@ -94,7 +136,7 @@ class SelectableMenu:
                     self._move_down()
 
                 elif key == readchar.key.ENTER:
-                    return self._options[self._selected_index][1]
+                    return self._options[self._selected_index].value
 
                 elif key == readchar.key.ESC:
                     return None
@@ -107,6 +149,7 @@ if __name__ == "__main__":
             ("Option 1", "value1"),
             ("Option 2", "value2"),
             ("Option 3", "value3"),
+            Option(label="Exit the program", value="exit", highlight_style="bold white on red", indicator="!"),
         ],
         title="Select an option",
     )
