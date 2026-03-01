@@ -13,10 +13,10 @@ class OperationsTestCase(unittest.TestCase):
 	def test_remote_release (self):
 		version_info = updater.get_latest_release()
 
-		self.assertEqual(len(version_info.keys()), 3)
+		self.assertIsInstance(version_info, updater.GithubRelease)
 		
 		self.assertRegex(
-			version_info["version"],
+			version_info.version,
 			r"[0-9]+\.[0-9]+\.[0-9]+.*"
 		)
 	
