@@ -14,6 +14,18 @@ import veryeasyfatt.bundle.path as bundle
 logger = logging.getLogger("danea-easyfatt.updater")
 logger.addHandler(logging.NullHandler())
 
+class GithubRelease(object):
+    def __init__(self, url: str, version: str, date: str):
+        self.url = url
+        self.version = version
+        self.date = date
+
+    def __str__(self):
+        return f"{self.version} ({self.date})"
+
+    def __repr__(self):
+        return f"GithubRelease(version='{self.version}', date='{self.date}', url='{self.url}')"
+
 def get_github_token() -> str:
     """Returns the Github token to use for API requests.
 
@@ -61,11 +73,11 @@ def get_github_api_endpoint() -> str:
     return f"https://api.{domain}/repos/{author}/{repository}"
 
 
-def get_latest_release():
+def get_latest_release() -> GithubRelease:
     """Returns information about the latest release (/releases/latest).
 
     Returns:
-            release (dict): The release information
+            release (GithubRelease): The release information
     """
     api_url = get_github_api_endpoint()
     extra_headers = {}
@@ -84,11 +96,11 @@ def get_latest_release():
 
     json_response = json.loads(response.text)
 
-    return {
-        "url": json_response["html_url"],
-        "version": json_response["tag_name"],
-        "date": json_response["published_at"],
-    }
+    return GithubRelease(
+        url=json_response["html_url"],
+        version=json_response["tag_name"],
+        date=json_response["published_at"],
+    )
 
 
 def get_latest_version() -> str:
@@ -97,7 +109,7 @@ def get_latest_version() -> str:
     Returns:
             version (str): The remote version
     """
-    return get_latest_release()["version"]
+    return get_latest_release().version
 
 
 def get_current_version() -> str:
