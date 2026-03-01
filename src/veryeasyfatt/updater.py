@@ -71,9 +71,8 @@ def get_latest_release():
     extra_headers = {}
 
     try:
-        api_token = get_github_token()
-        extra_headers["Authorization"] = f"Token {api_token}"
-    except Exception as e:
+        extra_headers["Authorization"] = f"Token {get_github_token()}"
+    except Exception:
         logger.debug(f"Could not retrieve Github token")
 
     response = requests.get(f"{api_url}/releases/latest", headers={
