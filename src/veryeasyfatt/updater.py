@@ -2,6 +2,7 @@ import logging
 import os
 import re
 import sys
+import time
 
 import requests
 import json
@@ -93,15 +94,51 @@ def get_latest_release() -> GithubRelease:
     except Exception:
         logger.debug(f"Could not retrieve Github token")
 
-    response = requests.get(
-        f"{api_url}/releases/latest",
-        headers={
-            "Accept": "application/vnd.github+json",
-            "X-GitHub-Api-Version": "2022-11-28",
-            **extra_headers,
-        },
-    )
-    response.raise_for_status()
+    try:
+        response = requests.get(
+            f"{api_url}/releases/latest",
+            headers={
+                "Accept": "application/vnd.github+json",
+                "X-GitHub-Api-Version": "2022-11-28",
+                **extra_headers,
+            },
+        )
+        response.raise_for_status()
+    except requests.HTTPError as e:
+        if response.status_code in [403, 429]:
+            retry_after = int(response.headers.get("Retry-After", -1))
+            x_rate_limit_remaining = int(
+                response.headers.get("X-RateLimit-Remaining", -1)
+            )
+
+            # The `x-ratelimit-reset` header is in UTC epoch seconds.
+            x_rate_limit_reset = int(response.headers.get("X-RateLimit-Reset", -1))
+            logger.warning(
+                f"Github API rate limit exceeded: retry after={retry_after}, remaining={x_rate_limit_remaining} (resets at {x_rate_limit_reset})."
+            )
+
+            if retry_after > 0:
+                # Retry after waiting the specified time
+                logger.info(f"Waiting for {retry_after} seconds before retrying...")
+                time.sleep(retry_after)
+                return get_latest_release()
+
+            if x_rate_limit_remaining == 0 and x_rate_limit_reset > 0:
+                # Calculate the time to wait until the rate limit resets
+                current_time = int(time.time())
+                wait_time = x_rate_limit_reset - current_time
+                if wait_time > 0:
+                    rate_limit_reset = time.strftime(
+                        "%Y-%m-%d %H:%M:%S", time.gmtime(x_rate_limit_reset)
+                    )
+                    logger.info(
+                        f"Waiting for {wait_time} seconds until rate limit resets (at {rate_limit_reset} UTC)..."
+                    )
+                    time.sleep(wait_time)
+                    return get_latest_release()
+
+        logger.error(f"HTTP error occurred: {e}")
+        raise
 
     json_response = json.loads(response.text)
 
