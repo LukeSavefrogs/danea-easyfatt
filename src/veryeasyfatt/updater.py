@@ -100,6 +100,7 @@ def get_latest_release() -> GithubRelease:
             headers={
                 "Accept": "application/vnd.github+json",
                 "X-GitHub-Api-Version": "2022-11-28",
+                "User-Agent": f"{'/'.join(api_url.split('/')[-2:])} - VeryEasyfatt Updater",
                 **extra_headers,
             },
         )
