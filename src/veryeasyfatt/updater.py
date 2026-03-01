@@ -3,6 +3,7 @@ import os
 import re
 import sys
 import time
+from functools import total_ordering
 
 import requests
 import json
@@ -16,17 +17,38 @@ logger = logging.getLogger("danea-easyfatt.updater")
 logger.addHandler(logging.NullHandler())
 
 
+@total_ordering
 class GithubRelease(object):
     def __init__(self, url: str, version: str, date: str):
         self.url = url
         self.version = version
         self.date = date
+        self._parsed_version = Version(version)
 
     def __str__(self):
         return f"{self.version} ({self.date})"
 
     def __repr__(self):
         return f"GithubRelease(version='{self.version}', date='{self.date}', url='{self.url}')"
+
+    def _coerce_to_version(self, other):
+        if isinstance(other, GithubRelease):
+            return other._parsed_version
+        if isinstance(other, Version):
+            return other
+        return NotImplemented
+
+    def __eq__(self, other):
+        other_version = self._coerce_to_version(other)
+        if other_version is NotImplemented:
+            return NotImplemented
+        return self._parsed_version == other_version
+
+    def __lt__(self, other):
+        other_version = self._coerce_to_version(other)
+        if other_version is NotImplemented:
+            return NotImplemented
+        return self._parsed_version < other_version
 
 
 def get_github_token() -> str:
