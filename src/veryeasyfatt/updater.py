@@ -100,6 +100,8 @@ def get_latest_release() -> GithubRelease:
             headers={
                 "Accept": "application/vnd.github+json",
                 "X-GitHub-Api-Version": "2022-11-28",
+                # Add a custom User-Agent to identify the application making the request, as recommended by GitHub's API guidelines
+                # https://docs.github.com/en/rest/using-the-rest-api/getting-started-with-the-rest-api?apiVersion=2022-11-28#user-agent
                 "User-Agent": f"{'/'.join(api_url.split('/')[-2:])} - VeryEasyfatt Updater",
                 **extra_headers,
             },
