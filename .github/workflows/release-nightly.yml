@@ -70,16 +70,16 @@ jobs:
         run: |
           poetry run build
       
-      - name: " Create Release"
-        uses: ncipollo/release-action@v1
+      - name: Update Nightly Release
+        uses: andelf/nightly-release@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          allowUpdates: true
           name: "Nightly Release"
           body: |
             Di seguito l'elenco delle modifiche introdotte in questa versione nightly.
 
             ${{ needs.release_body.outputs.changelog }}
-          # generateReleaseNotes: true
-          makeLatest: false
           prerelease: true
-          artifacts: "dist/*.exe"
+          files: |
+            ./dist/*.exe
