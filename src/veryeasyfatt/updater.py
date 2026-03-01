@@ -14,6 +14,7 @@ import veryeasyfatt.bundle.path as bundle
 logger = logging.getLogger("danea-easyfatt.updater")
 logger.addHandler(logging.NullHandler())
 
+
 class GithubRelease(object):
     def __init__(self, url: str, version: str, date: str):
         self.url = url
@@ -26,6 +27,7 @@ class GithubRelease(object):
     def __repr__(self):
         return f"GithubRelease(version='{self.version}', date='{self.date}', url='{self.url}')"
 
+
 def get_github_token() -> str:
     """Returns the Github token to use for API requests.
 
@@ -33,13 +35,17 @@ def get_github_token() -> str:
 
     Raises:
         Exception: If the `GITHUB_TOKEN` environment variable is not set or is empty.
+
     Returns:
         token (str): The Github token
     """
     token = os.getenv("GITHUB_TOKEN", "").strip()
     if token == "":
-        raise Exception("The 'GITHUB_TOKEN' environment variable is not set or is empty.")
+        raise Exception(
+            "The 'GITHUB_TOKEN' environment variable is not set or is empty."
+        )
     return token
+
 
 def get_github_api_endpoint() -> str:
     """Returns the current project's Github API endpoint.
@@ -47,10 +53,10 @@ def get_github_api_endpoint() -> str:
     Uses the `pyproject.toml` file in the root folder of the project to determine the repository URL.
 
     Raises:
-            Exception: If the URL is not a valid Github repository URL
+        Exception: If the URL is not a valid Github repository URL
 
     Returns:
-            api_url (str): The URL of the REST API endpoint
+        api_url (str): The URL of the REST API endpoint
     """
     repository_url = (
         toml.load((bundle.get_root_directory() / "pyproject.toml").resolve())
@@ -77,7 +83,7 @@ def get_latest_release() -> GithubRelease:
     """Returns information about the latest release (/releases/latest).
 
     Returns:
-            release (GithubRelease): The release information
+        release (GithubRelease): The release information
     """
     api_url = get_github_api_endpoint()
     extra_headers = {}
@@ -87,11 +93,14 @@ def get_latest_release() -> GithubRelease:
     except Exception:
         logger.debug(f"Could not retrieve Github token")
 
-    response = requests.get(f"{api_url}/releases/latest", headers={
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        **extra_headers,
-    })
+    response = requests.get(
+        f"{api_url}/releases/latest",
+        headers={
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+            **extra_headers,
+        },
+    )
     response.raise_for_status()
 
     json_response = json.loads(response.text)
@@ -107,7 +116,7 @@ def get_latest_version() -> str:
     """Returns the latest version available from the releases.
 
     Returns:
-            version (str): The remote version
+        version (str): The remote version
     """
     return get_latest_release().version
 
@@ -116,10 +125,10 @@ def get_current_version() -> str:
     """Returns the current version as specified in the `pyproject.toml` under `tool.poetry.version`.
 
     Raises:
-            Exception: If the `pyproject.toml` cannot be found
+        Exception: If the `pyproject.toml` cannot be found
 
     Returns:
-            version (str): The current version
+        version (str): The current version
     """
     toml_file = (bundle.get_root_directory() / "pyproject.toml").resolve()
 
@@ -135,7 +144,7 @@ def update_available() -> bool:
     """Checks if a new version has been released.
 
     Returns:
-            is_available (bool): Wether a new update is available among the releases.
+        is_available (bool): Wether a new update is available among the releases.
     """
     latest = Version(get_latest_version())
     current = Version(get_current_version())
