@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 import sys
 
@@ -13,6 +14,20 @@ import veryeasyfatt.bundle.path as bundle
 logger = logging.getLogger("danea-easyfatt.updater")
 logger.addHandler(logging.NullHandler())
 
+def get_github_token() -> str:
+    """Returns the Github token to use for API requests.
+
+    The token is read from the `GITHUB_TOKEN` environment variable.
+
+    Raises:
+        Exception: If the `GITHUB_TOKEN` environment variable is not set or is empty.
+    Returns:
+        token (str): The Github token
+    """
+    token = os.getenv("GITHUB_TOKEN", "").strip()
+    if token == "":
+        raise Exception("The 'GITHUB_TOKEN' environment variable is not set or is empty.")
+    return token
 
 def get_github_api_endpoint() -> str:
     """Returns the current project's Github API endpoint.
@@ -53,8 +68,19 @@ def get_latest_release():
             release (dict): The release information
     """
     api_url = get_github_api_endpoint()
+    extra_headers = {}
 
-    response = requests.get(f"{api_url}/releases/latest")
+    try:
+        api_token = get_github_token()
+        extra_headers["Authorization"] = f"Token {api_token}"
+    except Exception as e:
+        logger.debug(f"Could not retrieve Github token")
+
+    response = requests.get(f"{api_url}/releases/latest", headers={
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        **extra_headers,
+    })
     response.raise_for_status()
 
     json_response = json.loads(response.text)
