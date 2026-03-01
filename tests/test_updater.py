@@ -34,3 +34,42 @@ class OperationsTestCase(unittest.TestCase):
 
 		self.assertIsInstance(latest, Version)
 		self.assertIsInstance(current, Version)
+
+
+class GithubReleaseComparisonTestCase(unittest.TestCase):
+	def _make_release(self, version: str) -> updater.GithubRelease:
+		return updater.GithubRelease(url="https://example.com", version=version, date="2024-01-01")
+
+	def test_compare_release_with_version_equal(self):
+		release = self._make_release("1.2.3")
+		self.assertEqual(release, Version("1.2.3"))
+
+	def test_compare_release_with_version_less_than(self):
+		release = self._make_release("1.2.3")
+		self.assertLess(release, Version("1.2.4"))
+
+	def test_compare_release_with_version_greater_than(self):
+		release = self._make_release("1.2.4")
+		self.assertGreater(release, Version("1.2.3"))
+
+	def test_compare_version_with_release_equal(self):
+		release = self._make_release("1.2.3")
+		self.assertEqual(Version("1.2.3"), release)
+
+	def test_compare_version_with_release_less_than(self):
+		release = self._make_release("1.2.4")
+		self.assertLess(Version("1.2.3"), release)
+
+	def test_compare_version_with_release_greater_than(self):
+		release = self._make_release("1.2.3")
+		self.assertGreater(Version("1.2.4"), release)
+
+	def test_compare_release_with_release_equal(self):
+		release_a = self._make_release("1.2.3")
+		release_b = self._make_release("1.2.3")
+		self.assertEqual(release_a, release_b)
+
+	def test_compare_release_with_release_less_than(self):
+		release_a = self._make_release("1.2.3")
+		release_b = self._make_release("1.2.4")
+		self.assertLess(release_a, release_b)
