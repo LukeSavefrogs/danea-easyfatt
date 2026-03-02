@@ -62,27 +62,19 @@ def main(goal: Optional[str] = None):
     if goal is None:
         menu = SelectableMenu(
             options=[
-                Option(label="Generatore CSV per RouteXL", value="csv-generator"),
-                Option(label="Generatore KML per Google Earth", value="kml-generator"),
-                Option(label="Inizializza cache geografica (Google Maps)", value="initialize-geo-cache"),
-                Option(label="Simula inizializzazione cache geografica (Google Maps)", value="initialize-geo-cache-dryrun"),
-                Option(label="Esci", value="exit", highlight_style="bold red", indicator="!"),
+                Option(label="Generatore CSV per RouteXL", value=ApplicationGoals.CSV_GENERATOR.value),
+                Option(label="Generatore KML per Google Earth", value=ApplicationGoals.KML_GENERATOR.value),
+                Option(label="Inizializza cache geografica (Google Maps)", value=ApplicationGoals.INITIALIZE_GEO_CACHE.value),
+                Option(label="Simula inizializzazione cache geografica (Google Maps)", value=ApplicationGoals.INITIALIZE_GEO_CACHE_DRYRUN.value),
+                Option(label="Esci", value=None, highlight_style="bold red", indicator="!"),
             ],
             title="Scegli l'operazione da effettuare:",
         )
-        user_choice = menu.run()
+        goal = menu.run()
 
-        if user_choice == "exit":
+        if goal is None:
             return True
-        elif user_choice == "csv-generator":
-            goal = "csv-generator"
-        elif user_choice == "kml-generator":
-            goal = "kml-generator"
-        elif user_choice == "initialize-geo-cache":
-            goal = "initialize-geo-cache"
-        elif user_choice == "initialize-geo-cache-dryrun":
-            goal = "initialize-geo-cache-dryrun"
-        else:
+        elif goal not in ApplicationGoals.values():
             logger.error("Scelta non valida.")
             return False
 
