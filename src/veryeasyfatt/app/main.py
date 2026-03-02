@@ -233,6 +233,9 @@ def main(goal: Optional[str] = None):
                 )
         except Exception as e:
             logger.error(f"Errore in fase di apertura Google Earth: {e}")
+            logger.warning(
+                "Assicurarsi che Google Earth Pro sia installato correttamente per poter aprire il file KML."
+            )
 
     elif goal in [
         ApplicationGoals.INITIALIZE_GEO_CACHE.value,
