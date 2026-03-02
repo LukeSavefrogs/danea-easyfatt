@@ -54,7 +54,7 @@ jobs:
             -e 's/^### Removed/### Rimosso/' \
             -e 's/^### Fixed/### Risolto/' \
             -e 's/^### Security/### Sicurezza/' \
-            "$tempfile"
+            "$tempfile" | tee -a $GITHUB_OUTPUT
 
           echo "$EOF" >> $GITHUB_OUTPUT
 
