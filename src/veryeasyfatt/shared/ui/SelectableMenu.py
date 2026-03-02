@@ -3,7 +3,7 @@ from rich.table import Table
 from rich.live import Live
 import readchar
 
-from typing import Any
+from typing import Any, Optional
 from collections.abc import Sequence
 
 
@@ -91,7 +91,6 @@ class SelectableMenu(object):
         self._title = title
         self._highlight_style = highlight_style
         self._selected_index = 0
-        self._console = Console()
 
     # ------------------------
     # Rendering
@@ -132,20 +131,24 @@ class SelectableMenu(object):
     def get_options(self) -> list[Option]:
         return self._options
 
-    def run(self, exit_on_esc: bool = True) -> Any | None:
+    def run(self, exit_on_esc: bool = True, console: Optional[Console] = None) -> Any | None:
         """
         Run the menu and wait for the user to select an option.
 
         Args:
             exit_on_esc (bool, optional): Whether to exit the menu and return None when the ESC key is pressed. Defaults to True.
+            console (Console, optional): Rich Console instance to use. Defaults to None.
 
         Returns:
             The value of the selected option, or None if exited with ESC (if exit_on_esc is True).
         """
 
+        if console is None:
+            console = Console()
+
         with Live(
             self._render(),
-            console=self._console,
+            console=console,
             refresh_per_second=10,
         ) as live:
 
