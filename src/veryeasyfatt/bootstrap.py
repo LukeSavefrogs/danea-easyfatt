@@ -1,4 +1,5 @@
 """ Entry point of the wrapper. """
+
 import datetime
 import sys
 import webbrowser

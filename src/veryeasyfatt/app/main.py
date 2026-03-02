@@ -1,4 +1,5 @@
 """ Entry point of the application. """
+
 from io import StringIO
 import json
 import os
@@ -152,13 +153,15 @@ def main(goal: Optional[str] = None):
             # IMPORTANTE: Per evitare valori sballati nel totale sono costretto a
             #             trasformare il separatore decimale nel formato inglese (.)
             df["TransportedWeight"] = df["TransportedWeight"].map(
-                lambda v: v
-                if (v is None or pd.isnull(v))
-                else unit_registry.Quantity(
-                    str(v).replace(".", "").replace(",", ".").lower()
+                lambda v: (
+                    v
+                    if (v is None or pd.isnull(v))
+                    else unit_registry.Quantity(
+                        str(v).replace(".", "").replace(",", ".").lower()
+                    )
+                    .to("g")
+                    .magnitude
                 )
-                .to("g")
-                .magnitude
             )
 
             df_weight_sum = df["TransportedWeight"].sum()

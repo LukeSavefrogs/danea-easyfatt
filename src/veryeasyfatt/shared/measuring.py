@@ -1,4 +1,5 @@
 """ This module contains the unit registry used for all measurements in the application. """
+
 import pint
 
 unit_registry = pint.UnitRegistry(
