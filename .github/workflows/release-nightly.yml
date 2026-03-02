@@ -38,18 +38,22 @@ jobs:
         id: changelog-updated
         run: |
           tempfile=$(mktemp)
-          echo "${{ steps.changelog.outputs.changes }}" > "$tempfile"
+          cat - <<'EOF' > "$tempfile"
+          ${{ steps.changelog.outputs.changes }}
+          EOF
 
           # Replace "Added", "Changed", "Deprecated", "Removed", "Fixed", "Security" with italian translations
-          sed -i 's/^### Added/### Aggiunto/g' "$tempfile"
-          sed -i 's/^### Changed/### Modificato/g' "$tempfile"
-          sed -i 's/^### Deprecated/### Deprecato/g' "$tempfile"
-          sed -i 's/^### Removed/### Rimosso/g' "$tempfile"
-          sed -i 's/^### Fixed/### Risolto/g' "$tempfile"
-          sed -i 's/^### Security/### Sicurezza/g' "$tempfile"
+          modified_changelog="$(
+            sed -r \
+              -e 's/^### Added/### Aggiunto/' \
+              -e 's/^### Changed/### Modificato/' \
+              -e 's/^### Deprecated/### Deprecato/' \
+              -e 's/^### Removed/### Rimosso/' \
+              -e 's/^### Fixed/### Risolto/' \
+              -e 's/^### Security/### Sicurezza/' \
+              "$tempfile"
+          )"
           
-          modified_changelog="$(cat "$tempfile")"
-
           echo "changelog=$modified_changelog" >> $GITHUB_OUTPUT
 
   build-and-release:
