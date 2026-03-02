@@ -25,7 +25,7 @@ import veryeasyfatt.bundle as bundle
 from veryeasyfatt.shared.formatter import SimpleFormatter
 from veryeasyfatt.configuration import settings
 from veryeasyfatt.shared.pydantic.hashable import HashableBaseModel
-from veryeasyfatt.shared.ui.SelectableMenu import SelectableMenu
+from veryeasyfatt.shared.ui.SelectableMenu import Option, SelectableMenu
 
 logger = logging.getLogger("danea-easyfatt.kml")
 logger.addHandler(logging.NullHandler())
@@ -140,14 +140,30 @@ def search_location(
     elif search_type == "manual":
         menu = SelectableMenu(
             options=[
-                (f"{loc.address} (lat: {loc.latitude}, lon: {loc.longitude})", loc)
+                Option(
+                    label=f"{loc.address} (lat: {loc.latitude}, lon: {loc.longitude})",
+                    value=loc,
+                )
                 for loc in location
+            ]
+            + [
+                Option(
+                    label="None of the above",
+                    value=None,
+                    highlight_style="bold white on red",
+                    indicator="!",
+                )
             ],
             title=f"Multiple locations found for '{address.title()}', please select the correct one:",
             highlight_style="bold white on blue",
         )
 
         result = menu.run()
+
+        if result is None:
+            raise GeocodingError(
+                f"Too many locations found for '{address.title()}' (manually skipped):{_location_separator}{_location_separator.join([str(l) for l in location])}"
+            )
 
         if type(result) != geopy.location.Location:
             raise GeocodingError(
