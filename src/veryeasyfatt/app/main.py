@@ -114,9 +114,7 @@ def main(goal: Optional[str] = None):
                 return False
         else:
             nuovo_xml = (
-                Path(settings["files"]["input"]["easyfatt"])
-                .resolve()
-                .read_text(encoding="utf8")
+                Path(settings.files.input.easyfatt).resolve().read_text(encoding="utf8")
             )
 
         # 2. Genero il CSV sulla base del template
@@ -131,12 +129,10 @@ def main(goal: Optional[str] = None):
                 logger.info("Righe CSV copiate negli appunti.")
 
             # Salvo il csv su file
-            with open(settings["files"]["output"]["csv"], "w") as csv_file:
+            with open(settings.files.output.csv, "w") as csv_file:
                 csv_file.write("\n".join(righe_csv))
 
-            logger.info(
-                f"Creazione CSV '{settings['files']['output']['csv']}' terminata.."
-            )
+            logger.info(f"Creazione CSV '{settings.files.output.csv}' terminata..")
         except Exception:
             logger.exception("Errore durante la generazione del file CSV.")
             return False
@@ -186,10 +182,10 @@ def main(goal: Optional[str] = None):
         # Issue #20
         print("\n")
         if Confirm.ask(
-            f"Aprire il file '{settings['files']['output']['csv']}'?",
+            f"Aprire il file '{settings.files.output.csv}'?",
             choices=["s", "n"],
         ):
-            os.startfile(Path(settings["files"]["output"]["csv"]).resolve(), "open")
+            os.startfile(Path(settings.files.output.csv).resolve(), "open")
         print("\n")
 
     elif goal == ApplicationGoals.KML_GENERATOR.value:
@@ -258,9 +254,7 @@ def main(goal: Optional[str] = None):
         populate_cache(
             google_api_key=settings.features.kml_generation.google_api_key,
             database_path=(
-                Path(settings["easyfatt"]["database"]["filename"])
-                .expanduser()
-                .resolve()
+                Path(settings.easyfatt.database.filename).expanduser().resolve()
             ),
             dry_run=goal == ApplicationGoals.INITIALIZE_GEO_CACHE_DRYRUN.value,
         )
