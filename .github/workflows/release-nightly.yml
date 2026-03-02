@@ -36,21 +36,24 @@ jobs:
       
       - name: "Replace headers"
         id: changelog-updated
-        env:
-          CHANGELOG_CONTENT: ${{ steps.changelog.outputs.changes }}
         run: |
           EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+
+          cat - <<'EOF' > "$tempfile"
+          ${{ steps.changelog.outputs.changes }}
+          EOF
           
           echo "changelog<<$EOF" >> $GITHUB_OUTPUT
           
           # Replace "Added", "Changed", "Deprecated", "Removed", "Fixed", "Security" with italian translations
-          echo "$CHANGELOG_CONTENT" | sed -r \
+          sed -r \
             -e 's/^### Added/### Aggiunto/' \
             -e 's/^### Changed/### Modificato/' \
             -e 's/^### Deprecated/### Deprecato/' \
             -e 's/^### Removed/### Rimosso/' \
             -e 's/^### Fixed/### Risolto/' \
-            -e 's/^### Security/### Sicurezza/'
+            -e 's/^### Security/### Sicurezza/' \
+            "$tempfile"
 
           echo "$EOF" >> $GITHUB_OUTPUT
 
