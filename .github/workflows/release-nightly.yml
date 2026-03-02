@@ -16,33 +16,19 @@ jobs:
   release_body:
     runs-on: ubuntu-latest
     outputs:
-      changelog: ${{ steps.changelog.outputs.changelog }}
+      changelog: ${{ steps.changelog.outputs.changes }}
     steps:
       - name: "🛒 Checkout repository"
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
-      - name: "🧬 Generate Changelog"
-        uses: ardalanamini/auto-changelog@v3
+      - name: "🧬 Read Unreleased section from CHANGELOG"
+        uses: mindsers/changelog-reader-action@v2
         id: changelog
         with:
-          commit-types: |
-            breaking: ⚠ Breaking Changes ⚠
-            feat: ✨ Features ✨
-            ✨ feat: ✨ Features ✨
-            fix: 🐛 Risoluzione bug 🐛
-            🐞 fix: 🐛 Risoluzione bug 🐛
-            perf: 🚀 Performance 🚀
-            🚀 perf: 🚀 Performance 🚀
-            docs: 📄 Documentazione 📄
-            📄 docs: 📄 Documentazione 📄
-            other: Altre modifiche
-          default-commit-type: Altre modifiche
-          mention-authors: false
-          mention-new-contributors: true
-          include-compare: true
-          semver: false
+          version: Unreleased
+          validation_level: "warn"
   
   build-and-release:
     runs-on: windows-latest
