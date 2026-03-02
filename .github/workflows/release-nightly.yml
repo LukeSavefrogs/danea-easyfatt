@@ -36,9 +36,13 @@ jobs:
       
       - name: "Replace headers"
         id: changelog-updated
+        env:
+          CHANGELOG_CONTENT: ${{ steps.changelog.outputs.changes }}
         run: |
           EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
           tempfile="$(mktemp)"
+
+          echo "$CHANGELOG_CONTENT" | sed 's/^/    | /'
           
           cat - <<'EOF' > "$tempfile"
           ${{ steps.changelog.outputs.changes }}
@@ -54,6 +58,7 @@ jobs:
             -e 's/^### Removed/### Rimosso/' \
             -e 's/^### Fixed/### Risolto/' \
             -e 's/^### Security/### Sicurezza/' \
+            -e 's/`/\\`/g'
             "$tempfile" | tee -a $GITHUB_OUTPUT
 
           echo "$EOF" >> $GITHUB_OUTPUT
