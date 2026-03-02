@@ -84,6 +84,9 @@ def persist_to_file(
                 cache["data"][key] = original_func(*args, **kwargs)
 
                 if cache_enabled:
+                    if not _Path(file_name).parent.exists():
+                        _Path(file_name).parent.mkdir(parents=True, exist_ok=True)
+                        
                     with open(file_name, write_mode) as f:
                         cache_backend.dump(cache, f)
                 else:
