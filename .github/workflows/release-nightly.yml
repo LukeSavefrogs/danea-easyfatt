@@ -91,6 +91,7 @@ jobs:
             ./dist/*.exe
 
       - name: "Set Job Summary"
+        shell: bash
         run: |
           cat <<EOF >> $GITHUB_STEP_SUMMARY
           ## Nightly Release
