@@ -1455,14 +1455,14 @@ files = [
 
 [[package]]
 name = "pyinstaller-versionfile"
-version = "2.1.1"
-description = "Create a version file from a simple YAML config file"
+version = "3.0.1"
+description = "Create a windows version-file from metadata stored in a simple self-written YAML file or obtained from an installed distribution."
 optional = false
-python-versions = ">=3.6"
+python-versions = "<4.0,>=3.9"
 groups = ["dev"]
 files = [
-    {file = "pyinstaller_versionfile-2.1.1-py3-none-any.whl", hash = "sha256:34892679ec655fa1190ec07d2eda7042c8b5e6c44f5c056ec3eb1471d9955c18"},
-    {file = "pyinstaller_versionfile-2.1.1.tar.gz", hash = "sha256:19c3ca9d2e2c48c7cf8af173951b5d76fe826392c11b06575554e28c862a6997"},
+    {file = "pyinstaller_versionfile-3.0.1-py3-none-any.whl", hash = "sha256:e42fa7bb8464c2100cf1583753ece51ad8ceaf8cded28d046cd22809efb10d8c"},
+    {file = "pyinstaller_versionfile-3.0.1.tar.gz", hash = "sha256:c31ed3f0a9fc3683b3964a547ba28fa235a4de8ee2bf86993d85701e66f031d9"},
 ]
 
 [package.dependencies]
@@ -1840,4 +1840,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.12"
-content-hash = "24199c366960bc9b2f2e305ae2c8828a587a892b3f1687e0322238e380f64603"
+content-hash = "78b79cf43b22892e10099de8df6452e8dd2aedfcc1263324bb2bd009a642e5a2"
