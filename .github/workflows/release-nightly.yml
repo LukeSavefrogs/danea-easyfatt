@@ -48,7 +48,7 @@ jobs:
           sed -i 's/^### Fixed/### Risolto/g' "$tempfile"
           sed -i 's/^### Security/### Sicurezza/g' "$tempfile"
           {
-            echo "changelog<<EOF";
+            echo "changelog<<'EOF'";
             cat "$tempfile";
             echo "EOF";
           } >> $GITHUB_OUTPUT
