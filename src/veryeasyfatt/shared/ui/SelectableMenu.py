@@ -131,12 +131,12 @@ class SelectableMenu(object):
     def get_options(self) -> list[Option]:
         return self._options
 
-    def run(self, exit_on_esc: bool = True, console: Optional[Console] = None) -> Any | None:
+    def run(self, exit_on_esc: bool = False, console: Optional[Console] = None) -> Any | None:
         """
         Run the menu and wait for the user to select an option.
 
         Args:
-            exit_on_esc (bool, optional): Whether to exit the menu and return None when the ESC key is pressed. Defaults to True.
+            exit_on_esc (bool, optional): Whether to exit the menu and return None when the ESC key is pressed. Defaults to False.
             console (Console, optional): Rich Console instance to use. Defaults to None.
 
         Returns:
