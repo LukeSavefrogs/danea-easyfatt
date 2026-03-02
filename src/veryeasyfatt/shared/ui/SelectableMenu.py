@@ -131,7 +131,9 @@ class SelectableMenu(object):
     def get_options(self) -> list[Option]:
         return self._options
 
-    def run(self, exit_on_esc: bool = False, console: Optional[Console] = None) -> Any | None:
+    def run(
+        self, exit_on_esc: bool = False, console: Optional[Console] = None
+    ) -> Any | None:
         """
         Run the menu and wait for the user to select an option.
 
