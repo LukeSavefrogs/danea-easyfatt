@@ -5,7 +5,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Literal, Union
 
-import pydantic
+from pydantic import Field, validator
 import rich
 from rich.panel import Panel
 
@@ -34,23 +34,23 @@ logger.addHandler(logging.NullHandler())
 class CustomerAddress(HashableBaseModel):
     """Model for a customer address."""
 
-    code: str = pydantic.Field(alias="CodAnagr", frozen=True)
-    name: str = pydantic.Field(alias="Nome", frozen=True)
-    address: str = pydantic.Field(alias="Indirizzo", frozen=True)
-    postcode: str = pydantic.Field(alias="Cap", frozen=True)
-    city: str = pydantic.Field(alias="Citta", frozen=True)
-    province: str = pydantic.Field(alias="Prov", frozen=True)
-    country: str = pydantic.Field(alias="Nazione", frozen=True)
-    alias: str = pydantic.Field(alias="CodDest", default="", frozen=True)
-    fiscal_code: str = pydantic.Field(alias="CodiceFiscale", default="", frozen=True)
-    vat_code: str = pydantic.Field(alias="PartitaIva", default="", frozen=True)
-    homepage: str = pydantic.Field(alias="HomePage", default="", frozen=True)
+    code: str = Field(alias="CodAnagr", frozen=True)
+    name: str = Field(alias="Nome", frozen=True)
+    address: str = Field(alias="Indirizzo", frozen=True)
+    postcode: str = Field(alias="Cap", frozen=True)
+    city: str = Field(alias="Citta", frozen=True)
+    province: str = Field(alias="Prov", frozen=True)
+    country: str = Field(alias="Nazione", frozen=True)
+    alias: str = Field(alias="CodDest", default="", frozen=True)
+    fiscal_code: str = Field(alias="CodiceFiscale", default="", frozen=True)
+    vat_code: str = Field(alias="PartitaIva", default="", frozen=True)
+    homepage: str = Field(alias="HomePage", default="", frozen=True)
 
-    is_customer: bool = pydantic.Field(alias="IsCustomer", frozen=True)
-    is_supplier: bool = pydantic.Field(alias="IsSupplier", frozen=True)
-    is_primary: bool = pydantic.Field()
+    is_customer: bool = Field(alias="IsCustomer", frozen=True)
+    is_supplier: bool = Field(alias="IsSupplier", frozen=True)
+    is_primary: bool = Field()
 
-    @pydantic.validator(
+    @validator(
         "address",
         "postcode",
         "city",

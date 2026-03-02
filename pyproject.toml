@@ -70,6 +70,10 @@ cmd = "python -m unittest discover --catch"
 
 [tool.mypy]
 ignore_missing_imports = true
+follow_untyped_imports = true
+plugins = [
+  "pydantic.mypy"
+]
 
 [tool.black]
 include = '\.pyi?$'
