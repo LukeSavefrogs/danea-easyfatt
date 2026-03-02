@@ -36,25 +36,23 @@ jobs:
       
       - name: "Replace headers"
         id: changelog-updated
+        env:
+          CHANGELOG_CONTENT: ${{ steps.changelog.outputs.changes }}
         run: |
-          tempfile=$(mktemp)
-          cat - <<'EOF' > "$tempfile"
-          ${{ steps.changelog.outputs.changes }}
-          EOF
-
-          # Replace "Added", "Changed", "Deprecated", "Removed", "Fixed", "Security" with italian translations
-          modified_changelog="$(
-            sed -r \
-              -e 's/^### Added/### Aggiunto/' \
-              -e 's/^### Changed/### Modificato/' \
-              -e 's/^### Deprecated/### Deprecato/' \
-              -e 's/^### Removed/### Rimosso/' \
-              -e 's/^### Fixed/### Risolto/' \
-              -e 's/^### Security/### Sicurezza/' \
-              "$tempfile"
-          )"
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
           
-          echo "changelog=\"$modified_changelog\"" >> $GITHUB_OUTPUT
+          echo "changelog<<$EOF" >> $GITHUB_OUTPUT
+          
+          # Replace "Added", "Changed", "Deprecated", "Removed", "Fixed", "Security" with italian translations
+          echo "$CHANGELOG_CONTENT" | sed -r \
+            -e 's/^### Added/### Aggiunto/' \
+            -e 's/^### Changed/### Modificato/' \
+            -e 's/^### Deprecated/### Deprecato/' \
+            -e 's/^### Removed/### Rimosso/' \
+            -e 's/^### Fixed/### Risolto/' \
+            -e 's/^### Security/### Sicurezza/'
+
+          echo "$EOF" >> $GITHUB_OUTPUT
 
   build-and-release:
     runs-on: windows-latest
