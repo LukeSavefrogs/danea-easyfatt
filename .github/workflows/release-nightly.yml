@@ -54,7 +54,7 @@ jobs:
               "$tempfile"
           )"
           
-          echo "changelog=$modified_changelog" >> $GITHUB_OUTPUT
+          echo "changelog=\"$modified_changelog\"" >> $GITHUB_OUTPUT
 
   build-and-release:
     runs-on: windows-latest
