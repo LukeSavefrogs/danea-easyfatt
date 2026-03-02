@@ -4,6 +4,7 @@ from rich.live import Live
 import readchar
 
 from typing import Any
+from collections.abc import Sequence
 
 
 class Option(object):
@@ -38,14 +39,14 @@ class SelectableMenu(object):
 
     def __init__(
         self,
-        options: list[str | tuple[str, Any] | Option],
+        options: Sequence[str | tuple[str, Any] | Option],
         title: str | None = None,
         highlight_style: str = "bold white on blue",
         indicator: str = ">",
     ):
         """
         Args:
-            options (list[str | tuple[str, Any] | Option]): List of options. Each option can be either
+            options (Sequence[str | tuple[str, Any] | Option]): List of options. Each option can be either
                 a string (label and value will be the same),
                 a tuple of (label, value) or
                 an Option instance (gives more control).
