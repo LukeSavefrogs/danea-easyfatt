@@ -10,7 +10,9 @@ import logging
 import pandas as pd
 import pyperclip
 
-from rich.prompt import Confirm, IntPrompt
+from rich.prompt import Confirm
+from veryeasyfatt.shared.ui.SelectableMenu import SelectableMenu, Option
+
 from veryeasyfatt.app.constants import ApplicationGoals
 
 from veryeasyfatt.app.process_kml import generate_kml, populate_cache
@@ -58,28 +60,27 @@ def require_files(required_files: list[Path]) -> None:
 # -----------------------------------------------------------
 def main(goal: Optional[str] = None):
     if goal is None:
-        print("Scegli l'operazione da effettuare:")
-        print("1) Generatore CSV per RouteXL")
-        print("2) Generatore KML per Google Earth")
-        print("3) Inizializza cache geografica (Google Maps)")
-        print("4) Simula inizializzazione cache geografica (Google Maps)")
-        print("0) Esci")
-        print()
-        user_choice = IntPrompt.ask(
-            "Quale azione desideri eseguire?",
-            choices=["1", "2", "3", "4", "0"],
-            default=0,
+        menu = SelectableMenu(
+            options=[
+                Option(label="Generatore CSV per RouteXL", value="csv-generator"),
+                Option(label="Generatore KML per Google Earth", value="kml-generator"),
+                Option(label="Inizializza cache geografica (Google Maps)", value="initialize-geo-cache"),
+                Option(label="Simula inizializzazione cache geografica (Google Maps)", value="initialize-geo-cache-dryrun"),
+                Option(label="Esci", value="exit", highlight_style="bold red", indicator="!"),
+            ],
+            title="Scegli l'operazione da effettuare:",
         )
+        user_choice = menu.run()
 
-        if user_choice == 0:
+        if user_choice == "exit":
             return True
-        elif user_choice == 1:
+        elif user_choice == "csv-generator":
             goal = "csv-generator"
-        elif user_choice == 2:
+        elif user_choice == "kml-generator":
             goal = "kml-generator"
-        elif user_choice == 3:
+        elif user_choice == "initialize-geo-cache":
             goal = "initialize-geo-cache"
-        elif user_choice == 4:
+        elif user_choice == "initialize-geo-cache-dryrun":
             goal = "initialize-geo-cache-dryrun"
         else:
             logger.error("Scelta non valida.")
