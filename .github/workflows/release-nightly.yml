@@ -20,7 +20,7 @@ jobs:
   release_body:
     runs-on: ubuntu-latest
     outputs:
-      changelog: ${{ steps.changelog.outputs.changes }}
+      changelog: ${{ steps.changelog-updated.outputs.changelog }}
     steps:
       - name: "🛒 Checkout repository"
         uses: actions/checkout@v4
@@ -33,7 +33,23 @@ jobs:
         with:
           version: Unreleased
           validation_level: "warn"
-  
+      
+      - name: "Replace headers"
+        id: changelog-updated
+        run: |
+          tempfile=$(mktemp)
+          echo "${{ steps.changelog.outputs.changes }}" > "$tempfile"
+
+          # Replace "Added", "Changed", "Deprecated", "Removed", "Fixed", "Security" with italian translations
+          sed -i 's/^### Added/### Aggiunto/g' "$tempfile"
+          sed -i 's/^### Changed/### Modificato/g' "$tempfile"
+          sed -i 's/^### Deprecated/### Deprecato/g' "$tempfile"
+          sed -i 's/^### Removed/### Rimosso/g' "$tempfile"
+          sed -i 's/^### Fixed/### Risolto/g' "$tempfile"
+          sed -i 's/^### Security/### Sicurezza/g' "$tempfile"
+          {
+            echo "changelog=$(cat "$tempfile")";
+          } > $GITHUB_OUTPUT
   build-and-release:
     runs-on: windows-latest
     needs: [tests, release_body] # Require dependencies to finish
