@@ -69,3 +69,11 @@ jobs:
           prerelease: true
           files: |
             ./dist/*.exe
+
+      - name: "Set Job Summary"
+        run: |
+          cat <<EOF >> $GITHUB_STEP_SUMMARY
+          ## Nightly Release
+          Rilasciata la versione nightly con le seguenti modifiche:
+          ${{ needs.release_body.outputs.changelog }}
+          EOF
