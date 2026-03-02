@@ -62,11 +62,27 @@ def main(goal: Optional[str] = None):
     if goal is None:
         menu = SelectableMenu(
             options=[
-                Option(label="Generatore CSV per RouteXL", value=ApplicationGoals.CSV_GENERATOR.value),
-                Option(label="Generatore KML per Google Earth", value=ApplicationGoals.KML_GENERATOR.value),
-                Option(label="Inizializza cache geografica (Google Maps)", value=ApplicationGoals.INITIALIZE_GEO_CACHE.value),
-                Option(label="Simula inizializzazione cache geografica (Google Maps)", value=ApplicationGoals.INITIALIZE_GEO_CACHE_DRYRUN.value),
-                Option(label="Esci", value=None, highlight_style="bold red", indicator="!"),
+                Option(
+                    label="Generatore CSV per RouteXL",
+                    value=ApplicationGoals.CSV_GENERATOR.value,
+                ),
+                Option(
+                    label="Generatore KML per Google Earth",
+                    value=ApplicationGoals.KML_GENERATOR.value,
+                ),
+                Option(
+                    label="Inizializza cache geografica (Google Maps)",
+                    value=ApplicationGoals.INITIALIZE_GEO_CACHE.value,
+                ),
+                Option(
+                    label="Simula inizializzazione cache geografica (Google Maps)",
+                    value=ApplicationGoals.INITIALIZE_GEO_CACHE_DRYRUN.value,
+                    highlight_style="bold yellow",
+                    indicator="~",
+                ),
+                Option(
+                    label="Esci", value=None, highlight_style="bold red", indicator="!"
+                ),
             ],
             title="Scegli l'operazione da effettuare:",
         )
