@@ -300,3 +300,23 @@ Valori disponibili:
 {: .note-title .fs-3 }
 
 > Questa voce nella configurazione è nata per contrastare il problema presentato nell'issue [#126](https://github.com/LukeSavefrogs/danea-easyfatt/issues/126).
+
+## Variabili d'ambiente
+
+Oltre al file di configurazione, il programma supporta alcune **variabili d'ambiente** che possono essere impostate prima di avviarlo.
+
+### `GITHUB_TOKEN`
+
+Token di autenticazione per le API di GitHub, utilizzato dal modulo di aggiornamento automatico per verificare se è disponibile una nuova versione del programma.
+
+Quando impostato, il token viene incluso nelle richieste HTTP all'API di GitHub tramite l'header `Authorization`, aumentando il [rate limit](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api) da 60 a 5000 richieste per ora.
+
+> Valore di default
+>
+> _Nessuno (non autenticato)_
+{: .note-title .fs-3 }
+
+> FARE ATTENZIONE
+>
+> **Attenzione!** Questo token è **personale** e **non deve essere condiviso** con nessuno!
+{: .warning-title .fs-3 }
