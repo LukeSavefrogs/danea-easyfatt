@@ -47,11 +47,11 @@ jobs:
           sed -i 's/^### Removed/### Rimosso/g' "$tempfile"
           sed -i 's/^### Fixed/### Risolto/g' "$tempfile"
           sed -i 's/^### Security/### Sicurezza/g' "$tempfile"
-          {
-            echo "changelog<<'EOF'";
-            cat "$tempfile";
-            echo "EOF";
-          } >> $GITHUB_OUTPUT
+          
+          modified_changelog="$(cat "$tempfile")"
+
+          echo "changelog=$modified_changelog" >> $GITHUB_OUTPUT
+
   build-and-release:
     runs-on: windows-latest
     needs: [tests, release_body] # Require dependencies to finish
