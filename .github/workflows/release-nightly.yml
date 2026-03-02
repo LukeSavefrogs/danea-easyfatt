@@ -9,6 +9,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: nightly-release
+  cancel-in-progress: true
+
 jobs:
   tests:
     uses: ./.github/workflows/run-tests.yml
