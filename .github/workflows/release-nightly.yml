@@ -38,7 +38,8 @@ jobs:
         id: changelog-updated
         run: |
           EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
-
+          tempfile="$(mktemp)"
+          
           cat - <<'EOF' > "$tempfile"
           ${{ steps.changelog.outputs.changes }}
           EOF
