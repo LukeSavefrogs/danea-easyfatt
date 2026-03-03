@@ -112,23 +112,16 @@ jobs:
       - name: "Set summary"
         run: |
           cat <<'EOF' >> $GITHUB_STEP_SUMMARY
-          ## Inputs
+          ## Changelog generation details
           
-          **Version**:
-          ```plaintext
-          ${{ inputs.version }}
-          ```
-          
-          **Changelog validation level**:
-          ```plaintext
-          ${{ inputs.changelog-validation }}
-          ```
-          
-          **Header replacements**: 
-          ```json
-          ${{ steps.changelog-updated.outputs.pretty-header-replacements }}
-          ```
+          ### Inputs
 
-          ## Generated changelog
+          | Input | Value |
+          |-------|-------|
+          | Version | `${{ inputs.version }}` |
+          | Changelog validation level | `${{ inputs.changelog-validation }}` |
+          | Header replacements | <pre>${{ steps.changelog-updated.outputs.pretty-header-replacements }}</pre> |
+
+          ### Generated changelog
           ${{ steps.changelog-updated.outputs.changelog }}
           EOF
