@@ -58,7 +58,7 @@ from veryeasyfatt.configuration import settings
 # -----------------------------------------------------------
 #                        Inizio codice
 # -----------------------------------------------------------
-def main():
+def main() -> bool:
     # ==================================================================
     #                     Parametri linea di comando
     # ==================================================================
@@ -180,15 +180,22 @@ def main():
             return False
 
     try:
-        application.main(cli_args.goal)
+        return application.main(cli_args.goal)
     except Exception:
         logger.exception("Eccezione inaspettata nell'applicazione")
+        return False
 
 
 if __name__ == "__main__":
+    success: bool
     try:
-        main()
+        success = main()
+        if success is None:
+            success = True
+        
+        sys.exit(0 if success else 1)
     except Exception as e:
         logger.exception("Eccezione inaspettata nella funzione main")
+        sys.exit(1)
     finally:
         input("Premi [INVIO] per terminare il programma...")
