@@ -114,9 +114,15 @@ jobs:
           cat <<'EOF' >> $GITHUB_STEP_SUMMARY
           ## Inputs
           
-          **Version**: `${{ inputs.version }}`
+          **Version**:
+          ```plaintext
+          ${{ inputs.version }}
+          ```
           
-          **Changelog validation level**: `${{ inputs.changelog-validation }}`
+          **Changelog validation level**:
+          ```plaintext
+          ${{ inputs.changelog-validation }}
+          ```
           
           **Header replacements**: 
           ```json
