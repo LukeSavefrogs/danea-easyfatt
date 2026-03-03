@@ -14,7 +14,7 @@ bundle install
 
 1. Lancia il server locale:
 ```
-poetry run poe docs
+uv run poe docs
 ```
 
 ## Altre informazioni

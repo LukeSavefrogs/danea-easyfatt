@@ -58,9 +58,9 @@ def release(
         logger.fatal(f"File TOML '{local_toml_file}' couldn't be found.")
         return False
 
-    local_poetry_config = toml.load(local_toml_file)
+    local_config = toml.load(local_toml_file)
 
-    repository_url = urlparse(local_poetry_config["tool"]["poetry"]["repository"])
+    repository_url = urlparse(local_config["project"]["urls"]["Repository"])
     if repository_url.netloc != "github.com":
         logger.fatal(f"Website '{repository_url}' is currently not supported.")
         return False
@@ -89,11 +89,11 @@ def release(
         logger.critical(f"Error while fetching the remote TOML file: {repr(e)}")
         return False
 
-    remote_poetry_config = toml.loads(remote_toml_file_content)
+    remote_config = toml.loads(remote_toml_file_content)
 
     # 3. Compare TOML files versions (must be both equal)
-    version_local = "v" + local_poetry_config["tool"]["poetry"]["version"]
-    version_remote = "v" + remote_poetry_config["tool"]["poetry"]["version"]
+    version_local = "v" + local_config["project"]["version"]
+    version_remote = "v" + remote_config["project"]["version"]
 
     logger.debug(f"Local  → `pyproject.toml` version : '{version_local}'")
     logger.debug(f"Remote → `pyproject.toml` version: '{version_remote}'")
@@ -215,7 +215,7 @@ def release(
                 "prepatch",
                 "prerelease",
             ]:
-                console.print(f"\t▶ poetry version {release_type}")
+                console.print(f"\t▶ Update the version in pyproject.toml ({release_type})")
         
         console.print(Panel(capture.get(), title="Hint", highlight=True, border_style="cyan"))
         return False
