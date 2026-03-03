@@ -163,9 +163,7 @@ def main() -> bool:
                 logger.warning(
                     f"An update is available since {latest_release.date:%d/%m/%Y %H:%M:%S} (remote is '{latest_version}', while current is '{current_version}')"
                 )
-                webbrowser.open(
-                    latest_release.url, new=0, autoraise=True
-                )
+                webbrowser.open(latest_release.url, new=0, autoraise=True)
 
                 return False
             else:
@@ -192,7 +190,7 @@ if __name__ == "__main__":
         success = main()
         if success is None:
             success = True
-        
+
         sys.exit(0 if success else 1)
     except Exception as e:
         logger.exception("Eccezione inaspettata nella funzione main")
