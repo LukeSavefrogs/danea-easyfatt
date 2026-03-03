@@ -101,7 +101,7 @@ jobs:
           
           # Replace headers with their translations
           echo "changelog<<$EOF" >> $GITHUB_OUTPUT
-          sed -r "${replacements[@]}" -e 's/`/\\`/g' < "$tempfile" \
+          sed -r "${replacements[@]}" < "$tempfile" \
             | tee -a $GITHUB_OUTPUT
           echo "$EOF" >> $GITHUB_OUTPUT
 
