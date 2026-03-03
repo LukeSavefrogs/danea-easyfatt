@@ -113,7 +113,7 @@ jobs:
           - **Changelog validation level**: `${{ inputs.changelog-validation }}`
           - **Header replacements**: 
             ```json
-            ${{ toJson(inputs.header-replacements) }}
+            ${{ fromJson(inputs.header-replacements) }}
             ```
 
           ## Generated changelog
