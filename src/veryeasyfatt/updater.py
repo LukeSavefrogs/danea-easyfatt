@@ -1,3 +1,4 @@
+import datetime
 import logging
 import os
 import re
@@ -22,7 +23,7 @@ class GithubRelease(object):
     def __init__(self, url: str, version: str, date: str):
         self.url = url
         self.version = version
-        self.date = date
+        self.date = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%SZ")
         self._parsed_version = Version(version)
 
     def __str__(self):
