@@ -113,14 +113,11 @@ jobs:
         run: |
           cat <<'EOF' >> $GITHUB_STEP_SUMMARY
           ## Inputs
-          **Version**: `${{ inputs.version }}`
           
-          **Changelog validation level**: `${{ inputs.changelog-validation }}`
-          
-          **Header replacements**: 
-          ```json
-          ${{ steps.changelog-updated.outputs.pretty-header-replacements }}
-          ```
+          - **Version**: `${{ inputs.version }}`
+          - **Changelog validation level**: `${{ inputs.changelog-validation }}`
+          - **Header replacements**: 
+            <pre lang="json"><code>${{ steps.changelog-updated.outputs.pretty-header-replacements }}</code></pre>
 
           ## Generated changelog
           ${{ steps.changelog-updated.outputs.changelog }}
