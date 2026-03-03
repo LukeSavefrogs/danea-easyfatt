@@ -156,15 +156,15 @@ def main() -> bool:
     else:
         try:
             if updater.update_available():
-                latest_release = updater.get_latest_version()
-                latest_version = Version(updater.get_latest_version())
+                latest_release = updater.get_latest_release()
+                latest_version = Version(latest_release.version)
                 current_version = Version(updater.get_current_version())
 
                 logger.warning(
-                    f"An update is available (remote is '{latest_version}', while current is '{current_version}')"
+                    f"An update is available since {latest_release.date} (remote is '{latest_version}', while current is '{current_version}')"
                 )
                 webbrowser.open(
-                    updater.get_latest_release().url, new=0, autoraise=True
+                    latest_release.url, new=0, autoraise=True
                 )
 
                 return False
