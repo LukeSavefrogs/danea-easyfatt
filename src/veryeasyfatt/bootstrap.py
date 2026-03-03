@@ -161,7 +161,7 @@ def main() -> bool:
                 current_version = Version(updater.get_current_version())
 
                 logger.warning(
-                    f"An update is available since {latest_release.date} (remote is '{latest_version}', while current is '{current_version}')"
+                    f"An update is available since {latest_release.date:%d/%m/%Y %H:%M:%S} (remote is '{latest_version}', while current is '{current_version}')"
                 )
                 webbrowser.open(
                     latest_release.url, new=0, autoraise=True
