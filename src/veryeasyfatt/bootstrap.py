@@ -164,7 +164,7 @@ def main() -> bool:
                     f"An update is available (remote is '{latest_version}', while current is '{current_version}')"
                 )
                 webbrowser.open(
-                    updater.get_latest_release()["url"], new=0, autoraise=True
+                    updater.get_latest_release().url, new=0, autoraise=True
                 )
 
                 return False
