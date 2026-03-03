@@ -105,6 +105,10 @@ jobs:
             | tee -a $GITHUB_OUTPUT
           echo "$EOF" >> $GITHUB_OUTPUT
 
+          echo "pretty-header-replacements<<$EOF" >> $GITHUB_OUTPUT
+          jq -r <<< "$HEADER_REPLACEMENTS" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
+
       - name: "Set summary"
         run: |
           cat <<'EOF' >> $GITHUB_STEP_SUMMARY
@@ -113,9 +117,9 @@ jobs:
           - **Changelog validation level**: `${{ inputs.changelog-validation }}`
           - **Header replacements**: 
             ```json
-            ${{ inputs.header-replacements }}
+            ${{ steps.changelog-updated.outputs.pretty-header-replacements }}
             ```
 
-          ## Changelog for version ${{ inputs.version }}
+          ## Generated changelog
           ${{ steps.changelog-updated.outputs.changelog }}
           EOF
