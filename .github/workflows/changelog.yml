@@ -116,11 +116,24 @@ jobs:
           
           ### Inputs
 
-          | Input | Value |
-          |-------|-------|
-          | Version | `${{ inputs.version }}` |
-          | Changelog validation level | `${{ inputs.changelog-validation }}` |
-          | Header replacements | <pre>${{ steps.changelog-updated.outputs.pretty-header-replacements }}</pre> |
+          <table>
+            <tr>
+              <th>Input</th>
+              <th>Value</th>
+            </tr>
+            <tr>
+              <td>Version</td>
+              <td><code>${{ inputs.version }}</code></td>
+            </tr>
+            <tr>
+              <td>Changelog validation level</td>
+              <td><code>${{ inputs.changelog-validation }}</code></td>
+            </tr>
+            <tr>
+              <td>Header replacements</td>
+              <td><pre><code lang="json">${{ steps.changelog-updated.outputs.pretty-header-replacements }}</code></pre></td>
+            </tr>
+          </table>
 
           ### Generated changelog
           ${{ steps.changelog-updated.outputs.changelog }}
