@@ -7,9 +7,6 @@ on:
   workflow_call:
   workflow_dispatch:
 
-env:
-  POETRY_VERSION: "1.4.2"
-
 permissions:
   contents: write
 
@@ -22,20 +19,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: "📜 Install Poetry"
-        run: pipx install poetry
+      - name: "📦 Install uv"
+        uses: astral-sh/setup-uv@v5
 
       - name: "🐍 Install Python"
         uses: actions/setup-python@v5
-        with:
-          cache: "poetry"
-          cache-dependency-path: poetry.lock
 
       - name: "🔍 Install dependencies"
-        run: poetry install --with dev
+        run: uv sync --group dev
 
       - name: "🧪 Run tests"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          poetry run poe test -- --verbose
+          uv run poe test -- --verbose

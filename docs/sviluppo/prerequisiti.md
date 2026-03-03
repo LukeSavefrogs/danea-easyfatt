@@ -8,8 +8,7 @@ nav_order: 1
 # Prerequisiti
 Per partecipare allo sviluppo dell'**applicativo** vero e proprio saranno necessari i seguenti prerequisiti:
 - `python` (>3.9)
-- `poetry`
-- `pipx` (_consigliato_)
+- `uv`
 
 Per testare visivamente le modifiche alla **documentazione** invece, sarà necessario avere installato:
 - `ruby`
@@ -30,21 +29,11 @@ Per testare visivamente le modifiche alla **documentazione** invece, sarà neces
 > Questi pacchetti sono **fondamentali** per lo sviluppo e compilazione del programma finale.
 {: .warning}
 
-### Installazione `pipx` e `poetry`
-> L'installazione di `poetry` può essere effettuata anche senza utilizzare `pipx`, ma l'ho preferito per una questione di semplicità rispetto agli altri metodi.
-{: .note}
+### Installazione `uv`
 
-1. Installa [**`pipx`**](https://github.com/pypa/pipx#install-pipx):
-	```
-	python -m pip install --user pipx
-	```	
-1. Aggiungi `pipx` alla variabile d'ambiente `PATH`:
-	```
-	pipx ensurepath
-	```	
-1. Installa [**`poetry`**](https://python-poetry.org/docs/#installing-with-pipx):
+1. Installa [**`uv`**](https://docs.astral.sh/uv/getting-started/installation/):
    ```
-   pipx install poetry
+   curl -LsSf https://astral.sh/uv/install.sh | sh
    ```
 1. **Riavvia la shell**
 
@@ -53,19 +42,19 @@ Una volta installati i software necessari, bisognerà installare anche le **dipe
 
 Questo si può fare con il comando:
 ```
-poetry install
+uv sync
 ```
 
 > Ora è possibile eseguire i singoli file Python usando il comando:
 > ```
-> poetry run python [file_da_eseguire]
+> uv run python [file_da_eseguire]
 > ```
 {: .highlight}
 
 ## Pacchetti per la documentazione
 > Sotto questa categoria ricadono tutti i pacchetti non necessari all'esecuzione del programma o alla sua compilazione, ma che invece vengono utilizzati per testare localmente la documentazione che stai leggendo in questo momento 😃
 {: .note}
-Una volta effettuati tutti i passi spiegati di seguito sarà possibile vedere la documentazione nel proprio browser tramite il comando `poetry run poe docs`
+Una volta effettuati tutti i passi spiegati di seguito sarà possibile vedere la documentazione nel proprio browser tramite il comando `uv run poe docs`
 
 ### Installazione `ruby`
 Segui le istruzioni contenute nel [sito web ufficiale](https://jekyllrb.com/docs/installation/windows/#installation-via-rubyinstaller) di Jekyll.
@@ -84,10 +73,10 @@ gem install jekyll bundler
 #### Build
 Lancia il processo di build:
 ```
-poetry run build
+uv run build
 ```
 
 #### Release
 ```
-poetry run release
+uv run release
 ```

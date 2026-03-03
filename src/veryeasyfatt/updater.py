@@ -84,9 +84,9 @@ def get_github_api_endpoint() -> str:
     """
     repository_url = (
         toml.load((bundle.get_root_directory() / "pyproject.toml").resolve())
-        .get("tool", {})
-        .get("poetry", {})
-        .get("repository", "")
+        .get("project", {})
+        .get("urls", {})
+        .get("Repository", "")
     )
 
     url = re.match(
@@ -185,7 +185,7 @@ def get_latest_version() -> str:
 
 
 def get_current_version() -> str:
-    """Returns the current version as specified in the `pyproject.toml` under `tool.poetry.version`.
+    """Returns the current version as specified in the `pyproject.toml` under `project.version`.
 
     Raises:
         Exception: If the `pyproject.toml` cannot be found
@@ -198,9 +198,9 @@ def get_current_version() -> str:
     if not toml_file.exists() or not toml_file.is_file():
         raise Exception(f"Update error: TOML file '{toml_file}' was not found.")
 
-    poetry_config = toml.load(toml_file)
+    project_config = toml.load(toml_file)
 
-    return poetry_config["tool"]["poetry"]["version"]
+    return project_config["project"]["version"]
 
 
 def update_available() -> bool:

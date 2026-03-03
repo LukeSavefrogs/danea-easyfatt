@@ -18,6 +18,6 @@ The following technologies were used:
 
 ## Tools
 
-- [Poetry](https://python-poetry.org/)
+- [uv](https://docs.astral.sh/uv/)
 - [PoeThePoet](https://github.com/nat-n/poethepoet)
 - [GitPython](https://gitpython.readthedocs.io/en/stable/)

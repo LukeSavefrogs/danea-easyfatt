@@ -40,7 +40,7 @@ def build(filename: str, output_name: str|None = None, clean=True):
     try:
         pyinstaller_versionfile.create_versionfile(
             output_file=temporary_version_file,
-            version=pyproject_data["tool"]["poetry"]["version"],
+            version=pyproject_data["project"]["version"],
 
             company_name="Luca Salvarani",
             file_description="VeryEasyfatt Extra tools",
