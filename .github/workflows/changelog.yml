@@ -92,6 +92,13 @@ jobs:
           ${{ steps.changelog.outputs.changes }}
           EOF
 
+          if [[ ! -s "$tempfile" ]]; then
+            echo "::warning title=Changelog Warning::No changelog content found for version '${{ inputs.version }}'..."
+            echo "changelog<<$EOF" >> $GITHUB_OUTPUT
+            echo "__No changelog content found for version '${{ inputs.version }}'...__" >> $GITHUB_OUTPUT
+            echo "$EOF" >> $GITHUB_OUTPUT
+          fi
+
           printf "Content via file %s:\n%s\n" "$tempfile" "$(sed 's/^/    | /' < "$tempfile")"
           
           # Parse the JSON object of header replacements into an array of sed expressions
