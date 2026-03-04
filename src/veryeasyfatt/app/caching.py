@@ -27,6 +27,40 @@ def persist_to_file(
 
     Args:
         file_name (str): The name of the file where to store the cache.
+        backend (Backend, optional): The backend to use for caching. Defaults to Backend.PICKLE.
+        include (list, optional): The list of arguments to include in the cache key. Defaults to all arguments.
+        enabled (bool | str, optional): Whether caching is enabled. Can be a boolean or the name of a keyword argument. Defaults to True.
+    
+    Returns:
+        function: The decorated function.
+
+    Example:
+        ```python
+        # Cache the result of the function to "cache.pickle" using the default backend (pickle)
+        @persist_to_file("cache.pickle")
+        def expensive_function(x):
+            # Expensive computation here
+            return x * x
+
+        # Only include the first argument and the "y" keyword argument in the cache key
+        @persist_to_file(
+            "cache.json", 
+            backend=Backend.JSON, 
+            include=[0, "y"], 
+        )
+        def another_expensive_function(x, y):
+            # Expensive computation here
+            return x + y
+
+        # Enable or disable caching based on the "use_cache" keyword argument
+        @persist_to_file(
+            "cache.pickle", 
+            enabled="use_cache", 
+        )
+        def yet_another_expensive_function(x, use_cache=True):
+            # Expensive computation here
+            return x * 2
+        ```
     """
     cache_backend: types.ModuleType
     read_mode: _Literal["r", "rb"]
@@ -70,6 +104,7 @@ def persist_to_file(
 
             key = args + tuple(kwargs.values())
             if include:
+                # Only include the specified arguments in the cache key
                 key = tuple(
                     [
                         args[arg]
@@ -84,7 +119,7 @@ def persist_to_file(
                 )
 
             if key not in cache["data"].keys():
-                logger.debug(f"Cache miss for '{key}'")
+                logger.debug(f"Cache miss for \"{key}\"")
                 cache["data"][key] = original_func(*args, **kwargs)
 
                 if cache_enabled:
@@ -94,9 +129,9 @@ def persist_to_file(
                     with open(file_name, write_mode) as f:
                         cache_backend.dump(cache, f)
                 else:
-                    logger.debug(f"Cache disabled for key '{key}'")
+                    logger.debug(f"Cache disabled for key \"{key}\"")
             else:
-                logger.debug(f"Cache hit for '{key}'")
+                logger.debug(f"Cache hit for \"{key}\"")
 
             return cache["data"][key]
 
