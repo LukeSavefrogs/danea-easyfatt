@@ -38,7 +38,7 @@ class OperationsTestCase(unittest.TestCase):
 
 class GithubReleaseComparisonTestCase(unittest.TestCase):
 	def _make_release(self, version: str) -> updater.GithubRelease:
-		return updater.GithubRelease(url="https://example.com", version=version, date="2024-01-01")
+		return updater.GithubRelease(url="https://example.com", version=version, date="2024-01-01T00:00:00Z")
 
 	def test_compare_release_with_version_equal(self):
 		release = self._make_release("1.2.3")
