@@ -1,3 +1,4 @@
+import enum
 import logging
 import types
 from typing import Any as _Any, Literal as _Literal, Union as _Union
@@ -10,10 +11,13 @@ import json as _json
 logger = logging.getLogger("danea-easyfatt.caching")
 logger.addHandler(logging.NullHandler())
 
-
+class Backend(enum.Enum):
+    JSON = "json"
+    PICKLE = "pickle"
+    
 def persist_to_file(
     file_name: _Union[str, _Path],
-    backend: _Literal["json", "pickle"] = "pickle",
+    backend: Backend = Backend.PICKLE,
     include=[],
     enabled: bool | str = True,
 ):
@@ -28,11 +32,11 @@ def persist_to_file(
     read_mode: _Literal["r", "rb"]
     write_mode: _Literal["w", "wb"]
 
-    if backend == "pickle":
+    if backend == Backend.PICKLE:
         cache_backend = _pickle
         read_mode = "rb"
         write_mode = "wb"
-    elif backend == "json":
+    elif backend == Backend.JSON:
         cache_backend = _json
         read_mode = "r"
         write_mode = "w"
