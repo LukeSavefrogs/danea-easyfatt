@@ -129,13 +129,14 @@ def release(
 
     # 4. Check if the tags are aligned
     latest_tag_local = sorted(
-        repository.tags, key=lambda t: t.commit.committed_datetime
+        [ tag for tag in repository.tags if tag.name.startswith("v")], key=lambda t: t.commit.committed_datetime
     )[-1]
     try:
-        latest_tag_remote = requests.get(
+        remote_tags = requests.get(
             f"https://api.github.com/repos/{owner}/{repo}/tags",
             headers={"Cache-Control": "no-cache", "Pragma": "no-cache", "Expires": "0"},
-        ).json()[0]["name"]
+        ).json()
+        latest_tag_remote = [tag for tag in remote_tags if tag["name"].startswith("v")][0]["name"]
     except Exception as e:
         logger.critical(f"Error while fetching the remote tags: {repr(e)}")
         return False
