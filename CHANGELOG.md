@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Ora l'**encoding** di default dell'interprete Python è impostato a **`UTF-8`** invece di essere platform-dependent. Il programma non crasherà più in caso di caratteri speciali (come `→`), nemmeno durante i test automatici. Risolve issue [#141](https://github.com/LukeSavefrogs/danea-easyfatt/issues/141).
+- L'**Exit Code** del programma ora rispecchia lo standard, restituendo `1` in caso di errori durante l'esecuzione e `0` in caso di successo.
 
 ### Changed
 
