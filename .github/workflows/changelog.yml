@@ -25,6 +25,11 @@ on:
             "^### Security": "### Sicurezza"
           }
         type: string
+      empty-changelog-placeholder:
+        description: "Placeholder text to use if no changelog content is found for the specified version"
+        required: false
+        default: "__No changelog content found for this version.__"
+        type: string
   workflow_call:
     inputs:
       version:
@@ -48,6 +53,11 @@ on:
             "^### Fixed": "### Risolto",
             "^### Security": "### Sicurezza"
           }
+        type: string
+      empty-changelog-placeholder:
+        description: "Placeholder text to use if no changelog content is found for the specified version"
+        required: false
+        default: "__No changelog content found for this version.__"
         type: string
     outputs:
       changelog:
@@ -85,17 +95,21 @@ jobs:
           declare -a replacements=()
           declare EOF="$(dd if=/dev/urandom bs=15 count=1 status=none | base64)"
           declare tempfile="$(mktemp)"
+          declare placeholder_tempfile="$(mktemp)"
 
           printf "Content via environment variable \$CHANGELOG_CONTENT:\n%s\n" "$(sed 's/^/    | /' <<< "$CHANGELOG_CONTENT")"
           
           cat - <<'EOF' > "$tempfile"
           ${{ steps.changelog.outputs.changes }}
           EOF
+          cat - <<'EOF' > "$placeholder_tempfile"
+          ${{ inputs.empty-changelog-placeholder }}
+          EOF
 
           if [[ ! -s "$tempfile" ]]; then
             echo "::warning title=Changelog Warning::No changelog content found for version '${{ inputs.version }}'..."
             echo "changelog<<$EOF" >> $GITHUB_OUTPUT
-            echo "__No changelog content found for version '${{ inputs.version }}'...__" >> $GITHUB_OUTPUT
+            cat "$placeholder_tempfile" >> $GITHUB_OUTPUT
             echo "$EOF" >> $GITHUB_OUTPUT
           fi
 
