@@ -11,10 +11,12 @@ import json as _json
 logger = logging.getLogger("danea-easyfatt.caching")
 logger.addHandler(logging.NullHandler())
 
+
 class Backend(enum.Enum):
     JSON = "json"
     PICKLE = "pickle"
-    
+
+
 def persist_to_file(
     file_name: _Union[str, _Path],
     backend: Backend = Backend.PICKLE,
@@ -30,7 +32,7 @@ def persist_to_file(
         backend (Backend, optional): The backend to use for caching. Defaults to Backend.PICKLE.
         include (list, optional): The list of arguments to include in the cache key. Defaults to all arguments.
         enabled (bool | str, optional): Whether caching is enabled. Can be a boolean or the name of a keyword argument. Defaults to True.
-    
+
     Returns:
         function: The decorated function.
 
@@ -44,9 +46,9 @@ def persist_to_file(
 
         # Only include the first argument and the "y" keyword argument in the cache key
         @persist_to_file(
-            "cache.json", 
-            backend=Backend.JSON, 
-            include=[0, "y"], 
+            "cache.json",
+            backend=Backend.JSON,
+            include=[0, "y"],
         )
         def another_expensive_function(x, y):
             # Expensive computation here
@@ -54,8 +56,8 @@ def persist_to_file(
 
         # Enable or disable caching based on the "use_cache" keyword argument
         @persist_to_file(
-            "cache.pickle", 
-            enabled="use_cache", 
+            "cache.pickle",
+            enabled="use_cache",
         )
         def yet_another_expensive_function(x, use_cache=True):
             # Expensive computation here
@@ -119,7 +121,7 @@ def persist_to_file(
                 )
 
             if key not in cache["data"].keys():
-                logger.debug(f"Cache miss for \"{key}\"")
+                logger.debug(f'Cache miss for "{key}"')
                 cache["data"][key] = original_func(*args, **kwargs)
 
                 if cache_enabled:
@@ -129,9 +131,9 @@ def persist_to_file(
                     with open(file_name, write_mode) as f:
                         cache_backend.dump(cache, f)
                 else:
-                    logger.debug(f"Cache disabled for key \"{key}\"")
+                    logger.debug(f'Cache disabled for key "{key}"')
             else:
-                logger.debug(f"Cache hit for \"{key}\"")
+                logger.debug(f'Cache hit for "{key}"')
 
             return cache["data"][key]
 
