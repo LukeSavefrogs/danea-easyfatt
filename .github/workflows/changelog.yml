@@ -106,15 +106,20 @@ jobs:
           ${{ inputs.empty-changelog-placeholder }}
           EOF
 
+          printf "Content via file %s:\n%s\n" "$tempfile" "$(sed 's/^/    | /' < "$tempfile")"
+
+          echo "pretty-header-replacements<<$EOF" >> $GITHUB_OUTPUT
+          jq -r <<< "$HEADER_REPLACEMENTS" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
+
           if [[ ! -s "$tempfile" ]]; then
             echo "::warning title=Changelog Warning::No changelog content found for version '${{ inputs.version }}'..."
             echo "changelog<<$EOF" >> $GITHUB_OUTPUT
             cat "$placeholder_tempfile" >> $GITHUB_OUTPUT
             echo "$EOF" >> $GITHUB_OUTPUT
+            exit 0
           fi
 
-          printf "Content via file %s:\n%s\n" "$tempfile" "$(sed 's/^/    | /' < "$tempfile")"
-          
           # Parse the JSON object of header replacements into an array of sed expressions
           while IFS=$'\t' read -r key value; do
             echo "Replacing header '$key' with '$value'"
@@ -125,10 +130,6 @@ jobs:
           echo "changelog<<$EOF" >> $GITHUB_OUTPUT
           sed -r "${replacements[@]}" < "$tempfile" \
             | tee -a $GITHUB_OUTPUT
-          echo "$EOF" >> $GITHUB_OUTPUT
-
-          echo "pretty-header-replacements<<$EOF" >> $GITHUB_OUTPUT
-          jq -r <<< "$HEADER_REPLACEMENTS" >> $GITHUB_OUTPUT
           echo "$EOF" >> $GITHUB_OUTPUT
 
       - name: "Set summary"
