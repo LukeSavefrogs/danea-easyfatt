@@ -28,7 +28,7 @@ on:
       empty-changelog-placeholder:
         description: "Placeholder text to use if no changelog content is found for the specified version"
         required: false
-        default: "__No changelog content found for this version.__"
+        default: "_No changelog content found for this version._"
         type: string
   workflow_call:
     inputs:
@@ -57,7 +57,7 @@ on:
       empty-changelog-placeholder:
         description: "Placeholder text to use if no changelog content is found for the specified version"
         required: false
-        default: "__No changelog content found for this version.__"
+        default: "_No changelog content found for this version._"
         type: string
     outputs:
       changelog:
@@ -140,22 +140,30 @@ jobs:
           ### Inputs
 
           <table>
-            <tr>
-              <th>Input</th>
-              <th>Value</th>
-            </tr>
-            <tr>
-              <td>Version</td>
-              <td><code>${{ inputs.version }}</code></td>
-            </tr>
-            <tr>
-              <td>Changelog validation level</td>
-              <td><code>${{ inputs.changelog-validation }}</code></td>
-            </tr>
-            <tr>
-              <td>Header replacements</td>
-              <td><pre><code lang="json">${{ steps.changelog-updated.outputs.pretty-header-replacements }}</code></pre></td>
-            </tr>
+            <thead>
+              <tr>
+                <th>Input</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Version</td>
+                <td><code>${{ inputs.version }}</code></td>
+              </tr>
+              <tr>
+                <td>Changelog validation level</td>
+                <td><code>${{ inputs.changelog-validation }}</code></td>
+              </tr>
+              <tr>
+                <td>Header replacements</td>
+                <td><pre><code lang="json">${{ steps.changelog-updated.outputs.pretty-header-replacements }}</code></pre></td>
+              </tr>
+              <tr>
+                <td>Empty changelog placeholder</td>
+                <td><pre><code lang="markdown">${{ steps.changelog-updated.outputs.pretty-empty-changelog-placeholder }}</code></pre></td>
+              </tr>
+            </tbody>
           </table>
 
           ### Generated changelog
