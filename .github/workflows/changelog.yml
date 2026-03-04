@@ -112,7 +112,7 @@ jobs:
           jq -r <<< "$HEADER_REPLACEMENTS" >> $GITHUB_OUTPUT
           echo "$EOF" >> $GITHUB_OUTPUT
 
-          if [[ ! -s "$tempfile" ]]; then
+          if [[ -z "$(grep '[^[:space:]]' $tempfile)" ]]; then
             echo "::warning title=Changelog Warning::No changelog content found for version '${{ inputs.version }}'..."
             echo "changelog<<$EOF" >> $GITHUB_OUTPUT
             cat "$placeholder_tempfile" >> $GITHUB_OUTPUT
