@@ -69,6 +69,7 @@ jobs:
       - name: "Read version section from CHANGELOG"
         uses: mindsers/changelog-reader-action@v2
         id: changelog
+        continue-on-error: ${{ inputs.version == 'Unreleased' }}
         with:
           version: ${{ inputs.version }}
           validation_level: ${{ inputs.changelog-validation }}
