@@ -8,10 +8,6 @@ REGEX_TIME_BOUNDARY_INTERVAL = (
 
 
 class RouteXLTimeBoundary:
-    """Classe che rappresenta un intervallo di tempo per RouteXL, con orario di inizio e fine.
-    Viene utilizzata per convertire stringhe di intervalli di tempo in un formato compatibile con RouteXL.
-    """
-
     def __init__(self, ready_time: str, due_time: str):
         self.ready_time = ready_time
         self.due_time = due_time

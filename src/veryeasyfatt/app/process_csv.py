@@ -102,7 +102,9 @@ def genera_csv(
             document.get(f"CustomField{extra_field_orario}", "")
         )
         try:
-            orario_spedizione = RouteXLTimeBoundary.from_string(orario_spedizione_ordine)
+            orario_spedizione = RouteXLTimeBoundary.from_string(
+                orario_spedizione_ordine
+            )
         except ValueError:
             orario_spedizione = None
 
