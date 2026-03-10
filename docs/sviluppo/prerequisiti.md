@@ -7,7 +7,7 @@ nav_order: 1
 
 # Prerequisiti
 Per partecipare allo sviluppo dell'**applicativo** vero e proprio saranno necessari i seguenti prerequisiti:
-- `python` (>3.9)
+- `python` (>=3.10)
 - `poetry`
 - `pipx` (_consigliato_)
 
@@ -88,6 +88,14 @@ poetry run build
 ```
 
 #### Release
+Procedura di rilascio guidato:
 ```
 poetry run release
+```
+
+#### Test
+
+Lancia i test:
+```
+poetry run poe test
 ```
