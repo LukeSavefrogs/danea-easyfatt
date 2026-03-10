@@ -71,7 +71,7 @@ class GeocodingError(Exception):
 
 @caching.persist_to_file(
     file_name=(bundle.get_execution_directory() / ".cache" / "locations.pickle"),
-    backend="pickle",
+    backend=caching.Backend.PICKLE,
     include=[
         "address",
         0,

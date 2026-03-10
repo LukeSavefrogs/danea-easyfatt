@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 from typing import Optional
 import logging
 
@@ -59,7 +60,7 @@ def require_files(required_files: list[Path]) -> None:
 # -----------------------------------------------------------
 #                        Inizio codice
 # -----------------------------------------------------------
-def main(goal: Optional[str] = None):
+def main(goal: Optional[str] = None) -> bool:
     if goal is None:
         menu = SelectableMenu(
             options=[
@@ -265,12 +266,4 @@ def main(goal: Optional[str] = None):
             dry_run=goal == ApplicationGoals.INITIALIZE_GEO_CACHE_DRYRUN.value,
         )
 
-
-if __name__ == "__main__":
-    try:
-        main(r"D:\Progetti\danea-automation\tests\data\veryeasyfatt.config.toml")
-    except Exception as e:
-        logger.exception("Eccezione inaspettata nella funzione main")
-    finally:
-        input("Premi [INVIO] per terminare il programma...")
-        pass
+    return True

@@ -18,46 +18,20 @@ jobs:
     uses: ./.github/workflows/run-tests.yml
 
   release_body:
-    runs-on: ubuntu-latest
-    outputs:
-      changelog: ${{ steps.changelog-updated.outputs.changelog }}
-    steps:
-      - name: "🛒 Checkout repository"
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
-      - name: "🧬 Read Unreleased section from CHANGELOG"
-        uses: mindsers/changelog-reader-action@v2
-        id: changelog
-        with:
-          version: Unreleased
-          validation_level: "warn"
+    uses: ./.github/workflows/changelog.yml
+    with:
+      version: "Unreleased"
+      changelog-validation: "warn"
+      header-replacements: |
+        {
+          "^### Added": "### Aggiunto",
+          "^### Changed": "### Modificato",
+          "^### Deprecated": "### Deprecato",
+          "^### Removed": "### Rimosso",
+          "^### Fixed": "### Risolto",
+          "^### Security": "### Sicurezza"
+        }
       
-      - name: "Replace headers"
-        id: changelog-updated
-        run: |
-          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
-          tempfile="$(mktemp)"
-          
-          cat - <<'EOF' > "$tempfile"
-          ${{ steps.changelog.outputs.changes }}
-          EOF
-          
-          echo "changelog<<$EOF" >> $GITHUB_OUTPUT
-          
-          # Replace "Added", "Changed", "Deprecated", "Removed", "Fixed", "Security" with italian translations
-          sed -r \
-            -e 's/^### Added/### Aggiunto/' \
-            -e 's/^### Changed/### Modificato/' \
-            -e 's/^### Deprecated/### Deprecato/' \
-            -e 's/^### Removed/### Rimosso/' \
-            -e 's/^### Fixed/### Risolto/' \
-            -e 's/^### Security/### Sicurezza/' \
-            "$tempfile" | tee -a $GITHUB_OUTPUT
-
-          echo "$EOF" >> $GITHUB_OUTPUT
-
   build-and-release:
     runs-on: windows-latest
     needs: [tests, release_body] # Require dependencies to finish
