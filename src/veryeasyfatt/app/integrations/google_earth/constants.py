@@ -1,0 +1,1 @@
+GOOGLE_EARTH_WINREG_PATH = r"SOFTWARE\Google\Google Earth Pro"
