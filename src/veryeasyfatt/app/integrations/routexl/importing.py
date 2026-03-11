@@ -1,5 +1,6 @@
 import enum
 
+from pydantic import Field
 from pydantic.dataclasses import dataclass
 
 from veryeasyfatt.app.integrations.routexl.timing import RouteXLTimeBoundary
@@ -91,15 +92,17 @@ class ImportedRecord:
 class ImportedData:
     records: list[ImportedRecord]
 
-    template: StringTemplate = StringTemplate(
-        components=[
-            StringTemplateComponents.NAME,
-            StringTemplateComponents.SERVICE_TIME,
-            StringTemplateComponents.TIME_BOUNDARY,
-            StringTemplateComponents.COMMENT,
-            StringTemplateComponents.CAPACITY,
-        ],
-        separator=" "
+    template: StringTemplate = Field(
+        default_factory=lambda: StringTemplate(
+            components=[
+                StringTemplateComponents.NAME,
+                StringTemplateComponents.SERVICE_TIME,
+                StringTemplateComponents.TIME_BOUNDARY,
+                StringTemplateComponents.COMMENT,
+                StringTemplateComponents.CAPACITY,
+            ],
+            separator=" "
+        )
     )
 
     def add_record(self, record: ImportedRecord):
