@@ -46,7 +46,6 @@ class StringTemplate:
     ...     ],
     ...     separator=" "
     ... )
-    None
     >>> template.format({
     ...     StringTemplateComponents.NAME: "Stop 1",
     ...     StringTemplateComponents.SERVICE_TIME: "30",
