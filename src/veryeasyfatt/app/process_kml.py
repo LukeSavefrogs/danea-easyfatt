@@ -130,14 +130,17 @@ def search_location(
         raise GeocodingError(f"Location '{address.title()}' not found")
 
     if search_type == "strict":
-        if len(location) > 1:
-            raise GeocodingError(
-                f"Too many locations found for '{address.title()}':{_location_separator}{_location_separator.join([str(l) for l in location])}"
-            )
+        if len(location) == 1:
+            return location[0]
 
-        return location[0]
+        raise GeocodingError(
+            f"Too many locations found for '{address.title()}':{_location_separator}{_location_separator.join([str(l) for l in location])}"
+        )
 
     elif search_type == "manual":
+        if len(location) == 1:
+            return location[0]
+
         menu = SelectableMenu(
             options=[
                 Option(
