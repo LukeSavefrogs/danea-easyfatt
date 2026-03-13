@@ -5,7 +5,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Literal, Union
 
-import pydantic
+from pydantic import Field, validator
 import rich
 from rich.panel import Panel
 
@@ -25,6 +25,7 @@ import veryeasyfatt.bundle as bundle
 from veryeasyfatt.shared.formatter import SimpleFormatter
 from veryeasyfatt.configuration import settings
 from veryeasyfatt.shared.pydantic.hashable import HashableBaseModel
+from veryeasyfatt.shared.ui.SelectableMenu import Option, SelectableMenu
 
 logger = logging.getLogger("danea-easyfatt.kml")
 logger.addHandler(logging.NullHandler())
@@ -33,23 +34,23 @@ logger.addHandler(logging.NullHandler())
 class CustomerAddress(HashableBaseModel):
     """Model for a customer address."""
 
-    code: str = pydantic.Field(alias="CodAnagr", frozen=True)
-    name: str = pydantic.Field(alias="Nome", frozen=True)
-    address: str = pydantic.Field(alias="Indirizzo", frozen=True)
-    postcode: str = pydantic.Field(alias="Cap", frozen=True)
-    city: str = pydantic.Field(alias="Citta", frozen=True)
-    province: str = pydantic.Field(alias="Prov", frozen=True)
-    country: str = pydantic.Field(alias="Nazione", frozen=True)
-    alias: str = pydantic.Field(alias="CodDest", default="", frozen=True)
-    fiscal_code: str = pydantic.Field(alias="CodiceFiscale", default="", frozen=True)
-    vat_code: str = pydantic.Field(alias="PartitaIva", default="", frozen=True)
-    homepage: str = pydantic.Field(alias="HomePage", default="", frozen=True)
+    code: str = Field(alias="CodAnagr", frozen=True)
+    name: str = Field(alias="Nome", frozen=True)
+    address: str = Field(alias="Indirizzo", frozen=True)
+    postcode: str = Field(alias="Cap", frozen=True)
+    city: str = Field(alias="Citta", frozen=True)
+    province: str = Field(alias="Prov", frozen=True)
+    country: str = Field(alias="Nazione", frozen=True)
+    alias: str = Field(alias="CodDest", default="", frozen=True)
+    fiscal_code: str = Field(alias="CodiceFiscale", default="", frozen=True)
+    vat_code: str = Field(alias="PartitaIva", default="", frozen=True)
+    homepage: str = Field(alias="HomePage", default="", frozen=True)
 
-    is_customer: bool = pydantic.Field(alias="IsCustomer", frozen=True)
-    is_supplier: bool = pydantic.Field(alias="IsSupplier", frozen=True)
-    is_primary: bool = pydantic.Field()
+    is_customer: bool = Field(alias="IsCustomer", frozen=True)
+    is_supplier: bool = Field(alias="IsSupplier", frozen=True)
+    is_primary: bool = Field()
 
-    @pydantic.validator(
+    @validator(
         "address",
         "postcode",
         "city",
@@ -70,7 +71,7 @@ class GeocodingError(Exception):
 
 @caching.persist_to_file(
     file_name=(bundle.get_execution_directory() / ".cache" / "locations.pickle"),
-    backend="pickle",
+    backend=caching.Backend.PICKLE,
     include=[
         "address",
         0,
@@ -81,7 +82,7 @@ def search_location(
     address: str,
     google_api_key: str | None = None,
     geocoder_fn=None,
-    search_type: Literal["strict", "postcode"] = "strict",
+    search_type: Literal["strict", "manual", "postcode"] = "strict",
     **kwargs,
 ) -> geopy.location.Location:
     """Search for a location.
@@ -101,9 +102,9 @@ def search_location(
     """
     _location_separator = "\n → "
 
-    if search_type not in ["strict", "postcode"]:
+    if search_type not in ["strict", "manual", "postcode"]:
         raise Exception(
-            f"Invalid search type '{search_type}'. Valid values are 'strict' and 'postcode'"
+            f"Invalid search type '{search_type}'. Valid values are 'strict', 'manual' and 'postcode'"
         )
 
     if geocoder_fn is None:
@@ -129,12 +130,50 @@ def search_location(
         raise GeocodingError(f"Location '{address.title()}' not found")
 
     if search_type == "strict":
-        if len(location) > 1:
+        if len(location) == 1:
+            return location[0]
+
+        raise GeocodingError(
+            f"Too many locations found for '{address.title()}':{_location_separator}{_location_separator.join([str(l) for l in location])}"
+        )
+
+    elif search_type == "manual":
+        if len(location) == 1:
+            return location[0]
+
+        menu = SelectableMenu(
+            options=[
+                Option(
+                    label=f"{loc.address} (lat: {loc.latitude}, lon: {loc.longitude})",
+                    value=loc,
+                )
+                for loc in location
+            ]
+            + [
+                Option(
+                    label="None of the above",
+                    value=None,
+                    highlight_style="bold white on red",
+                    indicator="!",
+                )
+            ],
+            title=f"Multiple locations found for '{address.title()}', please select the correct one:",
+            highlight_style="bold white on blue",
+        )
+
+        result = menu.run()
+
+        if result is None:
             raise GeocodingError(
-                f"Too many locations found for '{address.title()}':{_location_separator}{_location_separator.join([str(l) for l in location])}"
+                f"Too many locations found for '{address.title()}' (manually skipped):{_location_separator}{_location_separator.join([str(l) for l in location])}"
             )
 
-        return location[0]
+        if type(result) != geopy.location.Location:
+            raise GeocodingError(
+                f"Invalid location selected (expected a geopy.location.Location object, got {type(result)})"
+            )
+
+        return result
 
     same_postal_code = []
     for loc in location:
@@ -177,7 +216,7 @@ def get_coordinates(
     address: str,
     google_api_key: str,
     caching=True,
-    search_type: Literal["strict", "postcode"] = "strict",
+    search_type: Literal["strict", "manual", "postcode"] = "strict",
 ) -> tuple[float, float, float]:
     """Get the coordinates of an address.
 

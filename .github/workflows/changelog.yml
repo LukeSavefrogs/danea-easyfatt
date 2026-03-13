@@ -1,0 +1,171 @@
+name: "Generate release body from changelog"
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (must match a section in CHANGELOG)"
+        required: true
+        type: string
+      changelog-validation:
+        description: "Validation level for changelog (none, warn, error)"
+        required: false
+        default: "none"
+        type: string
+      header-replacements:
+        description: "A JSON object mapping original headers to their replacements in the generated changelog. For example: {\"Added\": \"Aggiunto\", \"Changed\": \"Modificato\"}"
+        required: false
+        default: |
+          {
+            "^### Added": "### Aggiunto",
+            "^### Changed": "### Modificato",
+            "^### Deprecated": "### Deprecato",
+            "^### Removed": "### Rimosso",
+            "^### Fixed": "### Risolto",
+            "^### Security": "### Sicurezza"
+          }
+        type: string
+      empty-changelog-placeholder:
+        description: "Placeholder text to use if no changelog content is found for the specified version"
+        required: false
+        default: "_No changelog content found for this version._"
+        type: string
+  workflow_call:
+    inputs:
+      version:
+        description: "Version to release"
+        required: true
+        type: string
+      changelog-validation:
+        description: "Validation level for changelog (none, warn, error)"
+        required: false
+        default: "none"
+        type: string
+      header-replacements:
+        description: "A JSON object mapping original headers to their replacements in the generated changelog. For example: {\"Added\": \"Aggiunto\", \"Changed\": \"Modificato\"}"
+        required: false
+        default: |
+          {
+            "^### Added": "### Aggiunto",
+            "^### Changed": "### Modificato",
+            "^### Deprecated": "### Deprecato",
+            "^### Removed": "### Rimosso",
+            "^### Fixed": "### Risolto",
+            "^### Security": "### Sicurezza"
+          }
+        type: string
+      empty-changelog-placeholder:
+        description: "Placeholder text to use if no changelog content is found for the specified version"
+        required: false
+        default: "_No changelog content found for this version._"
+        type: string
+    outputs:
+      changelog:
+        description: "Generated changelog content for the release body"
+        value: ${{ jobs.release-body.outputs.changelog }}
+
+jobs:
+  release-body:
+    name: "Generate release body from changelog"
+    runs-on: ubuntu-latest
+    outputs:
+      changelog: ${{ steps.changelog-updated.outputs.changelog }}
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: "Read version section from CHANGELOG"
+        uses: mindsers/changelog-reader-action@v2
+        id: changelog
+        continue-on-error: ${{ inputs.version == 'Unreleased' }}
+        with:
+          version: ${{ inputs.version }}
+          validation_level: ${{ inputs.changelog-validation }}
+      
+      - name: "Replace headers"
+        id: changelog-updated
+        env:
+          CHANGELOG_CONTENT: ${{ steps.changelog.outputs.changes }}
+          HEADER_REPLACEMENTS: ${{ inputs.header-replacements }}
+        run: |
+          set -euo pipefail
+
+          declare -a replacements=()
+          declare EOF="$(dd if=/dev/urandom bs=15 count=1 status=none | base64)"
+          declare tempfile="$(mktemp)"
+          declare placeholder_tempfile="$(mktemp)"
+
+          printf "Content via environment variable \$CHANGELOG_CONTENT:\n%s\n" "$(sed 's/^/    | /' <<< "$CHANGELOG_CONTENT")"
+          
+          cat - <<'EOF' > "$tempfile"
+          ${{ steps.changelog.outputs.changes }}
+          EOF
+          cat - <<'EOF' > "$placeholder_tempfile"
+          ${{ inputs.empty-changelog-placeholder }}
+          EOF
+
+          printf "Content via file %s:\n%s\n" "$tempfile" "$(sed 's/^/    | /' < "$tempfile")"
+
+          echo "pretty-header-replacements<<$EOF" >> $GITHUB_OUTPUT
+          jq -r <<< "$HEADER_REPLACEMENTS" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
+
+          if [[ -z "$(grep '[^[:space:]]' $tempfile)" ]]; then
+            echo "::warning title=Changelog Warning::No changelog content found for version '${{ inputs.version }}'..."
+            echo "changelog<<$EOF" >> $GITHUB_OUTPUT
+            cat "$placeholder_tempfile" >> $GITHUB_OUTPUT
+            echo "$EOF" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Parse the JSON object of header replacements into an array of sed expressions
+          while IFS=$'\t' read -r key value; do
+            echo "Replacing header '$key' with '$value'"
+            replacements+=("-e" "s/${key}/${value}/g")
+          done < <(jq -r 'to_entries[] | "\(.key)\t\(.value)"' <<< "$HEADER_REPLACEMENTS")
+          
+          # Replace headers with their translations
+          echo "changelog<<$EOF" >> $GITHUB_OUTPUT
+          sed -r "${replacements[@]}" < "$tempfile" \
+            | tee -a $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
+
+      - name: "Set summary"
+        run: |
+          cat <<'EOF' >> $GITHUB_STEP_SUMMARY
+          ## Changelog generation details
+          
+          ### Inputs
+
+          <table>
+            <thead>
+              <tr>
+                <th>Input</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Version</td>
+                <td><code>${{ inputs.version }}</code></td>
+              </tr>
+              <tr>
+                <td>Changelog validation level</td>
+                <td><code>${{ inputs.changelog-validation }}</code></td>
+              </tr>
+              <tr>
+                <td>Header replacements</td>
+                <td><pre><code lang="json">${{ steps.changelog-updated.outputs.pretty-header-replacements }}</code></pre></td>
+              </tr>
+              <tr>
+                <td>Empty changelog placeholder</td>
+                <td><pre><code lang="markdown">${{ steps.changelog-updated.outputs.pretty-empty-changelog-placeholder }}</code></pre></td>
+              </tr>
+            </tbody>
+          </table>
+
+          ### Generated changelog
+          ${{ steps.changelog-updated.outputs.changelog }}
+          EOF

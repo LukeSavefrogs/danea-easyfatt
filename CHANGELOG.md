@@ -5,9 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v1.5.1] - 2026-03-12
+
+### Fixed
+
+- Corretto bug che causava la visualizzazione della selezione dell'indirizzo ad ogni geocodifica quando la configurazione `features.kml_generation.location_search_type` era impostata a `manual`
+
+## [v1.5.0] - 2026-03-04
 
 ### Added
+
+- Impostando la configurazione `features.kml_generation.location_search_type` a `manual`, ora è possibile scegliere manualmente l'indirizzo da restituire per ogni segnaposto del KML tra quelli trovati tramite l'API di Geocoding di Google nel caso in cui questa restituisca più risultati per un unico indirizzo. Vedi issue [#172](https://github.com/LukeSavefrogs/danea-easyfatt/issues/172).
 
 **Formatter**:
 
@@ -17,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Ora l'**encoding** di default dell'interprete Python è impostato a **`UTF-8`** invece di essere platform-dependent. Il programma non crasherà più in caso di caratteri speciali (come `→`), nemmeno durante i test automatici. Risolve issue [#141](https://github.com/LukeSavefrogs/danea-easyfatt/issues/141).
+- L'**Exit Code** del programma ora rispecchia lo standard, restituendo `1` in caso di errori durante l'esecuzione e `0` in caso di successo.
 
 ### Changed
 
@@ -32,7 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Ora è possibile eseguire la ricerca dei segnaposti Google in 2 modalità: `strict` e `postalcode`. Questa opzione è personalizzabile solo tramite il file di configurazione alla voce [`features.kml_generation.location_search_type`](https://lukesavefrogs.github.io/danea-easyfatt/utente/configurazione.html#featureskml_generationlocation_search_type). Vedi issue [#126](https://github.com/LukeSavefrogs/danea-easyfatt/issues/126).
+- Ora è possibile eseguire la ricerca dei segnaposti Google in 2 modalità: `strict` e `postcode`. Questa opzione è personalizzabile solo tramite il file di configurazione alla voce [`features.kml_generation.location_search_type`](https://lukesavefrogs.github.io/danea-easyfatt/utente/configurazione.html#featureskml_generationlocation_search_type). Vedi issue [#126](https://github.com/LukeSavefrogs/danea-easyfatt/issues/126).
 
 ## [v1.4.6] - 2023-10-12
 
