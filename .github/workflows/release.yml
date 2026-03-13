@@ -19,7 +19,7 @@ jobs:
       changelog_slug: ${{ steps.slugify.outputs.changelog_slug }}
     steps:
       - name: "🛒 Checkout repository"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -84,7 +84,7 @@ jobs:
     if: startsWith(github.event.ref, 'refs/tags/v')
     steps:
       - name: "🛒 Checkout repository"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       
