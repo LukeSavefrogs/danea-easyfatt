@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "danea-automation"
-version = "1.4.7"
+version = "1.5.1"
 description = "Automazione flussi aziendali Easyfatt"
 authors = ["Luca Salvarani <lucasalvarani99@gmail.com>"]
 readme = "README.md"
@@ -16,7 +16,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "~3.10"
+python = ">=3.10,<3.12"
 rich = "^13.0.1"
 requests = "^2.31.0"
 toml = "^0.10.2"
@@ -31,16 +31,18 @@ easyfatt-db-connector = "^0.3.2"
 geopy = "^2.3.0"
 pyperclip = "^1.8.2"
 dynaconf = "^3.2.2"
+readchar = "^4.2.1"
 
 
 [tool.poetry.group.dev.dependencies]
 gitpython = "^3.1.30"
 pyinstaller = "^6.0.0"
-poethepoet = "^0.24.0"
+poethepoet = "^0.42.0"
 autopep8 = "^2.0.2"
-pyinstaller-versionfile = "^2.1.1"
+pyinstaller-versionfile = "^3.0.0"
 mypy = "^1.5.1"
 packaging = "^23.1"
+black = ">=24.10,<24.11"
 
 
 [build-system]
@@ -68,3 +70,11 @@ cmd = "python -m unittest discover --catch"
 
 [tool.mypy]
 ignore_missing_imports = true
+follow_untyped_imports = true
+plugins = [
+  "pydantic.mypy"
+]
+
+[tool.black]
+include = '\.pyi?$'
+target-version = ["py310", "py311"]

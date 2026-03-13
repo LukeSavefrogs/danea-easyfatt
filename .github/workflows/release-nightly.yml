@@ -1,0 +1,82 @@
+name: Create Release (Nightly)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nightly-release
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    uses: ./.github/workflows/run-tests.yml
+
+  release_body:
+    uses: ./.github/workflows/changelog.yml
+    with:
+      version: "Unreleased"
+      changelog-validation: "warn"
+      header-replacements: |
+        {
+          "^### Added": "### Aggiunto",
+          "^### Changed": "### Modificato",
+          "^### Deprecated": "### Deprecato",
+          "^### Removed": "### Rimosso",
+          "^### Fixed": "### Risolto",
+          "^### Security": "### Sicurezza"
+        }
+      
+  build-and-release:
+    runs-on: windows-latest
+    needs: [tests, release_body] # Require dependencies to finish
+    steps:
+      - name: "🛒 Checkout repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: "📜 Install Poetry"
+        uses: abatilo/actions-poetry@v4
+        with:
+          poetry-version: 1.3.2
+          
+      - name: "🐍 Install Python"
+        uses: actions/setup-python@v5
+        with:
+          cache: 'poetry'
+        
+      - name: "🔍 Install dependencies"
+        run: poetry install
+
+      - name: "🎉 Generate artifacts"
+        run: |
+          poetry run build
+      
+      - name: Update Nightly Release
+        uses: andelf/nightly-release@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: "Nightly Release"
+          body: |
+            Di seguito l'elenco delle modifiche introdotte in questa versione nightly.
+
+            ${{ needs.release_body.outputs.changelog }}
+          prerelease: true
+          files: |
+            ./dist/*.exe
+
+      - name: "Set Job Summary"
+        shell: bash
+        run: |
+          cat <<EOF >> $GITHUB_STEP_SUMMARY
+          ## Nightly Release
+          Rilasciata la versione nightly con le seguenti modifiche:
+          ${{ needs.release_body.outputs.changelog }}
+          EOF

@@ -1,4 +1,5 @@
 """ Entry point of the wrapper. """
+
 import datetime
 import sys
 import webbrowser
@@ -57,7 +58,7 @@ from veryeasyfatt.configuration import settings
 # -----------------------------------------------------------
 #                        Inizio codice
 # -----------------------------------------------------------
-def main():
+def main() -> bool:
     # ==================================================================
     #                     Parametri linea di comando
     # ==================================================================
@@ -155,16 +156,14 @@ def main():
     else:
         try:
             if updater.update_available():
-                latest_release = updater.get_latest_version()
-                latest_version = Version(updater.get_latest_version())
+                latest_release = updater.get_latest_release()
+                latest_version = Version(latest_release.version)
                 current_version = Version(updater.get_current_version())
 
                 logger.warning(
-                    f"An update is available (remote is '{latest_version}', while current is '{current_version}')"
+                    f"An update is available since {latest_release.date:%d/%m/%Y %H:%M:%S} (remote is '{latest_version}', while current is '{current_version}')"
                 )
-                webbrowser.open(
-                    updater.get_latest_release()["url"], new=0, autoraise=True
-                )
+                webbrowser.open(latest_release.url, new=0, autoraise=True)
 
                 return False
             else:
@@ -179,15 +178,22 @@ def main():
             return False
 
     try:
-        application.main(cli_args.goal)
+        return application.main(cli_args.goal)
     except Exception:
         logger.exception("Eccezione inaspettata nell'applicazione")
+        return False
 
 
 if __name__ == "__main__":
+    success: bool
     try:
-        main()
+        success = main()
+        if success is None:
+            success = True
+
+        sys.exit(0 if success else 1)
     except Exception as e:
         logger.exception("Eccezione inaspettata nella funzione main")
+        sys.exit(1)
     finally:
         input("Premi [INVIO] per terminare il programma...")
