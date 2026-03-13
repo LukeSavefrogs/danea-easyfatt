@@ -3,6 +3,8 @@
     <p><i> - "Easyfatt made even easier" -</i></p>
 </div>
 
+[![GitHub Release](https://img.shields.io/github/v/release/LukeSavefrogs/danea-easyfatt?sort=semver)](https://github.com/LukeSavefrogs/danea-easyfatt/releases/latest)
+
 [![Run tests](https://github.com/LukeSavefrogs/danea-easyfatt/actions/workflows/run-tests.yml/badge.svg)](https://github.com/LukeSavefrogs/danea-easyfatt/actions/workflows/run-tests.yml)
 ![GitHub](https://img.shields.io/github/license/LukeSavefrogs/danea-easyfatt)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)

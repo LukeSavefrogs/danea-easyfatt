@@ -1,16 +1,20 @@
 """ Entry point of the application. """
+
 from io import StringIO
 import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 from typing import Optional
 import logging
 
 import pandas as pd
 import pyperclip
 
-from rich.prompt import Confirm, IntPrompt
+from rich.prompt import Confirm
+from veryeasyfatt.shared.ui.SelectableMenu import SelectableMenu, Option
+
 from veryeasyfatt.app.constants import ApplicationGoals
 
 from veryeasyfatt.app.process_kml import generate_kml, populate_cache
@@ -56,32 +60,39 @@ def require_files(required_files: list[Path]) -> None:
 # -----------------------------------------------------------
 #                        Inizio codice
 # -----------------------------------------------------------
-def main(goal: Optional[str] = None):
+def main(goal: Optional[str] = None) -> bool:
     if goal is None:
-        print("Scegli l'operazione da effettuare:")
-        print("1) Generatore CSV per RouteXL")
-        print("2) Generatore KML per Google Earth")
-        print("3) Inizializza cache geografica (Google Maps)")
-        print("4) Simula inizializzazione cache geografica (Google Maps)")
-        print("0) Esci")
-        print()
-        user_choice = IntPrompt.ask(
-            "Quale azione desideri eseguire?",
-            choices=["1", "2", "3", "4", "0"],
-            default=0,
+        menu = SelectableMenu(
+            options=[
+                Option(
+                    label="Generatore CSV per RouteXL",
+                    value=ApplicationGoals.CSV_GENERATOR.value,
+                ),
+                Option(
+                    label="Generatore KML per Google Earth",
+                    value=ApplicationGoals.KML_GENERATOR.value,
+                ),
+                Option(
+                    label="Inizializza cache geografica (Google Maps)",
+                    value=ApplicationGoals.INITIALIZE_GEO_CACHE.value,
+                ),
+                Option(
+                    label="Simula inizializzazione cache geografica (Google Maps)",
+                    value=ApplicationGoals.INITIALIZE_GEO_CACHE_DRYRUN.value,
+                    highlight_style="bold yellow",
+                    indicator="~",
+                ),
+                Option(
+                    label="Esci", value=None, highlight_style="bold red", indicator="!"
+                ),
+            ],
+            title="Scegli l'operazione da effettuare:",
         )
+        goal = menu.run()
 
-        if user_choice == 0:
+        if goal is None:
             return True
-        elif user_choice == 1:
-            goal = "csv-generator"
-        elif user_choice == 2:
-            goal = "kml-generator"
-        elif user_choice == 3:
-            goal = "initialize-geo-cache"
-        elif user_choice == 4:
-            goal = "initialize-geo-cache-dryrun"
-        else:
+        elif goal not in ApplicationGoals.values():
             logger.error("Scelta non valida.")
             return False
 
@@ -105,9 +116,7 @@ def main(goal: Optional[str] = None):
                 return False
         else:
             nuovo_xml = (
-                Path(settings["files"]["input"]["easyfatt"])
-                .resolve()
-                .read_text(encoding="utf8")
+                Path(settings.files.input.easyfatt).resolve().read_text(encoding="utf8")
             )
 
         # 2. Genero il CSV sulla base del template
@@ -122,12 +131,10 @@ def main(goal: Optional[str] = None):
                 logger.info("Righe CSV copiate negli appunti.")
 
             # Salvo il csv su file
-            with open(settings["files"]["output"]["csv"], "w") as csv_file:
+            with open(settings.files.output.csv, "w") as csv_file:
                 csv_file.write("\n".join(righe_csv))
 
-            logger.info(
-                f"Creazione CSV '{settings['files']['output']['csv']}' terminata.."
-            )
+            logger.info(f"Creazione CSV '{settings.files.output.csv}' terminata..")
         except Exception:
             logger.exception("Errore durante la generazione del file CSV.")
             return False
@@ -147,13 +154,15 @@ def main(goal: Optional[str] = None):
             # IMPORTANTE: Per evitare valori sballati nel totale sono costretto a
             #             trasformare il separatore decimale nel formato inglese (.)
             df["TransportedWeight"] = df["TransportedWeight"].map(
-                lambda v: v
-                if (v is None or pd.isnull(v))
-                else unit_registry.Quantity(
-                    str(v).replace(".", "").replace(",", ".").lower()
+                lambda v: (
+                    v
+                    if (v is None or pd.isnull(v))
+                    else unit_registry.Quantity(
+                        str(v).replace(".", "").replace(",", ".").lower()
+                    )
+                    .to("g")
+                    .magnitude
                 )
-                .to("g")
-                .magnitude
             )
 
             df_weight_sum = df["TransportedWeight"].sum()
@@ -177,10 +186,10 @@ def main(goal: Optional[str] = None):
         # Issue #20
         print("\n")
         if Confirm.ask(
-            f"Aprire il file '{settings['files']['output']['csv']}'?",
+            f"Aprire il file '{settings.files.output.csv}'?",
             choices=["s", "n"],
         ):
-            os.startfile(Path(settings["files"]["output"]["csv"]).resolve(), "open")
+            os.startfile(Path(settings.files.output.csv).resolve(), "open")
         print("\n")
 
     elif goal == ApplicationGoals.KML_GENERATOR.value:
@@ -228,6 +237,9 @@ def main(goal: Optional[str] = None):
                 )
         except Exception as e:
             logger.error(f"Errore in fase di apertura Google Earth: {e}")
+            logger.warning(
+                "Assicurarsi che Google Earth Pro sia installato correttamente per poter aprire il file KML."
+            )
 
     elif goal in [
         ApplicationGoals.INITIALIZE_GEO_CACHE.value,
@@ -249,19 +261,9 @@ def main(goal: Optional[str] = None):
         populate_cache(
             google_api_key=settings.features.kml_generation.google_api_key,
             database_path=(
-                Path(settings["easyfatt"]["database"]["filename"])
-                .expanduser()
-                .resolve()
+                Path(settings.easyfatt.database.filename).expanduser().resolve()
             ),
             dry_run=goal == ApplicationGoals.INITIALIZE_GEO_CACHE_DRYRUN.value,
         )
 
-
-if __name__ == "__main__":
-    try:
-        main(r"D:\Progetti\danea-automation\tests\data\veryeasyfatt.config.toml")
-    except Exception as e:
-        logger.exception("Eccezione inaspettata nella funzione main")
-    finally:
-        input("Premi [INVIO] per terminare il programma...")
-        pass
+    return True

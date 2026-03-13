@@ -58,6 +58,7 @@ google_api_key = ""                       	# Chiave API di Google Maps per la ge
 placemark_title = "{customerName} ({customerCode}) {notes}" # Formato del nome del segnaposto nel KML
 location_search_type = "strict"		   		# Tipo di ricerca da effettuare per la localizzazione del cliente:
 											#   - "strict": mostra errore se non viene trovato esattamente un indirizzo
+											#   - "manual": chiedi quale indirizzo usare in caso la ricerca restituisca più risultati
 											#   - "postcode": usa il CAP per fare un controllo aggiuntivo
 ```
 
@@ -290,6 +291,7 @@ Permette di personalizzare il metodo di ricerca degli indirizzi tramite Google G
 Valori disponibili:
 
 - `strict`: E' il metodo più conservativo, lo script si interrompe se l'API restituisce più di un indirizzo.
+- `manual`: Se viene trovato più di un indirizzo corrispondente, mostra un menu con cui è possibile interagire per selezionare l'indirizzo corretto.
 - `postcode`: Se viene trovato più di un indirizzo corrispondente, restituisce quello con lo stesso CAP dell'indirizzo richiesto (fallisce comunque se ne trova più di uno).
 
 > Valore di default
@@ -298,3 +300,23 @@ Valori disponibili:
 {: .note-title .fs-3 }
 
 > Questa voce nella configurazione è nata per contrastare il problema presentato nell'issue [#126](https://github.com/LukeSavefrogs/danea-easyfatt/issues/126).
+
+## Variabili d'ambiente
+
+Oltre al file di configurazione, il programma supporta alcune **variabili d'ambiente** che possono essere impostate prima di avviarlo.
+
+### `GITHUB_TOKEN`
+
+Token di autenticazione per le API di GitHub, utilizzato dal modulo di aggiornamento automatico per verificare se è disponibile una nuova versione del programma.
+
+Quando impostato, il token viene incluso nelle richieste HTTP all'API di GitHub tramite l'header `Authorization`, aumentando il [rate limit](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api) da 60 a 5000 richieste per ora.
+
+> Valore di default
+>
+> _Nessuno (non autenticato)_
+{: .note-title .fs-3 }
+
+> FARE ATTENZIONE
+>
+> **Attenzione!** Questo token è **personale** e **non deve essere condiviso** con nessuno!
+{: .warning-title .fs-3 }

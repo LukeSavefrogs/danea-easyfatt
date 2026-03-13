@@ -41,4 +41,5 @@ google_api_key = ""                       	# Chiave API di Google Maps per la ge
 placemark_title = "{customerName} ({customerCode}) {notes}" # Formato del nome del segnaposto nel KML
 location_search_type = "strict"		   		# Tipo di ricerca da effettuare per la localizzazione del cliente:
 											#   - "strict": mostra errore se non viene trovato esattamente un indirizzo
+											#   - "manual": chiedi quale indirizzo usare in caso la ricerca restituisca più risultati
 											#   - "postcode": usa il CAP per fare un controllo aggiuntivo
