@@ -28,6 +28,18 @@
     },
     "github.copilot.enable": {
 		"*": true,
-		"markdown": false
+		"markdown": true
 	},
+    "render-special-chars.except": [
+        "é ò à ù ì",
+    ],
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./tests",
+        "-p",
+        "test_*.py"
+    ],
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": true
 }

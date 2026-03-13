@@ -2,6 +2,7 @@ from pathlib import Path
 import secrets
 import subprocess
 import sys
+import textwrap
 import unittest
 import shutil
 
@@ -22,6 +23,10 @@ class BundleTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        """ Builds the executable file from the Python script before running the tests. 
+        
+        The executable is then removed after all tests are done.
+        """
         cls._executable_name = Path(f"./dist/{secrets.token_hex(16)}.exe")
         cls._python_scr_name = Path("./src/veryeasyfatt/bootstrap.py").resolve()
 
@@ -41,6 +46,7 @@ class BundleTestCase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        """ Removes the temporary executable file after all tests are done. """
         # Remove the temporary executable file
         cls._executable_name.unlink()
 
@@ -72,7 +78,7 @@ class BundleTestCase(unittest.TestCase):
 
     def test_no_version_check(self):
         """Tests if no version check is done."""
-        command_output = subprocess.run(
+        command = subprocess.run(
             [
                 self._executable_name,
                 "--disable-rich-logging",
@@ -81,27 +87,28 @@ class BundleTestCase(unittest.TestCase):
                 "csv-generator",
             ],
             timeout=360,
-            input="\nn\nn\n",
+            input="\nn\nn\n\n",
             capture_output=True,
             text=True,
             encoding="utf8",
-        ).stdout
+        )
 
+        self.assertEqual(command.stderr, "")
         self.assertRegex(
-            command_output, "Il controllo versione è stato disattivato tramite CLI"
+            command.stdout, "Il controllo versione è stato disattivato tramite CLI"
         )
 
     @with_temporary_file(
         file_prefix="veryeasyfatt-",
         file_suffix=".toml",
-        content=f"""
-        [files.input]
-        easyfatt = "./{secrets.token_hex(32)}.DefXml"
-    """,
+        content=textwrap.dedent(f"""
+            [files.input]
+            easyfatt = "./{secrets.token_hex(32)}.DefXml"
+        """),
     )
     def test_error_file_not_found(self, configuration_file: Path):
         """Tests the behaviour of the program when a required file is not present"""
-        command_output = subprocess.run(
+        command = subprocess.run(
             [
                 self._executable_name,
                 "--disable-version-check",
@@ -116,10 +123,12 @@ class BundleTestCase(unittest.TestCase):
             capture_output=True,
             text=True,
             encoding="utf8",
-        ).stdout
+        )
+        self.assertNotEqual(command.returncode, 0)
+        self.assertEqual(command.stderr, "")
 
         self.assertRegex(
-            command_output, r"The following required files were not found:"
+            command.stdout, r"The following required files were not found:"
         )
 
 
