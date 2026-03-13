@@ -37,7 +37,7 @@ jobs:
     needs: [tests, release_body] # Require dependencies to finish
     steps:
       - name: "🛒 Checkout repository"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       
