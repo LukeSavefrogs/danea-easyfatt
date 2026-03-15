@@ -17,7 +17,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
-rich = "^13.0.1"
+rich = "^14.0.0"
 requests = "^2.31.0"
 toml = "^0.10.2"
 packaging = "^23.0"
@@ -42,7 +42,7 @@ autopep8 = "^2.0.2"
 pyinstaller-versionfile = "^3.0.0"
 mypy = "^1.5.1"
 packaging = "^23.1"
-black = ">=24.10,<24.11"
+black = ">=26.3,<26.4"
 
 
 [build-system]

@@ -16,17 +16,18 @@ jobs:
   check-format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: "📜 Install Poetry"
-        uses: abatilo/actions-poetry@v2
+        uses: abatilo/actions-poetry@v4
         with:
           poetry-version: 2.3.2
 
       - name: "🐍 Install Python"
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           cache: 'poetry'
+          python-version: '3.11'
         
       - name: "🔍 Install dependencies"
         run: poetry install --with dev
