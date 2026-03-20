@@ -1,4 +1,4 @@
-""" Entry point of the application. """
+"""Entry point of the application."""
 
 from io import StringIO
 import os

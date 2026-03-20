@@ -8,14 +8,12 @@ gem "just-the-docs", "0.12.0" # currently the latest pre-release
 # gem "bulma-clean-theme"
 
 gem 'tzinfo-data'
-gem 'wdm', '~> 0.1.1', :install_if => Gem.win_platform?
+gem 'wdm', '~> 0.2.0', :install_if => Gem.win_platform?
 
 group :jekyll_plugins do
   gem 'jekyll-timeago', '~> 0.15.0'
-  gem "jekyll-default-layout"
+  gem "jekyll-default-layout", "~> 0.1.5"
+  gem "jekyll-glossary_tooltip", "~> 1.5", ">= 1.5.1"
+  gem "jemoji", "~> 0.13.0"
+  gem "jekyll-github-metadata", "~> 2.15"
 end
-gem "jekyll-glossary_tooltip", "~> 1.5", ">= 1.5.1", :group => :jekyll_plugins
-
-gem "jemoji", "~> 0.13.0", :group => :jekyll_plugins
-
-gem "jekyll-github-metadata", "~> 2.15", :group => :jekyll_plugins
