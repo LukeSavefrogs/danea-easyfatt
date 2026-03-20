@@ -99,7 +99,7 @@ def get_github_api_endpoint() -> str:
             f"The URL '{repository_url}' is not a valid Github repository URL."
         )
 
-    (domain, author, repository) = url.groups()
+    domain, author, repository = url.groups()
     return f"https://api.{domain}/repos/{author}/{repository}"
 
 

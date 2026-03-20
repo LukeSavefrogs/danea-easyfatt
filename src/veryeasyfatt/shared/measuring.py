@@ -1,4 +1,4 @@
-""" This module contains the unit registry used for all measurements in the application. """
+"""This module contains the unit registry used for all measurements in the application."""
 
 import pint
 

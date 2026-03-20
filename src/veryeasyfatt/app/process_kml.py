@@ -779,29 +779,21 @@ def get_all_addresses(database_path: Union[str, Path]) -> list[CustomerAddress]:
 
         anagrafiche = [
             CustomerAddress(**item, is_primary=True)
-            for item in connection.cursor()
-            .execute(
-                """
+            for item in connection.cursor().execute("""
                     SELECT anag."CodAnagr", ANAG."Nome", ANAG."Indirizzo", ANAG."Cap", ANAG."Citta", ANAG."Prov", IIF(naz."NomeNazionePrint" IS NULL, 'Italia', naz."NomeNazionePrint") AS "Nazione", IIF(anag."Cliente" = 1, 1, 0) AS "IsCustomer", IIF(anag."Fornitore" = 1, 1, 0) AS "IsSupplier", anag."CodiceFiscale", anag."PartitaIva", anag."HomePage"
                     FROM "TAnagrafica" AS anag
                     LEFT JOIN "TNazioni" naz ON ANAG."Nazione" = naz."NomeNazione";
-                """
-            )
-            .fetchallmap()
+                """).fetchallmap()
         ]
 
         anagrafiche_indirizzi_extra = [
             CustomerAddress(**item, is_primary=False)
-            for item in connection.cursor()
-            .execute(
-                """
+            for item in connection.cursor().execute("""
                     SELECT anag."CodAnagr", td."Nome", td."Indirizzo", td."Cap", td."Citta", td."Prov", IIF(naz."NomeNazionePrint" IS NULL, 'Italia', naz."NomeNazionePrint") AS "Nazione", IIF(anag."Cliente" = 1, 1, 0) AS "IsCustomer", IIF(anag."Fornitore" = 1, 1, 0) AS "IsSupplier", td."CodDest", anag."CodiceFiscale", anag."PartitaIva", anag."HomePage"
                     FROM "TAnagrafica" AS anag
                     RIGHT JOIN "TAnagraficaDest" td ON td."IDAnagr" = ANAG."IDAnagr"
                     LEFT JOIN "TNazioni" naz ON td."Nazione" = naz."NomeNazione";
-                """
-            )
-            .fetchallmap()
+                """).fetchallmap()
         ]
 
     # Elenco ordinato di tutte le anagrafiche (con indirizzi primari e secondari)

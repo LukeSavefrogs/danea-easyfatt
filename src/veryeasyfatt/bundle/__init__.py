@@ -1,4 +1,4 @@
-""" This module contains functions used to abstract away the differences when
+"""This module contains functions used to abstract away the differences when
 bundled with Pyinstaller or executed directly with Python.
 """
 

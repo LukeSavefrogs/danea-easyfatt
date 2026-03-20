@@ -1,4 +1,4 @@
-""" Entry point of the wrapper. """
+"""Entry point of the wrapper."""
 
 import datetime
 import sys

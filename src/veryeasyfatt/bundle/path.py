@@ -1,5 +1,5 @@
-""" Functions used to find files/directories in the context of applications
-bundled with Pyinstaller. """
+"""Functions used to find files/directories in the context of applications
+bundled with Pyinstaller."""
 
 import sys
 import inspect
