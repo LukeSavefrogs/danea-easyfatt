@@ -1,0 +1,39 @@
+name: Build the documentation
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'docs/**'
+      - '**.md'
+      - '**.yml'
+      - '**.html'
+      - Gemfile
+      - Gemfile.lock
+      - .github/workflows/build-documentation.yml
+      - .ruby-version
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+          cache-version: 0 # Increment this number if you need to re-download cached gems
+
+      - name: Build with Jekyll
+        # Outputs to the './_site' directory by default
+        run: bundle exec jekyll build # TODO: get base-url from inputs (but on push??)
+        env:
+          JEKYLL_ENV: production
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: _site
