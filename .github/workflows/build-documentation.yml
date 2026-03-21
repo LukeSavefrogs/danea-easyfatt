@@ -1,0 +1,50 @@
+name: Build the documentation
+
+on:
+  workflow_call:
+    inputs:
+      base-url:
+        required: true
+        description: "The base url of the built documentation"
+        type: string
+  workflow_dispatch:
+    inputs:
+      base-url:
+        required: true
+        description: "The base url of the built documentation"
+        type: string
+  push:
+    paths:
+      - 'docs/**'
+      - '**.md'
+      - '**.yml'
+      - '**.html'
+      - Gemfile
+      - Gemfile.lock
+      - _config.yml
+      - .github/workflows/build-documentation.yml
+      - .ruby-version
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          cache-version: 0
+
+      - name: Build with Jekyll
+        run: bundle exec jekyll build --baseurl "${BASE_URL:-/}"
+        env:
+          JEKYLL_ENV: production
+          BASE_URL: ${{ inputs.base-url }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: _site
