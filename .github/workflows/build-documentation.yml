@@ -38,11 +38,6 @@ jobs:
           bundler-cache: true
           cache-version: 0
 
-      # Should not be needed at all, but I run this command anyway
-      - name: Install dependencies (Rubygems)
-        run: |
-          bundle install
-
       - name: Build with Jekyll
         run: bundle exec jekyll build --baseurl "${BASE_URL:-/}"
         env:
