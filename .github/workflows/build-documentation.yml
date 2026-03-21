@@ -21,6 +21,7 @@ on:
       - '**.html'
       - Gemfile
       - Gemfile.lock
+      - _config.yml
       - .github/workflows/build-documentation.yml
       - .ruby-version
 
