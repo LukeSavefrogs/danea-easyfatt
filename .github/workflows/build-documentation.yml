@@ -24,11 +24,10 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-          cache-version: 0 # Increment this number if you need to re-download cached gems
+          bundler-cache: true
+          cache-version: 0
 
       - name: Build with Jekyll
-        # Outputs to the './_site' directory by default
         run: bundle exec jekyll build # TODO: get base-url from inputs (but on push??)
         env:
           JEKYLL_ENV: production
