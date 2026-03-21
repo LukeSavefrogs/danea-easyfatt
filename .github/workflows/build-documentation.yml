@@ -38,9 +38,10 @@ jobs:
           cache-version: 0
 
       - name: Build with Jekyll
-        run: bundle exec jekyll build --baseurl "${{ inputs.base-url || "https://www.example.com/" }}"
+        run: bundle exec jekyll build --baseurl "${BASE_URL:-https://www.example.com/}"
         env:
           JEKYLL_ENV: production
+          BASE_URL: ${{ inputs.base-url }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
