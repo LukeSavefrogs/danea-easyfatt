@@ -15,4 +15,4 @@ jobs:
           vt_api_key: ${{ secrets.VIRUSTOTAL_TOKEN }}
           update_release_body: true
           files: |
-            .exe$
+            *.exe
