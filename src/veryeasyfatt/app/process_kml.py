@@ -5,7 +5,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Literal, Union
 
-from pydantic import Field, validator
+from pydantic import Field, field_validator
 import rich
 from rich.panel import Panel
 
@@ -50,7 +50,7 @@ class CustomerAddress(HashableBaseModel):
     is_supplier: bool = Field(alias="IsSupplier", frozen=True)
     is_primary: bool = Field()
 
-    @validator(
+    @field_validator(
         "address",
         "postcode",
         "city",
@@ -59,8 +59,9 @@ class CustomerAddress(HashableBaseModel):
         "vat_code",
         "fiscal_code",
         "homepage",
-        pre=True,
+        mode="before",
     )
+    @classmethod
     def replace_none(cls, value):
         return value if value is not None else ""
 
