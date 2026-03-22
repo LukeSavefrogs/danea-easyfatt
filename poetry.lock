@@ -1466,14 +1466,14 @@ setuptools = ">=42.0.0"
 
 [[package]]
 name = "pyinstaller-versionfile"
-version = "3.0.1"
+version = "3.1.0"
 description = "Create a windows version-file from metadata stored in a simple self-written YAML file or obtained from an installed distribution."
 optional = false
-python-versions = "<4.0,>=3.9"
+python-versions = "<4.0,>=3.10"
 groups = ["dev"]
 files = [
-    {file = "pyinstaller_versionfile-3.0.1-py3-none-any.whl", hash = "sha256:e42fa7bb8464c2100cf1583753ece51ad8ceaf8cded28d046cd22809efb10d8c"},
-    {file = "pyinstaller_versionfile-3.0.1.tar.gz", hash = "sha256:c31ed3f0a9fc3683b3964a547ba28fa235a4de8ee2bf86993d85701e66f031d9"},
+    {file = "pyinstaller_versionfile-3.1.0-py3-none-any.whl", hash = "sha256:b29709c48863848a92bf803f74270bdafcae3d4b79bc05c2610a3603279b2976"},
+    {file = "pyinstaller_versionfile-3.1.0.tar.gz", hash = "sha256:39547421bf64f8b4f651fbd2bb30f47b7258d356b52cbcc65b46b0deca7709ed"},
 ]
 
 [package.dependencies]
