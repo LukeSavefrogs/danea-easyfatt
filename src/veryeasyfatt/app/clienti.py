@@ -10,6 +10,7 @@ import re
 
 import hashlib
 import pickle
+from veryeasyfatt.app.integrations.routexl import RouteXLTimeBoundary
 import veryeasyfatt.bundle as bundle
 
 logger = logging.getLogger("danea-easyfatt.clienti")
@@ -20,7 +21,7 @@ CACHE_FILENAME = "customer_info.pickle"
 
 
 def rename_extra_field(column_name):
-    """Rinomina il campo 'Extra {N}' in 'IntervalloSpedizione'. Lascia inalterati i nomi delle altre colonne.
+    """Rinomina il campo `Extra {N}` in `IntervalloSpedizione`. Lascia inalterati i nomi delle altre colonne.
 
     Args:
         column_name (str): Nome della colonna corrente
@@ -33,52 +34,6 @@ def rename_extra_field(column_name):
         if re.match(r"^Extra [0-9]+$", column_name)
         else column_name
     )
-
-
-def formatta_orario(value):
-    """Formatta l'orario nel formato HH:mm (aggiungendo '0*' e ':00' dove necessario)
-
-    Args:
-        value (str): L'orario da formattare
-
-    Returns:
-        str: Orario formattato nel formato HH:mm
-    """
-    orario = value.split(":")
-
-    if len(orario) < 2:
-        orario.append("0")
-
-    return ":".join(map(lambda s: s.strip().zfill(2), orario))
-
-
-def routexl_time_boundaries(string: str):
-    """Generates a valid "Ready and due time" string to be used for csv import
-
-    See also:
-        https://docs.routexl.com/index.php?title=Import#Additional_fields:~:text=Ready%20and%20due%20time%20as%20hh%3Amm%20before%20and%20after%20%3E%3E
-
-    Args:
-        string (str): The string to convert
-
-    Raises:
-        ValueError: If the input value is not a string
-
-    Returns:
-        str | None: The time boundaries in the form "HH:MM>>HH:MM"
-    """
-    REGEX_INTERVALLO = r"([0-9:]+)\s*(?:>+|-+|\s+a\s+)\s*([0-9:]+)"
-
-    if not isinstance(string, str):
-        raise ValueError(
-            f"Input string must be of type 'str', not '{type(string).__name__}'"
-        )
-
-    intervallo_match = re.match(REGEX_INTERVALLO, string)
-    if intervallo_match is None:
-        return None
-
-    return ">>".join(map(formatta_orario, intervallo_match.groups()))
 
 
 def get_customers_data(
@@ -214,7 +169,11 @@ def get_intervallo_spedizioni(filename: Union[str, Path], extra_field_id=1):
     # Esempio:
     # 	'08' invece di '8'
     customer_info["IntervalloSpedizione"] = [
-        routexl_time_boundaries(value.strip()) if (value is not None) else None
+        (
+            str(RouteXLTimeBoundary.from_string(value.strip()))
+            if (value is not None)
+            else None
+        )
         for value in customer_info["IntervalloSpedizione"]
     ]
     logger.info(f"Sanificati valori della colonna 'IntervalloSpedizione'")

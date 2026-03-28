@@ -1,11 +1,9 @@
 """Entry point of the application."""
 
 from io import StringIO
-import json
 import os
 from pathlib import Path
 import subprocess
-import sys
 from typing import Optional
 import logging
 
@@ -20,7 +18,8 @@ from veryeasyfatt.app.constants import ApplicationGoals
 from veryeasyfatt.app.process_kml import generate_kml, populate_cache
 from veryeasyfatt.app.process_xml import modifica_xml
 from veryeasyfatt.app.process_csv import genera_csv
-from veryeasyfatt.app.registry import find_install_location
+from veryeasyfatt.app.integrations.windows.registry import find_install_location
+from veryeasyfatt.app.integrations.google_earth import GOOGLE_EARTH_WINREG_PATH
 from veryeasyfatt.shared.measuring import unit_registry
 
 from veryeasyfatt.configuration import settings
@@ -221,9 +220,7 @@ def main(goal: Optional[str] = None) -> bool:
         logger.info(f"Creazione KMl '{settings.files.output.kml}' terminata..")
 
         try:
-            google_earth_path = find_install_location(
-                r"SOFTWARE\Google\Google Earth Pro"
-            )
+            google_earth_path = find_install_location(GOOGLE_EARTH_WINREG_PATH)
             logger.info(f"Google Earth path: {google_earth_path}")
 
             if Confirm.ask("Aprire il file KML su Google Earth?", choices=["s", "n"]):
