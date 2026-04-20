@@ -4,9 +4,10 @@ import pandas as pd
 import re
 import logging
 
-from veryeasyfatt.app.clienti import get_intervallo_spedizioni, routexl_time_boundaries
+from veryeasyfatt.app.clienti import get_intervallo_spedizioni
 from veryeasyfatt.shared.formatter import SimpleFormatter
 from veryeasyfatt.configuration import settings
+from veryeasyfatt.app.integrations.routexl import RouteXLTimeBoundary
 
 logger = logging.getLogger("danea-easyfatt.csv")
 logger.addHandler(logging.NullHandler())
@@ -29,7 +30,7 @@ def genera_csv(
     logger.debug(f"Trasformo l'XML in un dizionario")
     safe_formatter = SimpleFormatter()
 
-    default_time_boundary = routexl_time_boundaries(
+    default_time_boundary = RouteXLTimeBoundary.from_string(
         settings.features.shipping.default_interval
     )
 
@@ -101,7 +102,9 @@ def genera_csv(
             document.get(f"CustomField{extra_field_orario}", "")
         )
         try:
-            orario_spedizione = routexl_time_boundaries(orario_spedizione_ordine)
+            orario_spedizione = RouteXLTimeBoundary.from_string(
+                orario_spedizione_ordine
+            )
         except ValueError:
             orario_spedizione = None
 
@@ -110,12 +113,12 @@ def genera_csv(
                 f"Preso orario spedizione da ordine singolo: {orario_spedizione}"
             )
         else:
-            orario_spedizione = intervallo_spedizioni.get(
-                document["CustomerCode"], None
-            )
-            if orario_spedizione is not None:
+            try:
+                orario_spedizione = RouteXLTimeBoundary.from_string(
+                    intervallo_spedizioni[document["CustomerCode"]]
+                )
                 logger.debug("Preso orario spedizione da profilo cliente")
-            else:
+            except (ValueError, KeyError):
                 orario_spedizione = default_time_boundary
                 logger.debug("Preso orario spedizione da valore di default")
 
@@ -131,7 +134,7 @@ def genera_csv(
                 eval_IndirizzoSpedizione=indirizzo_spedizione,
                 eval_CAPSpedizione=str(cap_spedizione),
                 eval_CittaSpedizione=citta_spedizione,
-                eval_intervalloSpedizione=orario_spedizione,
+                eval_intervalloSpedizione=str(orario_spedizione),
                 eval_pesoSpedizione=str(peso),
             )
         )
