@@ -7,7 +7,7 @@
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	"features": {
 		"ghcr.io/devcontainers/features/ruby:1": {
-			"version": "3.4.9"
+			"version": "4.0.3"
 		},
 		"ghcr.io/dhoeric/features/act:1": {},
 		"ghcr.io/devcontainers-extra/features/actionlint:1": {},
