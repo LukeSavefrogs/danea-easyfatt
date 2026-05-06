@@ -20,7 +20,7 @@ CACHE_FILENAME = "customer_info.pickle"
 
 
 def rename_extra_field(column_name):
-    """Rinomina il campo 'Extra {N}' in 'IntervalloSpedizione'. Lascia inalterati i nomi delle altre colonne.
+    """Rinomina i campi 'Extra {N}'/'Libero {N}' in 'IntervalloSpedizione'. Lascia inalterati i nomi delle altre colonne.
 
     Args:
         column_name (str): Nome della colonna corrente
@@ -210,7 +210,7 @@ def get_intervallo_spedizioni(filename: Union[str, Path], extra_field_id=1):
 
     customer_info = customer_info.rename(mapper=rename_extra_field, axis="columns")
     logger.debug(
-        f"Rinominata colonna 'Extra {extra_field_id}' in 'IntervalloSpedizione'"
+        f"Rinominata colonna '{selected_custom_field}' in 'IntervalloSpedizione'"
     )
 
     customer_info = customer_info.replace({np.nan: None})
