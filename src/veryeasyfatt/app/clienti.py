@@ -196,12 +196,11 @@ def get_intervallo_spedizioni(filename: Union[str, Path], extra_field_id=1):
 
     extra_field_column = f"Extra {extra_field_id}"
     libero_field_column = f"Libero {extra_field_id}"
-    selected_custom_field = (
-        extra_field_column
-        if extra_field_column in df.columns
-        else libero_field_column if libero_field_column in df.columns else None
-    )
-    if selected_custom_field is None:
+    if extra_field_column in df.columns:
+        selected_custom_field = extra_field_column
+    elif libero_field_column in df.columns:
+        selected_custom_field = libero_field_column
+    else:
         raise KeyError(
             f"Nessuna colonna trovata tra '{extra_field_column}' e '{libero_field_column}'"
         )
