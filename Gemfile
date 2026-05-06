@@ -13,7 +13,7 @@ gem 'wdm', '~> 0.2.0', :install_if => Gem.win_platform?
 group :jekyll_plugins do
   gem 'jekyll-timeago', '~> 1.1.0'
   gem "jekyll-default-layout", "~> 0.1.5"
-  gem "jekyll-glossary_tooltip", "~> 1.5", ">= 1.5.1"
+  gem "jekyll-glossary_tooltip", "~> 2.0", ">= 2.1.0"
   gem "jemoji", "~> 0.13.0"
   gem "jekyll-github-metadata", "~> 2.15"
 end
