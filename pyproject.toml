@@ -42,7 +42,7 @@ autopep8 = "^2.0.2"
 pyinstaller-versionfile = "^3.0.0"
 mypy = "^1.5.1"
 packaging = "^23.1"
-black = ">=26.3,<26.4"
+black = ">=26.10,<26.11"
 
 
 [build-system]
