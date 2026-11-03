@@ -232,22 +232,21 @@ files = [
 
 [[package]]
 name = "dynaconf"
-version = "3.2.13"
+version = "3.3.5"
 description = "The dynamic configurator for your Python Project"
 optional = false
-python-versions = ">=3.8"
+python-versions = "<3.15,>=3.10"
 groups = ["main"]
 files = [
-    {file = "dynaconf-3.2.13-py2.py3-none-any.whl", hash = "sha256:4305527aef4834bdba3e39479b23c005186e83fb85f65bcaa4bcea58fa26759b"},
-    {file = "dynaconf-3.2.13.tar.gz", hash = "sha256:d79e0189d97b3f226b8ebb1717e2ce05d1a05cdf6ea05de66d24625fdb5a0cbd"},
+    {file = "dynaconf-3.3.5-py3-none-any.whl", hash = "sha256:b3b4a753d5c866fc85466b65fc58d4954f6ed7dc8aa67f2b15bcbfd85d184687"},
+    {file = "dynaconf-3.3.5.tar.gz", hash = "sha256:a08f6ab44025034ef3c9f86b32548ab01efd4039094a74bd9f028a43c63d016f"},
 ]
 
 [package.extras]
-all = ["configobj", "hvac", "redis", "ruamel.yaml"]
+all = ["dynaconf[ini,redis,toml,vault,yaml]"]
 configobj = ["configobj"]
 ini = ["configobj"]
 redis = ["redis"]
-test = ["configobj", "django", "flask (>=0.12)", "hvac (>=1.1.0)", "pytest", "pytest-cov", "pytest-mock", "pytest-xdist", "python-dotenv", "radon", "redis", "toml"]
 toml = ["toml"]
 vault = ["hvac"]
 yaml = ["ruamel.yaml"]
